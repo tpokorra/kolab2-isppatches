@@ -1,0 +1,27 @@
+Index: sqlite-2.8.17/configure
+--- sqlite-2.8.17/configure.orig	2005-04-24 00:43:23 +0200
++++ sqlite-2.8.17/configure	2006-12-18 09:51:03 +0100
+@@ -20450,7 +20450,10 @@
+   TARGET_HAVE_READLINE=0
+ fi
+ 
+-
++if [ "$ac_cv_lib_readline_readline" = "no" ]
++then
++    TARGET_HAVE_READLINE=0
++fi
+ 
+ #########
+ # Figure out whether or not we have a "usleep()" function.
+Index: sqlite-2.8.17/src/encode.c
+--- sqlite-2.8.17/src/encode.c.orig	2005-04-24 00:43:22 +0200
++++ sqlite-2.8.17/src/encode.c	2007-02-23 15:28:03 +0100
+@@ -176,6 +176,8 @@
+   int i, e;
+   unsigned char c;
+   e = *(in++);
++  if (e == 0)
++    return 0;
+   i = 0;
+   while( (c = *(in++))!=0 ){
+     if( c==1 ){

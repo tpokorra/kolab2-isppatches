@@ -1,0 +1,375 @@
+Index: imap/mboxlist.c
+===================================================================
+RCS file: /cvs/src/cyrus/imap/mboxlist.c,v
+retrieving revision 1.270
+diff -u -r1.270 mboxlist.c
+--- imap/mboxlist.c	28 Jul 2009 02:46:23 -0000	1.270
++++ imap/mboxlist.c	11 Dec 2009 20:49:36 -0000
+@@ -1576,7 +1576,7 @@
+ 	   except for "anonymous", "anyone", the global admin
+ 	   and users in the default domain */
+ 	if ((cp = strchr(identifier, '@'))) {
+-	    if (rights &&
++	    if (!config_getswitch(IMAPOPT_ALLOWCROSSDOMAINACLS) && rights &&
+ 		((domain && strncasecmp(cp+1, domain, strlen(cp+1))) ||
+ 		 (!domain && (!config_defdomain ||
+ 			      strcasecmp(config_defdomain, cp+1))))) {
+@@ -1918,6 +1918,7 @@
+     int usermboxnamelen;
+     int checkmboxlist;
+     int checkshared;
++    int crossdomain;
+     int isadmin;
+     struct auth_state *auth_state;
+     int (*proc)(char *, int, int, void *rock);
+@@ -1935,7 +1936,9 @@
+     long matchlen;
+ 
+     /* don't list mailboxes outside of the default domain */
+-    if (!rock->domainlen && !rock->isadmin && memchr(key, '!', keylen)) return 0; 
++    if (!rock->domainlen && !rock->isadmin && memchr(key, '!', keylen) &&
++	!config_getswitch(IMAPOPT_ALLOWCROSSDOMAINACLS))
++	return 0;
+ 
+     minmatch = 0;
+     if (rock->inboxoffset) {
+@@ -2108,6 +2111,23 @@
+ 	    }
+ 
+ 	    rock->checkshared = 0;
++
++	    if (rock->find_namespace == NAMESPACE_USER &&
++		config_getswitch(IMAPOPT_ALLOWCROSSDOMAINACLS) && !rock->isadmin &&
++		!rock->crossdomain) {
++		char *cp = strchr(namebuf+rock->inboxoffset, '!');
++		if (cp) {
++		    int local_matchlen = (matchlen - 1 -
++					  (cp - (namebuf+rock->inboxoffset)));
++		    if (!strncmp(cp + 1, "user", local_matchlen)) {
++			r = (*rock->proc)(cp + 1, local_matchlen, 1,
++					  rock->procrock);
++			return CYRUSDB_DONE;
++		    }
++		}
++	    }
++
++
+ 	    r = (*rock->proc)(namebuf+rock->inboxoffset, matchlen, 
+ 			      1, rock->procrock);
+ 
+@@ -2128,6 +2148,91 @@
+     return r;
+ }
+ 
++
++static void convert_cross_domain_pattern(char *domainpat, int domainpatlen,
++					 char **converted_pattern,
++					 const char *pattern, int *crossdomainmatch,
++					 const char *domain)
++{
++    int patternlen = strlen(pattern);
++    char *domain_pattern, *local_dest;
++    char *local_pattern, *domain_dest;
++    int local_prefix_len;
++    const char *src;
++    int c;
++
++    domain_dest = domain_pattern = xmalloc(patternlen + 1);
++    local_dest = local_pattern = xmalloc(patternlen + 1);
++    src = pattern;
++
++    while ((c = *src++)) {
++	*local_dest++ = c;
++	if (c == '.' || c == '*')
++	    break;
++    }
++
++    local_prefix_len = local_dest - local_pattern;
++    if (c && c != '.')
++	local_prefix_len -= 1;
++    if (strncmp(pattern, "user.", local_prefix_len) == 0) {
++	/* pattern matches "user.*".  so convert the domain part of the
++	 * pattern */
++
++	if (c == '*') {
++	    /* the pattern can match any domain */
++	    *domain_dest++ = '*';
++	}
++	else if (c == '.') {
++	    while ((c = *src++)) {
++		if (c == '.')
++		    break;
++		if (c == '^')
++		    c = '.';
++		*domain_dest++ = (c == '%' ? '*' : c);
++		if (c == '*')
++		    break;
++	    }
++
++	    if (c == '*') {
++		*local_dest++ = '*';
++	    }
++	}
++
++	if (c) {
++	    strcpy(local_dest, src);
++	}
++	else {
++	    if (local_dest > local_pattern) {
++		if (local_dest[-1] == '.') {
++		    local_dest--;
++		}
++	    }
++	    *local_dest = 0;
++	}
++
++	if (domain_dest == domain_pattern) {
++	    *domain_dest++ = '*';
++	}
++	*domain_dest++ = '!';
++	*domain_dest = 0;
++
++	strncpy(domainpat, domain_pattern, domainpatlen);
++	domainpat[domainpatlen - 1] = 0;
++	strncat(domainpat, local_pattern, domainpatlen - strlen(domainpat) - 1);
++
++	*converted_pattern = xstrdup(local_pattern);
++	*crossdomainmatch = 1;
++    }
++    else {
++	/* pattern doesn't contain an explicit domain part */
++	snprintf(domainpat, domainpatlen, "*!%s", pattern);
++	*crossdomainmatch = 0;
++    }
++
++    free(domain_pattern);
++    free(local_pattern);
++}
++
+ /*
+  * Find all mailboxes that match 'pattern'.
+  * 'isadmin' is nonzero if user is a mailbox admin.  'userid'
+@@ -2151,8 +2256,11 @@
+     char *p;
+     int prefixlen;
+     int userlen = userid ? strlen(userid) : 0, domainlen = 0;
++    int domainpat_prefixlen = 0;
+     char domainpat[MAX_MAILBOX_BUFFER] = ""; /* do intra-domain fetches only */
+     char *pat = NULL;
++    char *converted_pattern = NULL;
++    int crossdomainmatch = 0;
+ 
+     if (config_virtdomains) {
+ 	char *domain;
+@@ -2162,8 +2270,10 @@
+ 	    domainlen = strlen(domain); /* includes separator */
+ 
+ 	    if ((p = strchr(pattern , '!'))) {
+-		if ((p-pattern != domainlen-1) ||
+-		    strncmp(pattern, domain+1, domainlen-1)) {
++		if (!(config_getswitch(IMAPOPT_ALLOWCROSSDOMAINACLS) &&
++		      !isadmin) &&
++		    ((p-pattern != domainlen-1) ||
++		     strncmp(pattern, domain+1, domainlen-1))) {
+ 		    /* don't allow cross-domain access */
+ 		    return IMAP_MAILBOX_BADNAME;
+ 		}
+@@ -2171,7 +2281,16 @@
+ 		pattern = p+1;
+ 	    }
+ 
+-	    snprintf(domainpat, sizeof(domainpat), "%s!%s", domain+1, pattern);
++	    if (!(config_getswitch(IMAPOPT_ALLOWCROSSDOMAINACLS) && !isadmin)) {
++		snprintf(domainpat, sizeof(domainpat), "%s!%s", domain+1, pattern);
++	    }
++	    else {
++		convert_cross_domain_pattern(domainpat, sizeof(domainpat),
++					     &converted_pattern, pattern,
++					     &crossdomainmatch, domain + 1);
++		if (converted_pattern)
++		    pattern = converted_pattern;
++	    }
+ 	}
+ 	if ((p = strrchr(pattern, '@'))) {
+ 	    /* global admin specified mbox@domain */
+@@ -2201,6 +2320,7 @@
+     cbrock.auth_state = auth_state;
+     cbrock.checkmboxlist = 0;	/* don't duplicate work */
+     cbrock.checkshared = 0;
++    cbrock.crossdomain = 0;
+     cbrock.proc = proc;
+     cbrock.procrock = rock;
+ 
+@@ -2260,6 +2380,12 @@
+     prefixlen = p - pattern;
+     *p = '\0';
+ 
++    /* Find fixed-string domain pattern prefix */
++    for (p = domainpat; *p; p++) {
++	if (*p == '*' || *p == '%' || *p == '?' || *p == '@') break;
++    }
++    domainpat_prefixlen = p - domainpat;
++
+     /*
+      * If user.X.* or INBOX.* can match pattern,
+      * search for those mailboxes next
+@@ -2292,6 +2418,7 @@
+ 	glob_free(&cbrock.g);
+ 	cbrock.g = glob_init(domainpat, GLOB_HIERARCHY);
+ 	cbrock.inboxoffset = 0;
++	cbrock.crossdomain = crossdomainmatch;
+ 	if (usermboxnamelen) {
+ 	    usermboxname[--usermboxnamelen] = '\0';
+ 	    cbrock.usermboxname = usermboxname;
+@@ -2301,7 +2428,7 @@
+ 	   just bother looking at the ones that have the same pattern
+ 	   prefix. */
+ 	r = DB->foreach(mbdb,
+-			domainpat, domainlen + prefixlen,
++			domainpat, domainpat_prefixlen,
+ 			&find_p, &find_cb, &cbrock,
+ 			NULL);
+     }
+@@ -2310,6 +2437,7 @@
+   done:
+     glob_free(&cbrock.g);
+     if (pat) free(pat);
++    if (converted_pattern) free(converted_pattern);
+ 
+     return r;
+ }
+@@ -2347,6 +2475,7 @@
+     cbrock.auth_state = auth_state;
+     cbrock.checkmboxlist = 0;	/* don't duplicate work */
+     cbrock.checkshared = 0;
++    cbrock.crossdomain = 0;
+     cbrock.proc = proc;
+     cbrock.procrock = rock;
+ 
+@@ -2987,6 +3116,7 @@
+     cbrock.auth_state = auth_state;
+     cbrock.checkmboxlist = !force;
+     cbrock.checkshared = 0;
++    cbrock.crossdomain = 0;
+     cbrock.proc = proc;
+     cbrock.procrock = rock;
+ 
+@@ -3138,6 +3268,7 @@
+     cbrock.auth_state = auth_state;
+     cbrock.checkmboxlist = !force;
+     cbrock.checkshared = 0;
++    cbrock.crossdomain = 0;
+     cbrock.proc = proc;
+     cbrock.procrock = rock;
+ 
+Index: imap/mboxname.c
+===================================================================
+RCS file: /cvs/src/cyrus/imap/mboxname.c,v
+retrieving revision 1.47
+diff -u -r1.47 mboxname.c
+--- imap/mboxname.c	28 Jul 2009 06:17:26 -0000	1.47
++++ imap/mboxname.c	11 Dec 2009 20:49:36 -0000
+@@ -112,6 +112,8 @@
+ {
+     char *cp;
+     int userlen, domainlen = 0, namelen;
++    int name_has_domain = 0;
++    const char *name_local_part = NULL;
+ 
+     /* Blank the result, just in case */
+     result[0] = '\0';
+@@ -156,6 +158,18 @@
+ 	    }
+ 	}
+ 
++	if (config_getswitch(IMAPOPT_ALLOWCROSSDOMAINACLS) &&
++	    !namespace->isadmin &&
++	    !strncmp(name, "user", 4) && name[4] == namespace->hier_sep) {
++	    name_local_part = strchr(name + 5, namespace->hier_sep);
++	    if (!name_local_part) {
++		name_local_part = name + strlen(name);
++	    }
++	    domainlen = name_local_part - (name + 5) + 1;
++	    sprintf(result, "%.*s!", domainlen - 1, name + 5);
++	    name_has_domain = 1;
++	}
++
+ 	/* if no domain specified, we're in the default domain */
+     }
+ 
+@@ -186,7 +200,13 @@
+     if (domainlen+namelen > MAX_MAILBOX_NAME) {
+ 	return IMAP_MAILBOX_BADNAME;
+     }
+-    sprintf(result, "%.*s", namelen, name);
++
++    if (name_has_domain) {
++	sprintf(result, "user%s", name_local_part ? name_local_part : "");
++    }
++    else {
++	sprintf(result, "%.*s", namelen, name);
++    }
+ 
+     /* Translate any separators in mailboxname */
+     mboxname_hiersep_tointernal(namespace, result, 0);
+@@ -349,6 +369,7 @@
+ {
+     char *domain = NULL, *cp;
+     size_t domainlen = 0, resultlen;
++    int append_domain = 1;
+ 
+     /* Blank the result, just in case */
+     result[0] = '\0';
+@@ -363,18 +384,29 @@
+ 	/* don't use the domain if it matches the user's domain */
+ 	if (userid && (cp = strchr(userid, '@')) &&
+ 	    (strlen(++cp) == domainlen) && !strncmp(domain, cp, domainlen))
+-	    domain = NULL;
++	    append_domain = 0;
+     }
+ 
+-    strcpy(result, name);
+-
+-    /* Translate any separators in mailboxname */
+-    mboxname_hiersep_toexternal(namespace, result, 0);
++    if (config_getswitch(IMAPOPT_ALLOWCROSSDOMAINACLS) && !namespace->isadmin
++	&& domain && !strncmp(name, "user", 4) &&
++	(name[4] == 0 || name[4] == '.')) {
++	sprintf(result, "user%c%.*s", namespace->hier_sep, domainlen, domain);
++	if (name[4] != 0)
++	    sprintf(result + domainlen + 5, "%c%s", namespace->hier_sep,
++		    name + 5);
++	mboxname_hiersep_toexternal(namespace, result + domainlen + 6, 0);
++	append_domain = 0;
++    }
++    else {
++	strcpy(result, name);
++	/* Translate any separators in mailboxname */
++	mboxname_hiersep_toexternal(namespace, result, 0);
++    }
+ 
+     resultlen = strlen(result);
+ 
+     /* Append domain */
+-    if (domain) {
++    if (domain && append_domain) {
+ 	if(resultlen+domainlen+1 > MAX_MAILBOX_NAME) 
+ 	    return IMAP_MAILBOX_BADNAME;
+ 
+Index: lib/imapoptions
+===================================================================
+RCS file: /cvs/src/cyrus/lib/imapoptions,v
+retrieving revision 1.67
+diff -u -r1.67 imapoptions
+--- lib/imapoptions	29 Jun 2009 17:21:06 -0000	1.67
++++ lib/imapoptions	11 Dec 2009 20:49:38 -0000
+@@ -1155,6 +1155,9 @@
+    interface, otherwise the user is assumed to be in the default
+    domain (if set). */
+ 
++{ "allowcrossdomainacls", 0, SWITCH }
++/* Allow ACL across domain boundaries. */
++
+ /*
+ .SH SEE ALSO
+ .PP

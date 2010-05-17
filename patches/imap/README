@@ -1,0 +1,41 @@
+DESCRIPTION:
+
+The patch for the imap library provided by the university of
+Washington adds the capabilities for setting/getting imap
+annotations. This is needed for imap caching in the free/busy system
+of Kolab-2.1. In addition this patch is required to accelerate Horde.
+
+IMPACT:
+
+The free/busy system won't work without this patch. Horde will run
+slower if not using this patch.
+
+REFERENCES:
+
+Kolab bug tracker merge: 
+
+https://intevation.de/roundup/kolab/merge10
+
+Wiki page:
+
+http://wiki.kolab.org/index.php/Template:Patches_cclient
+
+Mercurial patch repository:
+
+http://hg.pardus.de/cgi-bin/hg.cgi/kolab/patches/imap-c-client/summary
+
+HISTORY
+
+The patch has been sent to the uw-imap developers in June 2005.
+Nothing has happened and it has been resent in March 2007. 
+
+http://mailman1.u.washington.edu/pipermail/imap-uw/2007-March/001203.html
+
+The developers responded that inclusion of this features currently
+depends on publication of this draft as a RFC:
+
+http://ietfreport.isoc.org/idref/draft-daboo-imap-annotatemore/
+
+This is still pending.
+
+

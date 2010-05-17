@@ -1,0 +1,14 @@
+COPYING
+INSTALL
+Makefile
+Makefile.in
+README
+aclocal.m4
+autom4te.cache
+config.log
+config.status
+configure
+dist_conf
+install-sh
+kolab-webadmin.spec
+missing

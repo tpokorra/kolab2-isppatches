@@ -1,0 +1,96 @@
+Kolab Server 2.* TODO list
+==========================
+
+Thomas (thomas):
+
+    - small effort:
+
+
+    - larger effort:
+
+
+Gunnar (wrobel):
+
+    - small effort:
+
+        Check if we need to bump the version number of PEAR-Horde-Channel (I assume it did not always create php-h4).
+
+        Add horde.local.php for incusion path in horde-h4
+
+	Fix the Build system for ...
+
+	  apache-php      [DONE]
+	  clamav          [DONE]
+	  db              [DONE]
+	  gmp             [DONE]
+	  imapd           [DONE]
+	  kolab-fbview
+	  kolab-webadmin
+	  kolab-webclient [DONE]
+	  kolabd
+	  openldap        [DONE]
+	  openpkg         [DONE]
+	  pear packages   [DONE]
+	  perl-kolab
+	  perl-ldap       [DONE]
+	  php             [DONE]
+	  php-kolab       [DONE]
+	  php-smarty      [DONE]
+	  postfix         [DONE]
+	  sqlite          [DONE]
+
+	Short test of updated packages ...
+
+	  apache-php      [DONE]
+	  clamav          [DONE]
+	  imapd           [DONE]
+	  kolab-fbview
+	  kolab-webadmin  [DONE]
+	  kolab-webclient [DONE]
+	  kolabd          [DONE]
+	  openldap        [DONE]
+	  perl-kolab      [DONE]
+	  php             [DONE]
+	  php-kolab
+	  postfix         [DONE]
+	  sqlite          [DONE]
+
+       The web client:
+
+            -> horde
+               - Blocks: cloud.php
+               - Check the admin section
+               - how to handle the secret key setting ($conf[secret_key])
+               - Deletion of horde.db?
+
+       The web admin:
+
+            -> Check handling domain maintainers
+
+
+       Ensure that pear packages may have a complex *.spec file with
+       additional instructions in the "install" section.
+
+    - larger effort:
+
+	Handle the php.ini timezone setting correctly. Check if
+	it is absolutely necessary to put this choice into kolab_bootstrap.
+	Maybe the bootstrap could also determine it automatically.
+
+Sascha (wilde):
+
+    - small effort:
+
+
+    - larger effort:
+
+
+Additional targets that might be done:
+
+
+Some of the issues that need testing are:
+
+
+Link for all server and web client issues on testing:
+
+	https://issues.kolab.org/issue?:columns=title,id,keyword&:group=priority&:filter=keyword,status&status=6&keyword=1,19

@@ -1,0 +1,34 @@
+<chapter><title> Appendix </title>
+
+<sect1><title> Handling Kolab's LDAP database on the commandline</title>
+<para>As already described the actual layout of the LDAP directory is quite
+flexible. One can expect that it may be necessary to modify it some time in the
+future and the "migration" issue arises. This is a bit tricky but surely can be
+done. But be aware that the described command <filename>slapcat</filename> only
+reads the LDAP database locally on the server and does not connect via the
+network.
+</para>
+
+<para><programlisting>
+/kolab/etc/rc.d/rc.openldap stop
+slapcat -b suffix -l &lt;ldap ldif file&gt; 
+	suffix may be "dc=my,dc=domain,dc=org"
+mv /kolab/var/openldap/openldap-data/* &lt;backup directory&gt;
+(process the ldif, adding new fields, etc.)
+slapadd -b suffix &lt;/dev/null
+	"&lt;" is a redirection here
+slapadd -l &lt;edited ldap ldif file&gt;
+/kolab/etc/rc.d/rc.openldap start
+</programlisting></para>
+
+<para>The LDAP Interchange Format (LDIF) consists of ASCII text and may be
+processed with the usual tools (Sed, Awk, Perl, etc.). A syntax check is done
+when importing it back into the LDAP database. Unfortunately slapadd reports
+errors on the basis of whole records, seldomly an exact line number and a more
+descriptive help text is printed. But the LDIF format itself is reasonably
+simple. Also other tool programs may be used to help out here.
+</para>
+
+</sect1>
+
+</chapter>

@@ -1,0 +1,220 @@
+<chapter><title> Cyrus SASL2 Library </title>
+<para> The Cyrus SASL2 project of the Carnegie Mellon University provides a library
+which a number of other free software
+projects use for authentication, namely the Cyrus IMAP daemon and the Postfix
+mailserver.</para>
+
+<para> Starting with version 2 the saslauthd daemon provides an authentication
+interface to LDAP. Note that two methods exist right now to achieve this:</para> 
+<orderedlist>
+<listitem><para> saslauthd against LDAP via PAM (with pam-ldap)</para></listitem>
+<listitem><para> saslauthd directly against LDAP </para></listitem>
+</orderedlist>
+<para> The direct LDAP support is considered expermintal as of now. 
+The OpenPKG sasl package already includes the latest source tree but
+has not enabled the LDAP feature in the RPM spec file. Note that the package 
+was taken from the Current tree of OpenPKG.</para>
+
+<para> The SPEC file was slightly changed to reflect the direct LDAP feature and
+a patch had to be applied to the configure script of the original source package:</para>
+
+<para><programlisting>
+#   package information
+Name:         sasl
+Summary:      Simple Authentication and Security Layer
+URL:          http://asg.web.cmu.edu/sasl/
+Vendor:       Cyrus Project, CMU
+Packager:     The OpenPKG Project
+Distribution: OpenPKG [PLUS]
+Group:        Cryptography
+License:      BSD
+Version:      2.1.10
+Release:      1.2.0
+
+#   package options
+%option       with_fsl    no
+%option       with_pam    no
+%option	      with_ldap   yes
+
+#   list of sources
+%define url   ftp://ftp.andrew.cmu.edu/pub/cyrus-mail/
+                            cyrus-sasl-%{version}.tar.gz
+Source0:      %( [ ! -f %{SOURCE cyrus-sasl-%{version}.tar.gz} ] \
+                   && wget -c %url; echo %url )
+Source1:      rc.sasl
+Source2:      fsl.sasl
+Patch0:       sasl-ldap.patch
+
+
+#   build information
+Prefix:       %{l_prefix}
+BuildRoot:    %{l_buildroot}
+BuildPreReq:  OpenPKG, openpkg &gt;= 1.2.0, db &gt;= 4.1.24, openssl, gcc
+PreReq:       OpenPKG, openpkg &gt;= 1.2.0
+%if "%{with_fsl}" == "yes"
+BuildPreReq:  fsl
+PreReq:       fsl
+%endif
+%if "%{with_pam}" == "yes"
+BuildPreReq:  PAM
+PreReq:       PAM
+%endif
+%if "%{with_ldap}" == "yes"
+BuildPreReq:  openldap
+PreReq:       openldap
+%endif
+AutoReq:      no
+AutoReqProv:  no
+
+%description
+    SASL is the Simple Authentication and Security Layer, a method
+    for adding authentication support to connection-based protocols.
+    To use SASL, a protocol includes a command for identifying and
+    authenticating a user to a server and for optionally negotiating
+    protection of subsequent protocol interactions. If its use is
+    negotiated, a security layer is inserted between the protocol and
+    the connection.
+
+%prep
+    %setup -q -n cyrus-sasl-%{version}
+    %{l_shtool} subst \
+        -e 's;^ *for dbname in ;for dbname in db ;' \
+        configure
+   %patch0 -p0
+
+%build
+    %{l_shtool} subst \
+        -e "s;javac;javac-xxx;g" \
+        -e "s;javah;javah-xxx;g" \
+        -e "s;javadoc;javadoc-xxx;g" \
+        configure
+    CC="%{l_cc}" \
+    CFLAGS="%{l_cflags -O} %{l_cppflags} -static" \
+%if "%{with_fsl}" == "yes"
+    LDFLAGS="%{l_ldflags} `%{l_prefix}/bin/fsl-config --all --ldflags`" \
+    LIBS="-ldb `%{l_prefix}/bin/fsl-config --all --libs`" \
+%else
+    LDFLAGS="%{l_ldflags}" \
+    LIBS="-ldb" \
+%endif
+    ./configure \
+        --prefix=%{l_prefix} \
+        --with-plugindir=%{l_prefix}/lib/sasl \
+        --with-saslauthd=%{l_prefix}/var/sasl/saslauthd \
+        --with-dbpath=%{l_prefix}/var/sasl/sasldb \
+        --with-dblib=berkeley \
+        --with-openssl=%{l_prefix} \
+        --with-bdb-incdir=%{l_prefix}/include \
+        --with-bdb-libdir=%{l_prefix}/lib \
+%if "%{with_pam}" == "yes"
+        --with-pam \
+%else
+        --without-pam \
+%endif
+%if "%{with_ldap}" == "yes"
+        --with-ldap=%{l_prefix} \
+%endif
+        --disable-shared \
+        --enable-static \
+        --disable-java \
+        --disable-sample \
+        --disable-krb4 \
+        --disable-gssapi \
+        --disable-otp \
+        --without-des \
+        --without-opie
+    %{l_make} %{l_mflags}
+    cd saslauthd
+    %{l_make} %{l_mflags} testsaslauthd
+
+%install
+    rm -rf $RPM_BUILD_ROOT
+    %{l_make} %{l_mflags} install AM_MAKEFLAGS="DESTDIR=$RPM_BUILD_ROOT"
+    %{l_shtool} install -c -m 755 saslauthd/testsaslauthd \
+                             $RPM_BUILD_ROOT%{l_prefix}/sbin/
+    %{l_shtool} mkdir -f -p -m 755 \
+        $RPM_BUILD_ROOT%{l_prefix}/etc/rc.d
+    %{l_shtool} install -c -m 755 \
+        -e 's;@l_prefix@;%{l_prefix};g' \
+%if "%{with_pam}" == "yes"
+        -e 's;@authmech@;pam;g' \
+%else
+        -e 's;@authmech@;getpwent;g' \
+%endif
+        %{SOURCE rc.sasl} \
+        $RPM_BUILD_ROOT%{l_prefix}/etc/rc.d/
+%if "%{with_fsl}" == "yes"
+      %{l_shtool} mkdir -f -p -m 755 $RPM_BUILD_ROOT%{l_prefix}/etc/fsl
+      %{l_shtool} install -c -m 644 \
+          -e 's;@l_prefix@;%{l_prefix};g' \
+          %{SOURCE fsl.sasl} \
+          $RPM_BUILD_ROOT%{l_prefix}/etc/fsl/
+%endif
+    %{l_shtool} mkdir -f -p -m 700 \
+        $RPM_BUILD_ROOT%{l_prefix}/var/sasl/log
+    %{l_shtool} mkdir -f -p -m 755 \
+        $RPM_BUILD_ROOT%{l_prefix}/var/sasl/saslauthd
+    mv $RPM_BUILD_ROOT%{l_prefix}/lib/sasl2 \
+        $RPM_BUILD_ROOT%{l_prefix}/lib/sasl
+    strip $RPM_BUILD_ROOT%{l_prefix}/sbin/* &gt;/dev/null 2&gt;&1 || true
+    %{l_rpmtool} files -v -ofiles -r$RPM_BUILD_ROOT %{l_files_std} \
+%if "%{with_fsl}" == "yes"
+        '%config %{l_prefix}/etc/fsl/fsl.sasl' \
+        '%not %dir %{l_prefix}/etc/fsl' \
+%endif
+        '%dir %attr(-,%{l_susr},%{l_sgrp}) %{l_prefix}/var/sasl/log'
+
+%files -f files
+
+%clean
+    rm -rf $RPM_BUILD_ROOT
+</programlisting></para>
+
+<para> Two patches we had to provide for openpkg follow.</para>
+
+<para><programlisting>
+--- saslauthd/configure.orig	Sun Nov 17 15:27:34 2002
++++ saslauthd/configure	Sun Nov 17 15:42:13 2002
+@@ -4012,7 +4012,7 @@
+   echo $ac_n "(cached) $ac_c" 1&gt;&6
+ else
+   ac_save_LIBS="$LIBS"
+-LIBS="-lldap -llber $LIBS"
++LIBS="-lldap -llber -lssl -lcrypto $LIBS"
+ cat &gt; conftest.$ac_ext &lt;&lt;EOF
+ #line 4018 "configure"
+ #include "confdefs.h"
+@@ -4044,7 +4044,7 @@
+ #define HAVE_LDAP 1
+ EOF
+ 
+-                       LDAP_LIBS="-lldap -llber" 
++                       LDAP_LIBS="-lldap -llber -lssl -lcrypto" 
+ else
+   echo "$ac_t""no" 1&gt;&6
+ fi
+</programlisting></para>
+
+<para><programlisting>
+--- lib/Makefile.in     Wed Dec  4 10:20:38 2002
++++ lib/Makefile.in     Wed Dec  4 10:21:00 2002
+@@ -437,7 +437,7 @@
+
+
+ plugin_common.lo: plugin_common.o
+-       ln -s $(top_builddir)/plugins/plugin_common.lo plugin_common.lo
++       ln -sf $(top_builddir)/plugins/plugin_common.lo plugin_common.lo
+
+ plugin_common.o:
+        ln -s $(top_builddir)/plugins/plugin_common.o plugin_common.o
+</programlisting></para>
+
+<para> A Source RPM containing above changes is available.</para>
+
+<para> The community has at this point already demanded
+that further authentication mechanisms may be used with the Kolab server.
+It seems that the choices offered by the saslauthd satisfy this demand.
+It requires however that the LDAP database and the additional authentication
+database must be kept consistent. That is right now out of the focus of
+the initial Kolab release. </para>
+</chapter>

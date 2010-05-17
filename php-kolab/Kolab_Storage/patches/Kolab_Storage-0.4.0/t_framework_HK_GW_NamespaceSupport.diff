@@ -1,0 +1,881 @@
+diff -Naur Kolab_Storage.orig/package.xml Kolab_Storage/package.xml
+--- a/framework/Kolab_Storage/package.xml	2010-03-23 08:00:04.000000000 +0100
++++ b/framework/Kolab_Storage/package.xml	2010-03-23 08:31:30.000000000 +0100
+@@ -80,6 +80,15 @@
+    <file  name="lib/Horde/Kolab/Storage/Data.php" role="php" />
+    <file  name="lib/Horde/Kolab/Storage/Folder.php" role="php" />
+    <file  name="lib/Horde/Kolab/Storage/List.php" role="php" />
++    <file  name="lib/Horde/Kolab/Storage/Namespace.php" role="php" />
++    <file  name="lib/Horde/Kolab/Storage/Namespace/Config.php" role="php" />
++    <file  name="lib/Horde/Kolab/Storage/Namespace/Element.php" role="php" />
++    <file  name="lib/Horde/Kolab/Storage/Namespace/Element/Other.php" role="php" />
++    <file  name="lib/Horde/Kolab/Storage/Namespace/Element/Personal.php" role="php" />
++    <file  name="lib/Horde/Kolab/Storage/Namespace/Element/Shared.php" role="php" />
++    <file  name="lib/Horde/Kolab/Storage/Namespace/Element/SharedWithPrefix.php" role="php" />
++    <file  name="lib/Horde/Kolab/Storage/Namespace/Fixed.php" role="php" />
++    <file  name="lib/Horde/Kolab/Storage/Namespace/Imap.php" role="php" />
+    <file  name="lib/Horde/Kolab/Storage/Perms.php" role="php" />
+    <file  name="lib/Horde/Kolab/Test/Storage.php" role="php" />
+    <file  name="lib/Horde/Kolab/Deprecated.php" role="php" />
+@@ -187,6 +200,15 @@
+    <install as="Horde/Kolab/Storage/Data.php" name="lib/Horde/Kolab/Storage/Data.php" />
+    <install as="Horde/Kolab/Storage/Folder.php" name="lib/Horde/Kolab/Storage/Folder.php" />
+    <install as="Horde/Kolab/Storage/List.php" name="lib/Horde/Kolab/Storage/List.php" />
++   <install as="Horde/Kolab/Storage/Namespace.php" name="lib/Horde/Kolab/Storage/Namespace.php" />
++   <install as="Horde/Kolab/Storage/Namespace/Config.php" name="lib/Horde/Kolab/Storage/Namespace/Config.php" />
++   <install as="Horde/Kolab/Storage/Namespace/Element.php" name="lib/Horde/Kolab/Storage/Namespace/Element.php" />
++   <install as="Horde/Kolab/Storage/Namespace/Element/Other.php" name="lib/Horde/Kolab/Storage/Namespace/Element/Other.php" />
++   <install as="Horde/Kolab/Storage/Namespace/Element/Personal.php" name="lib/Horde/Kolab/Storage/Namespace/Element/Personal.php" />
++   <install as="Horde/Kolab/Storage/Namespace/Element/Shared.php" name="lib/Horde/Kolab/Storage/Namespace/Element/Shared.php" />
++   <install as="Horde/Kolab/Storage/Namespace/Element/SharedWithPrefix.php" name="lib/Horde/Kolab/Storage/Namespace/Element/SharedWithPrefix.php" />
++   <install as="Horde/Kolab/Storage/Namespace/Fixed.php" name="lib/Horde/Kolab/Storage/Namespace/Fixed.php" />
++   <install as="Horde/Kolab/Storage/Namespace/Imap.php" name="lib/Horde/Kolab/Storage/Namespace/Imap.php" />
+    <install as="Horde/Kolab/Storage/Perms.php" name="lib/Horde/Kolab/Storage/Perms.php" />
+    <install as="Horde/Kolab/Test/Storage.php" name="lib/Horde/Kolab/Test/Storage.php" />
+    <install as="Horde/Kolab/Storage/AllTests.php" name="test/Horde/Kolab/Storage/AllTests.php" />
+diff -Naur Kolab_Storage/lib/Horde/Kolab/Storage/Folder.php Kolab_Storage/lib/Horde/Kolab/Storage/Folder.php
+--- a/framework/Kolab_Storage/lib/Horde/Kolab/Storage/Folder.php	2010-03-23 08:00:04.000000000 +0100
++++ b/framework/Kolab_Storage/lib/Horde/Kolab/Storage/Folder.php	2010-03-23 08:12:29.000000000 +0100
+@@ -240,11 +240,7 @@
+      */
+     function setName($name)
+     {
+-        $name = str_replace(':', '/', $name);
+-        if (substr($name, 0, 5) != 'user/' && substr($name, 0, 7) != 'shared.') {
+-            $name = 'INBOX/' . $name;
+-        }
+-        $this->new_name = String::convertCharset($name, NLS::getCharset(), 'UTF7-IMAP');
++        $this->new_name = $this->_list->namespace->setName($name);
+     }
+ 
+     /**
+@@ -472,6 +468,21 @@
+     }
+ 
+     /**
++     * Return the name of the folder.
++     *
++     * @return string The name of the folder.
++     */
++    public function getName()
++    {
++        if (isset($this->name)) {
++            return $this->name;
++        }
++        if (!isset($this->name) && isset($this->new_name)) {
++            return $this->new_name;
++        }
++    }
++
++    /**
+      * Returns the owner of the folder.
+      *
+      * @return string|PEAR_Error  The owner of this folder.
+@@ -479,26 +475,28 @@
+     function getOwner()
+     {
+         if (!isset($this->_owner)) {
+-            if (!isset($this->name) && isset($this->new_name)) {
+-                $name = $this->new_name;
+-            } else {
+-                $name = $this->name;
+-            }
+-
+-            if (!preg_match(";(shared\.|INBOX[/]?|user/([^/]+)[/]?)([^@]*)(@.*)?;", $name, $matches)) {
+-                return PEAR::raiseError(sprintf(_("Owner of folder %s cannot be determined."), $name));
+-            }
+-
+-            $this->_subpath = $matches[3];
+-
+-            if (substr($matches[1], 0, 6) == 'INBOX/') {
+-                $this->_owner = Auth::getAuth();
+-            } elseif (substr($matches[1], 0, 5) == 'user/') {
+-                $domain = strstr(Auth::getAuth(), '@');
+-                $user_domain = isset($matches[4]) ? $matches[4] : $domain;
+-                $this->_owner = $matches[2] . $user_domain;
+-            } elseif ($matches[1] == 'shared.') {
+-                $this->_owner =  'anonymous';
++            $owner = $this->_list->namespace->getOwner($this->getName());
++            /**
++             * @todo: Reconsider if this handling should really be done here
++             * rather than in a module nearer to the applications.
++             */
++            switch ($owner) {
++            case Horde_Kolab_Storage_Namespace::PERSONAL:
++                $this->_owner = Auth::getAuth();
++                break;
++            case Horde_Kolab_Storage_Namespace::SHARED:
++                $this->_owner = 'anonymous';
++                break;
++            default:
++                list($prefix, $user) = explode(':', $owner, 2);
++                if (strpos($user, '@') === false) {
++                    $domain = strstr(Auth::getAuth(), '@');
++                    if (!empty($domain)) {
++                        $user .= $domain;
++                    }
++                }
++                $this->_owner = $user;
++                break;
+             }
+         }
+         return $this->_owner;
+@@ -513,21 +511,11 @@
+      */
+     function getSubpath($name = null)
+     {
+-        if (!isset($this->_subpath) || isset($name)) {
+-            if (!isset($name)) {
+-                if (!isset($this->name) && isset($this->new_name)) {
+-                    $name = $this->new_name;
+-                } else {
+-                    $name = $this->name;
+-                }
+-            }
+-
+-            if (!preg_match(";(shared\.|INBOX[/]?|user/([^/]+)[/]?)([^@]*)(@.*)?;", $name, $matches)) {
+-                return PEAR::raiseError(sprintf(_("Subpath of folder %s cannot be determined."), $name));
+-            }
+-
+-            $this->_subpath = $matches[3];
+-
++        if (!empty($name)) {
++            return $this->_list->namespace->getSubpath($name);
++        }
++        if (!isset($this->_subpath)) {
++            $this->_subpath = $this->_list->namespace->getSubpath($this->getName());
+         }
+         return $this->_subpath;
+     }
+@@ -539,13 +527,8 @@
+      */
+     function getTitle()
+     {
+-        if (!isset($this->_title) && isset($this->name)) {
+-            $title = $this->name;
+-            if (substr($title, 0, 6) == 'INBOX/') {
+-                $title = substr($title, 6);
+-            }
+-            $title = str_replace('/', ':', $title);
+-            $this->_title = String::convertCharset($title, 'UTF7-IMAP');
++        if (!isset($this->_title)) {
++            $this->_title = $this->_list->namespace->getTitle($this->getName());
+         }
+         return $this->_title;
+     }
+diff -Naur Kolab_Storage/lib/Horde/Kolab/Storage/List.php Kolab_Storage/lib/Horde/Kolab/Storage/List.php
+--- a/framework/Kolab_Storage/lib/Horde/Kolab/Storage/List.php	2010-03-23 08:00:04.000000000 +0100
++++ b/framework/Kolab_Storage/lib/Horde/Kolab/Storage/List.php	2010-03-23 08:08:31.000000000 +0100
+@@ -8,6 +8,16 @@
+ /** Kolab IMAP folder representation. **/
+ require_once 'Horde/Kolab/Storage/Folder.php';
+ 
++/** Kolab IMAP namespace handler. **/
++require_once 'Horde/Kolab/Storage/Namespace.php';
++require_once 'Horde/Kolab/Storage/Namespace/Fixed.php';
++require_once 'Horde/Kolab/Storage/Namespace/Config.php';
++require_once 'Horde/Kolab/Storage/Namespace/Element.php';
++require_once 'Horde/Kolab/Storage/Namespace/Element/Other.php';
++require_once 'Horde/Kolab/Storage/Namespace/Element/Personal.php';
++require_once 'Horde/Kolab/Storage/Namespace/Element/Shared.php';
++require_once 'Horde/Kolab/Storage/Namespace/Element/SharedWithPrefix.php';
++
+ /**
+  * The Kolab_List class represents all IMAP folders on the Kolab
+  * server visible to the current user.
+@@ -59,6 +69,13 @@
+      */
+     var $validity;
+ 
++    /**
++     * The namespace handler.
++     *
++     * @var Horde_Kolab_Storage_Namespace
++     */
++    var $namespace;
++
+ 
+     /**
+      * Constructor.
+@@ -66,6 +83,13 @@
+     function Kolab_List()
+     {
+         $this->validity = 0;
++
++        if (isset($GLOBALS['conf']['kolab']['imap']['namespaces'])) {
++            $this->namespace = new Horde_Kolab_Storage_Namespace_Config($GLOBALS['conf']['kolab']['imap']['namespaces']);
++        } else {
++            $this->namespace = new Horde_Kolab_Storage_Namespace_Fixed();
++        }
++
+         $this->__wakeup();
+     }
+ 
+diff -Naur Kolab_Storage/lib/Horde/Kolab/Storage/Namespace/Config.php Kolab_Storage/lib/Horde/Kolab/Storage/Namespace/Config.php
+--- a/framework/Kolab_Storage/lib/Horde/Kolab/Storage/Namespace/Config.php	1970-01-01 01:00:00.000000000 +0100
++++ b/framework/Kolab_Storage/lib/Horde/Kolab/Storage/Namespace/Config.php	2010-03-23 08:00:56.000000000 +0100
+@@ -0,0 +1,60 @@
++<?php
++/**
++ * The Horde_Kolab_Storage_Namespace_Config:: allows to configure the available
++ * IMAP namespaces on the Kolab server.
++ *
++ * PHP version 5
++ *
++ * @category Kolab
++ * @package  Kolab_Storage
++ * @author   Gunnar Wrobel <wrobel@pardus.de>
++ * @license  http://www.fsf.org/copyleft/lgpl.html LGPL
++ * @link     http://pear.horde.org/index.php?package=Kolab_Storage
++ */
++
++/**
++ * The Horde_Kolab_Storage_Namespace_Config:: allows to configure the available
++ * IMAP namespaces on the Kolab server.
++ *
++ * Copyright 2004-2010 The Horde Project (http://www.horde.org/)
++ *
++ * See the enclosed file COPYING for license information (LGPL). If you
++ * did not receive this file, see http://www.fsf.org/copyleft/lgpl.html.
++ *
++ * @category Kolab
++ * @package  Kolab_Storage
++ * @author   Gunnar Wrobel <wrobel@pardus.de>
++ * @license  http://www.fsf.org/copyleft/lgpl.html LGPL
++ * @link     http://pear.horde.org/index.php?package=Kolab_Storage
++ */
++class Horde_Kolab_Storage_Namespace_Config
++extends  Horde_Kolab_Storage_Namespace
++{
++    /**
++     * Constructor.
++     */
++    public function __construct(array $configuration)
++    {
++        parent::__construct();
++        foreach ($configuration as $element) {
++            if ($element['type'] == Horde_Kolab_Storage_Namespace::SHARED
++                && isset($element['prefix'])) {
++                $namespace_element = new Horde_Kolab_Storage_Namespace_Element_SharedWithPrefix(
++                    $element['name'], $element['delimiter'], $element['prefix']
++                );
++                $this->_sharedPrefix = $element['prefix'];
++            } else {
++                $class = 'Horde_Kolab_Storage_Namespace_Element_' . ucfirst($element['type']);
++                $namespace_element = new $class($element['name'], $element['delimiter']);
++            }
++            if (empty($element['name'])) {
++                $this->_any = $namespace_element;
++            } else {
++                $this->_namespaces[] = $namespace_element;
++            }
++            if (isset($element['add'])) {
++                $this->_primaryPersonalNamespace = $namespace_element;
++            }
++        }
++    }
++}
+\ Kein Zeilenumbruch am Dateiende.
+diff -Naur Kolab_Storage/lib/Horde/Kolab/Storage/Namespace/Element/Other.php Kolab_Storage/lib/Horde/Kolab/Storage/Namespace/Element/Other.php
+--- a/framework/Kolab_Storage/lib/Horde/Kolab/Storage/Namespace/Element/Other.php	1970-01-01 01:00:00.000000000 +0100
++++ b/framework/Kolab_Storage/lib/Horde/Kolab/Storage/Namespace/Element/Other.php	2010-03-23 08:24:32.000000000 +0100
+@@ -0,0 +1,49 @@
++<?php
++
++class Horde_Kolab_Storage_Namespace_Element_Other
++extends Horde_Kolab_Storage_Namespace_Element
++{
++    /**
++     * Return the type of this namespace (personal, other, or shared).
++     *
++     * @return string The type.
++     */
++    public function getType()
++    {
++        return Horde_Kolab_Storage_Namespace::OTHER;
++    }
++
++    /**
++     * Return the owner of a folder.
++     *
++     * @param string $name The name of the folder.
++     *
++     * @return string The owner of the folder.
++     */
++    public function getOwner($name)
++    {
++        $path = explode($this->_delimiter, $name);
++        $user = $path[1];
++        if (strpos($user, '@') === false) {
++            $domain = strstr(array_pop($path), '@');
++            if (!empty($domain)) {
++                $user .= $domain;
++            }
++        }
++        return Horde_Kolab_Storage_Namespace::OTHER . ':' . $user;
++    }
++
++    /**
++     * Return an array describing the path elements of the folder.
++     *
++     * @param string $name The name of the folder.
++     *
++     * @return array The path elements.
++     */
++    protected function _subpath($name)
++    {
++        $path = parent::_subpath($name);
++        array_shift($path);
++        return $path;
++    }
++}
+\ Kein Zeilenumbruch am Dateiende.
+diff -Naur Kolab_Storage/lib/Horde/Kolab/Storage/Namespace/Element/Personal.php Kolab_Storage/lib/Horde/Kolab/Storage/Namespace/Element/Personal.php
+--- a/framework/Kolab_Storage/lib/Horde/Kolab/Storage/Namespace/Element/Personal.php	1970-01-01 01:00:00.000000000 +0100
++++ b/framework/Kolab_Storage/lib/Horde/Kolab/Storage/Namespace/Element/Personal.php	2010-03-23 08:00:56.000000000 +0100
+@@ -0,0 +1,27 @@
++<?php
++
++class Horde_Kolab_Storage_Namespace_Element_Personal
++extends Horde_Kolab_Storage_Namespace_Element
++{
++    /**
++     * Return the type of this namespace (personal, other, or shared).
++     *
++     * @return string The type.
++     */
++    public function getType()
++    {
++        return Horde_Kolab_Storage_Namespace::PERSONAL;
++    }
++
++    /**
++     * Return the owner of a folder.
++     *
++     * @param string $name The name of the folder.
++     *
++     * @return string The owner of the folder.
++     */
++    public function getOwner($name)
++    {
++        return Horde_Kolab_Storage_Namespace::PERSONAL;
++    }
++}
+\ Kein Zeilenumbruch am Dateiende.
+diff -Naur Kolab_Storage/lib/Horde/Kolab/Storage/Namespace/Element/Shared.php Kolab_Storage/lib/Horde/Kolab/Storage/Namespace/Element/Shared.php
+--- a/framework/Kolab_Storage/lib/Horde/Kolab/Storage/Namespace/Element/Shared.php	1970-01-01 01:00:00.000000000 +0100
++++ b/framework/Kolab_Storage/lib/Horde/Kolab/Storage/Namespace/Element/Shared.php	2010-03-23 08:00:56.000000000 +0100
+@@ -0,0 +1,27 @@
++<?php
++
++class Horde_Kolab_Storage_Namespace_Element_Shared
++extends Horde_Kolab_Storage_Namespace_Element
++{
++    /**
++     * Return the type of this namespace (personal, other, or shared).
++     *
++     * @return string The type.
++     */
++    public function getType()
++    {
++        return Horde_Kolab_Storage_Namespace::SHARED;
++    }
++
++    /**
++     * Return the owner of a folder.
++     *
++     * @param string $name The name of the folder.
++     *
++     * @return string The owner of the folder.
++     */
++    public function getOwner($name)
++    {
++        return Horde_Kolab_Storage_Namespace::SHARED;
++    }
++}
+\ Kein Zeilenumbruch am Dateiende.
+diff -Naur Kolab_Storage/lib/Horde/Kolab/Storage/Namespace/Element/SharedWithPrefix.php Kolab_Storage/lib/Horde/Kolab/Storage/Namespace/Element/SharedWithPrefix.php
+--- a/framework/Kolab_Storage/lib/Horde/Kolab/Storage/Namespace/Element/SharedWithPrefix.php	1970-01-01 01:00:00.000000000 +0100
++++ b/framework/Kolab_Storage/lib/Horde/Kolab/Storage/Namespace/Element/SharedWithPrefix.php	2010-03-23 08:00:56.000000000 +0100
+@@ -0,0 +1,41 @@
++<?php
++
++class Horde_Kolab_Storage_Namespace_Element_SharedWithPrefix
++extends Horde_Kolab_Storage_Namespace_Element_Shared
++{
++    /**
++     * The prefix to hide when referencing this namespace.
++     *
++     * @var string
++     */
++    protected $_prefix;
++
++    /**
++     * Constructor.
++     *
++     * @param string $name      The prefix identifying this namespace.
++     * @param string $delimiter The delimiter used for this namespace.
++     * @param string $prefix The prefix to hide.
++     */
++    public function __construct($name, $delimiter, $prefix)
++    {
++        parent::__construct($name, $delimiter);
++        $this->_prefix = $prefix;
++    }
++
++    /**
++     * Return an array describing the path elements of the folder.
++     *
++     * @param string $name The name of the folder.
++     *
++     * @return array The path elements.
++     */
++    protected function _subpath($name)
++    {
++        $path = parent::_subpath($name);
++        if (strpos($path[0], $this->_prefix) === 0) {
++            $path[0] = substr($path[0], strlen($this->_prefix));
++        }
++        return $path;
++    }
++}
+\ Kein Zeilenumbruch am Dateiende.
+diff -Naur Kolab_Storage/lib/Horde/Kolab/Storage/Namespace/Element.php Kolab_Storage/lib/Horde/Kolab/Storage/Namespace/Element.php
+--- a/framework/Kolab_Storage/lib/Horde/Kolab/Storage/Namespace/Element.php	1970-01-01 01:00:00.000000000 +0100
++++ b/framework/Kolab_Storage/lib/Horde/Kolab/Storage/Namespace/Element.php	2010-03-23 08:00:56.000000000 +0100
+@@ -0,0 +1,125 @@
++<?php
++
++abstract class Horde_Kolab_Storage_Namespace_Element
++{
++    /**
++     * The prefix identifying this namespace.
++     *
++     * @var string
++     */
++    protected $_name;
++
++    /**
++     * The delimiter used for this namespace.
++     *
++     * @var string
++     */
++    protected $_delimiter;
++
++    /**
++     * Constructor.
++     *
++     * @param string $name      The prefix identifying this namespace.
++     * @param string $delimiter The delimiter used for this namespace.
++     */
++    public function __construct($name, $delimiter)
++    {
++        if (substr($name, -1) == $delimiter) {
++            $name = substr($name, 0, -1);
++        }
++        $this->_name = $name;
++        $this->_delimiter = $delimiter;
++    }
++
++    /**
++     * Return the type of this namespace (personal, other, or shared).
++     *
++     * @return string The type.
++     */
++    abstract public function getType();
++
++    /**
++     * Return the name of this namespace.
++     *
++     * @return string The name/prefix.
++     */
++    public function getName()
++    {
++        return $this->_name;
++    }
++
++    /**
++     * Does the folder name lie in this namespace?
++     *
++     * @param string $name The name of the folder.
++     *
++     * @return boolean True if the folder is element of this namespace.
++     */
++    public function matches($name)
++    {
++        return (strpos($name, $this->_name) === 0);
++    }
++
++    /**
++     * Return the owner of a folder.
++     *
++     * @param string $name The name of the folder.
++     *
++     * @return string The owner of the folder.
++     */
++    abstract public function getOwner($name);
++
++    /**
++     * Return the title of a folder.
++     *
++     * @param string $name The name of the folder.
++     *
++     * @return string The title of the folder.
++     */
++    public function getTitle($name)
++    {
++        return join($this->_subpath($name), ':');
++    }
++
++    /**
++     * Get the sub path for the given folder name.
++     *
++     * @param string $name The folder name.
++     *
++     * @return string The sub path.
++     */
++    public function getSubpath($name)
++    {
++        return join($this->_subpath($name), $this->_delimiter);
++    }
++
++    /**
++     * Return an array describing the path elements of the folder.
++     *
++     * @param string $name The name of the folder.
++     *
++     * @return array The path elements.
++     */
++    protected function _subpath($name)
++    {
++        $path = explode($this->_delimiter, $name);
++        if ($path[0] == $this->_name) {
++            array_shift($path);
++        }
++        //@todo: What about the potential trailing domain?
++        return $path;
++    }
++
++    /**
++     * Generate a folder path for the given path in this namespace.
++     *
++     * @param array $path The path of the folder.
++     *
++     * @return string The name of the folder.
++     */
++    public function generateName($path)
++    {
++        return join($path, $this->_delimiter);
++    }
++
++}
+\ Kein Zeilenumbruch am Dateiende.
+diff -Naur Kolab_Storage/lib/Horde/Kolab/Storage/Namespace/Fixed.php Kolab_Storage/lib/Horde/Kolab/Storage/Namespace/Fixed.php
+--- a/framework/Kolab_Storage/lib/Horde/Kolab/Storage/Namespace/Fixed.php	1970-01-01 01:00:00.000000000 +0100
++++ b/framework/Kolab_Storage/lib/Horde/Kolab/Storage/Namespace/Fixed.php	2010-03-23 08:00:56.000000000 +0100
+@@ -0,0 +1,57 @@
++<?php
++/**
++ * The Horde_Kolab_Storage_Namespace_Fixed:: implements the default IMAP
++ * namespaces on the Kolab server.
++ *
++ * PHP version 5
++ *
++ * @category Kolab
++ * @package  Kolab_Storage
++ * @author   Gunnar Wrobel <wrobel@pardus.de>
++ * @license  http://www.fsf.org/copyleft/lgpl.html LGPL
++ * @link     http://pear.horde.org/index.php?package=Kolab_Storage
++ */
++
++/**
++ * The Horde_Kolab_Storage_Namespace_Fixed:: implements the default IMAP
++ * namespaces on the Kolab server.
++ *
++ * Copyright 2004-2010 The Horde Project (http://www.horde.org/)
++ *
++ * See the enclosed file COPYING for license information (LGPL). If you
++ * did not receive this file, see http://www.fsf.org/copyleft/lgpl.html.
++ *
++ * @category Kolab
++ * @package  Kolab_Storage
++ * @author   Gunnar Wrobel <wrobel@pardus.de>
++ * @license  http://www.fsf.org/copyleft/lgpl.html LGPL
++ * @link     http://pear.horde.org/index.php?package=Kolab_Storage
++ */
++class Horde_Kolab_Storage_Namespace_Fixed
++extends  Horde_Kolab_Storage_Namespace
++{
++    /**
++     * Indicates the personal namespace that the class will use to create new
++     * folders.
++     *
++     * @var string
++     */
++    protected $_primaryPersonalNamespace = 'INBOX';
++
++    /**
++     * Constructor.
++     */
++    public function __construct()
++    {
++        parent::__construct();
++
++        $personal = new Horde_Kolab_Storage_Namespace_Element_Personal('INBOX/', '/');
++        $other    = new Horde_Kolab_Storage_Namespace_Element_Other('user/', '/');
++        $shared   = new Horde_Kolab_Storage_Namespace_Element_SharedWithPrefix('', '/', 'shared.');
++
++        $this->_namespaces = array($personal, $other);
++        $this->_any = $shared;
++        $this->_primaryPersonalNamespace = $personal;
++        $this->_sharedPrefix = 'shared.';
++    }
++}
+\ Kein Zeilenumbruch am Dateiende.
+diff -Naur Kolab_Storage/lib/Horde/Kolab/Storage/Namespace/Imap.php Kolab_Storage/lib/Horde/Kolab/Storage/Namespace/Imap.php
+--- a/framework/Kolab_Storage/lib/Horde/Kolab/Storage/Namespace/Imap.php	1970-01-01 01:00:00.000000000 +0100
++++ b/framework/Kolab_Storage/lib/Horde/Kolab/Storage/Namespace/Imap.php	2010-03-23 08:00:56.000000000 +0100
+@@ -0,0 +1,49 @@
++<?php
++/**
++ * The Horde_Kolab_Storage_Namespace_Config:: allows to use the information from
++ * the IMAP NAMESPACE command to identify the IMAP namespaces on the Kolab
++ * server.
++ *
++ * PHP version 5
++ *
++ * @category Kolab
++ * @package  Kolab_Storage
++ * @author   Gunnar Wrobel <wrobel@pardus.de>
++ * @license  http://www.fsf.org/copyleft/lgpl.html LGPL
++ * @link     http://pear.horde.org/index.php?package=Kolab_Storage
++ */
++
++/**
++ * The Horde_Kolab_Storage_Namespace_Config:: allows to use the information from
++ * the IMAP NAMESPACE command to identify the IMAP namespaces on the Kolab
++ * server.
++ *
++ * Copyright 2004-2010 The Horde Project (http://www.horde.org/)
++ *
++ * See the enclosed file COPYING for license information (LGPL). If you
++ * did not receive this file, see http://www.fsf.org/copyleft/lgpl.html.
++ *
++ * @category Kolab
++ * @package  Kolab_Storage
++ * @author   Gunnar Wrobel <wrobel@pardus.de>
++ * @license  http://www.fsf.org/copyleft/lgpl.html LGPL
++ * @link     http://pear.horde.org/index.php?package=Kolab_Storage
++ */
++class Horde_Kolab_Storage_Namespace_Imap
++extends  Horde_Kolab_Storage_Namespace_Config
++{
++    /**
++     * Constructor.
++     */
++    public function __construct(array $namespaces, array $configuration)
++    {
++        $c = array();
++        foreach ($namespaces as $namespace) {
++            if (in_array($namespace['name'], array_keys($configuration))) {
++                $namespace = array_merge($namespace, $configuration[$namespace['name']]);
++            }
++            $c[] = $namespace;
++        }
++        parent::__construct($c);
++    }
++}
+\ Kein Zeilenumbruch am Dateiende.
+diff -Naur Kolab_Storage/lib/Horde/Kolab/Storage/Namespace.php Kolab_Storage/lib/Horde/Kolab/Storage/Namespace.php
+--- a/framework/Kolab_Storage/lib/Horde/Kolab/Storage/Namespace.php	1970-01-01 01:00:00.000000000 +0100
++++ b/framework/Kolab_Storage/lib/Horde/Kolab/Storage/Namespace.php	2010-03-23 08:09:52.000000000 +0100
+@@ -0,0 +1,188 @@
++<?php
++/**
++ * The Horde_Kolab_Storage_Namespace:: class handles IMAP namespaces and allows
++ * to derive folder information from folder names.
++ *
++ * PHP version 5
++ *
++ * @category Kolab
++ * @package  Kolab_Storage
++ * @author   Gunnar Wrobel <wrobel@pardus.de>
++ * @license  http://www.fsf.org/copyleft/lgpl.html LGPL
++ * @link     http://pear.horde.org/index.php?package=Kolab_Storage
++ */
++
++/**
++ * The Horde_Kolab_Storage_Namespace:: class handles IMAP namespaces and allows
++ * to derive folder information from folder names.
++ *
++ * Copyright 2004-2010 The Horde Project (http://www.horde.org/)
++ *
++ * See the enclosed file COPYING for license information (LGPL). If you
++ * did not receive this file, see http://www.fsf.org/copyleft/lgpl.html.
++ *
++ * @category Kolab
++ * @package  Kolab_Storage
++ * @author   Gunnar Wrobel <wrobel@pardus.de>
++ * @license  http://www.fsf.org/copyleft/lgpl.html LGPL
++ * @link     http://pear.horde.org/index.php?package=Kolab_Storage
++ */
++abstract class Horde_Kolab_Storage_Namespace
++{
++    /** The possible namespace types (RFC 2342 [5]) */
++    const PERSONAL = 'personal';
++    const OTHER    = 'other';
++    const SHARED   = 'shared';
++
++    /**
++     * The namespaces.
++     *
++     * @var array
++     */
++    protected $_namespaces = array();
++
++    /**
++     * The characterset this module uses to communicate with the outside world.
++     *
++     * @var string
++     */
++    protected $_charset;
++
++    /**
++     * A prefix in the shared namespaces that will be ignored/removed.
++     *
++     * @var string
++     */
++    protected $_sharedPrefix;
++
++    /**
++     * The namespace that matches any folder name not matching to another
++     * namespace.
++     *
++     * @var Horde_Kolab_Storage_Namespace_Element
++     */
++    protected $_any;
++
++    /**
++     * Indicates the personal namespace that the class will use to create new
++     * folders.
++     *
++     * @var Horde_Kolab_Storage_Namespace_Element
++     */
++    protected $_primaryPersonalNamespace;
++
++    /**
++     * Constructor.
++     */
++    public function __construct()
++    {
++        $this->_charset = NLS::getCharset();
++        if (empty($this->_primaryPersonalNamespace)) {
++            $personal = null;
++            foreach ($this->_namespaces as $namespace) {
++                if ($namespace->getName() == 'INBOX') {
++                    $this->_primaryPersonalNamespace = $namespace;
++                    break;
++                }
++                if (empty($personal) && $namespace->getType() == self::PERSONAL) {
++                    $personal = $namespace;
++                }
++            }
++            if (empty($this->_primaryPersonalNamespace)) {
++                $this->_primaryPersonalNamespace = $personal;
++            }
++        }
++    }
++
++    /**
++     * Match a folder name with the corresponding namespace.
++     *
++     * @param string $name The name of the folder.
++     *
++     * @return Horde_Kolab_Storage_Namespace_Element The corresponding namespace.
++     *
++     * @throws Horde_Kolab_Storage_Exception If the namespace of the folder
++     *                                       cannot be determined.
++     */
++    protected function matchNamespace($name)
++    {
++        foreach ($this->_namespaces as $namespace) {
++            if ($namespace->matches($name)) {
++                return $namespace;
++            }
++        }
++        if (!empty($this->_any)) {
++            return $this->_any;
++        }
++    }
++
++    /**
++     * Get the character set used/expected when calling the getTitle() or
++     * setName() methods.
++     *
++     * @return string The character set.
++     */
++    public function getCharset()
++    {
++        return $this->_charset;
++    }
++
++    /**
++     * Return the title of a folder.
++     *
++     * @param string $name The name of the folder.
++     *
++     * @return string The title of the folder.
++     */
++    public function getTitle($name)
++    {
++        $name = String::convertCharset($name, 'UTF7-IMAP', $this->_charset);
++        return $this->matchNamespace($name)->getTitle($name);
++    }
++
++    /**
++     * Return the owner of a folder.
++     *
++     * @param string $name The name of the folder.
++     *
++     * @return string The owner of the folder.
++     */
++    public function getOwner($name)
++    {
++        $name = String::convertCharset($name, 'UTF7-IMAP', $this->_charset);
++        return $this->matchNamespace($name)->getOwner($name);
++    }
++
++    /**
++     * Get the sub path for the given folder name.
++     *
++     * @param string $name The folder name.
++     *
++     * @return string The sub path.
++     */
++    public function getSubpath($name)
++    {
++        $name = String::convertCharset($name, 'UTF7-IMAP', $this->_charset);
++        return $this->matchNamespace($name)->getSubpath($name);
++    }
++
++    /**
++     * Generate an IMAP folder name.
++     *
++     * @param string $name The new folder name.
++     *
++     * @return string The IMAP folder name.
++     */
++    public function setName($name)
++    {
++        $namespace = $this->matchNamespace($name);
++        $path = explode(':', $name);
++        if (empty($this->_sharedPrefix)
++            || (strpos($path[0], $this->_sharedPrefix) === false
++                && $namespace->getType() != self::OTHER)) {
++            array_unshift($path, $this->_primaryPersonalNamespace->getName());
++            $namespace = $this->_primaryPersonalNamespace;
++        }
++        return String::convertCharset($namespace->generateName($path), $this->_charset, 'UTF7-IMAP');
++    }
++}
+\ Kein Zeilenumbruch am Dateiende.

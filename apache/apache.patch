@@ -1,0 +1,201 @@
+Index: build/config_vars.sh.in
+--- build/config_vars.sh.in.orig	2008-02-05 00:00:07.000000000 +0100
++++ build/config_vars.sh.in	2010-03-06 09:23:16.000000000 +0100
+@@ -35,7 +35,7 @@
+    APU_CONFIG=@APU_CONFIG@
+ fi
+ 
+-APR_LIBTOOL="`${APR_CONFIG} --apr-libtool`"
++APR_LIBTOOL="@prefix@/share/apache/build/libtool"
+ APR_INCLUDEDIR="`${APR_CONFIG} --includedir`"
+ APU_INCLUDEDIR="`${APU_CONFIG} --includedir`"
+ 
+Index: config.layout
+--- config.layout.orig	2004-11-21 19:50:36.000000000 +0100
++++ config.layout	2010-03-06 09:23:16.000000000 +0100
+@@ -50,7 +50,7 @@
+     iconsdir:      ${datadir}/icons
+     htdocsdir:     ${datadir}/htdocs
+     manualdir:     ${datadir}/manual
+-    cgidir:        ${datadir}/cgi-bin
++    cgidir:        ${exec_prefix}/cgi
+     includedir:    ${prefix}/include+
+     localstatedir: ${prefix}/var+
+     runtimedir:    ${localstatedir}/run
+Index: configure
+--- configure.orig	2010-03-02 06:34:50.000000000 +0100
++++ configure	2010-03-06 09:23:16.000000000 +0100
+@@ -3603,6 +3603,11 @@
+    { (exit 1); exit 1; }; }
+ fi
+ 
++if test "x${USE_BUNDLED_APR}" != "x" ; then
++    apr_found=reconfig
++    apr_config=srclib/apr/apr-1-config
++fi
++
+ if test "$apr_found" = "reconfig"; then
+ 
+   # save our work to this point; this allows the sub-package to use it
+@@ -3963,6 +3968,11 @@
+    { (exit 1); exit 1; }; }
+ fi
+ 
++if test "x${USE_BUNDLED_APR}" != "x" ; then
++    apu_found=reconfig
++    apu_config=srclib/apr-util/apu-1-config
++fi
++
+ # Catch some misconfigurations:
+ case ${apr_found}.${apu_found} in
+ reconfig.yes)
+Index: docs/conf/mime.types
+--- docs/conf/mime.types.orig	2010-01-06 00:40:54.000000000 +0100
++++ docs/conf/mime.types	2010-03-06 09:25:36.000000000 +0100
+@@ -103,6 +103,7 @@
+ application/mbox				mbox
+ # application/media_control+xml
+ application/mediaservercontrol+xml		mscml
++application/metalink+xml			metalink
+ # application/mikey
+ # application/moss-keys
+ # application/moss-signature
+Index: docs/docroot/index.html
+--- docs/docroot/index.html.orig	2004-11-20 21:16:24.000000000 +0100
++++ docs/docroot/index.html	2010-03-06 09:23:16.000000000 +0100
+@@ -1 +1,7 @@
+-<html><body><h1>It works!</h1></body></html>
+\ No newline at end of file
++<html>
++  <body>
++    <h1>It works!</h1>
++    It works! Your <a href="http://openpkg.org/">OpenPKG</a> based <a href="http://httpd.apache.org/">Apache</a> HTTP server was successfully installed and started.<br/>
++    You now have to read the <a href="/apache-manual/">documentation</a> and configure it according to your local demands. 
++  </body>
++</html>
+Index: modules/generators/mod_autoindex.c
+--- modules/generators/mod_autoindex.c.orig	2009-08-28 16:37:37.000000000 +0200
++++ modules/generators/mod_autoindex.c	2010-03-06 09:23:16.000000000 +0100
+@@ -1573,17 +1573,17 @@
+ 
+             ++cols;
+         }
+-        ap_rputs("<th>", r);
++        ap_rputs("<th align=\"left\">", r);
+         emit_link(r, "Name", K_NAME, keyid, direction,
+                   colargs, static_columns);
+         if (!(autoindex_opts & SUPPRESS_LAST_MOD)) {
+-            ap_rputs("</th><th>", r);
++            ap_rputs("</th><th align=\"right\">", r);
+             emit_link(r, "Last modified", K_LAST_MOD, keyid, direction,
+                       colargs, static_columns);
+             ++cols;
+         }
+         if (!(autoindex_opts & SUPPRESS_SIZE)) {
+-            ap_rputs("</th><th>", r);
++            ap_rputs("</th><th align=\"right\">", r);
+             emit_link(r, "Size", K_SIZE, keyid, direction,
+                       colargs, static_columns);
+             ++cols;
+@@ -1677,7 +1677,14 @@
+         }
+ 
+         if (autoindex_opts & TABLE_INDEXING) {
+-            ap_rputs("<tr>", r);
++            char *class;
++            if (strcmp(t2, "Parent Directory") == 0)
++                class = "updir";
++            else if (ar[x]->isdir)
++                class = "dir";
++            else
++                class = "file";
++            ap_rvputs(r, "<tr class=\"", class, "\">", NULL);
+             if (!(autoindex_opts & SUPPRESS_ICON)) {
+                 ap_rputs("<td valign=\"top\">", r);
+                 if (autoindex_opts & ICONS_ARE_LINKS) {
+@@ -1762,9 +1769,6 @@
+                                                         desc_width), NULL);
+                     }
+                 }
+-                else {
+-                    ap_rputs("</td><td>&nbsp;", r);
+-                }
+             }
+             ap_rputs("</td></tr>\n", r);
+         }
+Index: server/Makefile.in
+--- server/Makefile.in.orig	2006-03-09 22:29:55.000000000 +0100
++++ server/Makefile.in	2010-03-06 09:23:16.000000000 +0100
+@@ -56,7 +56,8 @@
+ 	tmp=export_files_unsorted.txt; \
+ 	rm -f $$tmp && touch $$tmp; \
+ 	for dir in $(EXPORT_DIRS); do \
+-	    ls $$dir/*.h >> $$tmp; \
++		abs_dir=`cd $$dir && exec pwd`; \
++	    ls $$abs_dir/*.h >> $$tmp; \
+ 	done; \
+ 	for dir in $(EXPORT_DIRS_APR); do \
+ 	    (ls $$dir/ap[ru].h $$dir/ap[ru]_*.h >> $$tmp 2>/dev/null); \
+Index: support/Makefile.in
+--- support/Makefile.in.orig	2005-07-07 01:15:34.000000000 +0200
++++ support/Makefile.in	2010-03-06 09:23:16.000000000 +0100
+@@ -22,12 +22,6 @@
+ 	        chmod 755 $(DESTDIR)$(sbindir)/$$i; \
+ 	    fi ; \
+ 	done
+-	@if test -f "$(builddir)/envvars-std"; then \
+-	    cp -p envvars-std $(DESTDIR)$(sbindir); \
+-	    if test ! -f $(DESTDIR)$(sbindir)/envvars; then \
+-	        cp -p envvars-std $(DESTDIR)$(sbindir)/envvars ; \
+-	    fi ; \
+-	fi
+ 
+ htpasswd_OBJECTS = htpasswd.lo
+ htpasswd: $(htpasswd_OBJECTS)
+Index: support/apachectl.in
+--- support/apachectl.in.orig	2006-07-12 05:38:44.000000000 +0200
++++ support/apachectl.in	2010-03-06 09:23:16.000000000 +0100
+@@ -43,11 +43,6 @@
+ # the path to your httpd binary, including options if necessary
+ HTTPD='@exp_sbindir@/@progname@'
+ #
+-# pick up any necessary environment variables
+-if test -f @exp_sbindir@/envvars; then
+-  . @exp_sbindir@/envvars
+-fi
+-#
+ # a command that outputs a formatted text version of the HTML at the
+ # url given on the command line.  Designed for lynx, however other
+ # programs may work.  
+Index: support/apxs.in
+--- support/apxs.in.orig	2006-07-12 05:38:44.000000000 +0200
++++ support/apxs.in	2010-03-06 09:23:16.000000000 +0100
+@@ -190,9 +190,6 @@
+ my $httpd = get_vars("sbindir") . "/" . get_vars("progname");
+ $httpd = eval qq("$httpd");
+ $httpd = eval qq("$httpd");
+-my $envvars = get_vars("sbindir") . "/envvars";
+-$envvars = eval qq("$envvars");
+-$envvars = eval qq("$envvars");
+ 
+ #allow apxs to be run from the source tree, before installation
+ if ($0 =~ m:support/apxs$:) {
+@@ -204,7 +201,7 @@
+ 	exit 1;
+ }
+ 
+-unless (grep /mod_so/, `. $envvars && $httpd -l`) {
++unless (grep /mod_so/, `$httpd -l`) {
+     error("Sorry, no shared object support for Apache");
+     error("available under your platform. Make sure");
+     error("the Apache module mod_so is compiled into");
+@@ -338,8 +335,7 @@
+     exit(1);
+ }
+ 
+-my $libtool = `$apr_config --apr-libtool`;
+-chomp($libtool);
++my $libtool = "$prefix/share/apache/build/libtool";
+ 
+ my $apr_includedir = `$apr_config --includes`;
+ chomp($apr_includedir);

@@ -1,0 +1,114 @@
+#!@l_prefix@/bin/openpkg rc
+##
+##  rc.clamav -- Run-Commands
+##
+
+%config
+    clamav_enable="$openpkg_rc_def"
+    clamav_daemons="clamd clamav-milter"
+    clamav_clamd_flags=""
+    clamav_clamav_milter_flags=""
+    clamav_update="daily"
+    clamav_log_prolog="true"
+    clamav_log_epilog="true"
+    clamav_log_numfiles="10"
+    clamav_log_minsize="1M"
+    clamav_log_complevel="9"
+
+%common
+    clamav_cfgfile="@l_prefix@/etc/clamav/clamd.conf"
+    clamav_pidfile_clamd="@l_prefix@/var/clamav/clamd.pid"
+    clamav_pidfile_clamav_milter="@l_prefix@/var/clamav/clamav-milter.pid"
+    clamav_signal () {
+        [ -f $clamav_pidfile_clamd ] \
+            && kill -$1 `cat $clamav_pidfile_clamd`
+        local rc_clamav_clamd=$?
+        [ -f $clamav_pidfile_clamav_milter ] \
+            && kill -$1 `cat $clamav_pidfile_clamav_milter`
+        local rc_clamav_clamav_milter=$?
+        [    $rc_clamav_clamd         -eq 0 \
+          -o $rc_clamav_clamav_milter -eq 0 ]
+    }
+
+%status -u @l_rusr@ -o
+    clamav_usable="unknown"
+    clamav_active="no"
+    rcService clamav enable yes && \
+        clamav_signal 0 && clamav_active="yes"
+    echo "clamav_enable=\"$clamav_enable\""
+    echo "clamav_usable=\"$clamav_usable\""
+    echo "clamav_active=\"$clamav_active\""
+
+%start -u @l_rusr@
+    rcService clamav enable yes || exit 0
+    rcService clamav active yes && exit 0
+    for daemon in $clamav_daemons; do
+        if [ ".$daemon" = ".clamd" ]; then
+            @l_prefix@/sbin/clamd \
+                --config-file=$clamav_cfgfile \
+                $clamav_clamd_flags
+        elif [ ".$daemon" = ".clamav-milter" -a -x @l_prefix@/sbin/clamav-milter ]; then
+            ( umask 002
+              @l_prefix@/sbin/clamav-milter \
+                  --config-file=$clamav_cfgfile \
+                  --max-children=4 --outgoing --local \
+                  --pidfile=$clamav_pidfile_clamav_milter \
+                  --sendmail-cf=/dev/null \
+                  $clamav_clamav_milter_flags \
+                  local:@l_prefix@/var/milter/socket/clamav-milter
+             ) || exit $?
+        fi
+    done
+
+%stop -u @l_rusr@
+    rcService clamav enable yes || exit 0
+    rcService clamav active no && exit 0
+    clamav_signal TERM
+    rm -f $clamav_pidfile_clamd 2>/dev/null || true
+    rm -f $clamav_pidfile_clamav_milter 2>/dev/null || true
+
+%restart -u @l_rusr@
+    rcService clamav enable yes || exit 0
+    rcService clamav active no && exit 0
+    rc clamav stop
+    sleep 2
+    rc clamav start
+
+%quarterly -u @l_rusr@
+    rcService clamav enable yes || exit 0
+    if [ ".$clamav_update" = .quarterly ]; then
+        @l_prefix@/bin/freshclam
+        if [ $? -ge 10 ]; then exit $?; fi
+    fi
+
+%hourly -u @l_rusr@
+    rcService clamav enable yes || exit 0
+    if [ ".$clamav_update" = .hourly ]; then
+        @l_prefix@/bin/freshclam
+        if [ $? -ge 10 ]; then exit $?; fi
+    fi
+
+%daily -u @l_rusr@
+    rcService clamav enable yes || exit 0
+    if [ ".$clamav_update" = .daily ]; then
+        @l_prefix@/bin/freshclam
+        if [ $? -ge 10 ]; then exit $?; fi
+    fi
+    logfiles=""
+    for daemon in freshclam $clamav_daemons; do
+        logfiles="$logfiles @l_prefix@/var/clamav/$daemon.log"
+    done
+    shtool rotate -f \
+        -n $clamav_log_numfiles -s $clamav_log_minsize -d \
+        -z $clamav_log_complevel -o @l_rusr@ -g @l_rgrp@ -m 644 \
+        -P "$clamav_log_prolog" \
+        -E "$clamav_log_epilog; rc clamav restart" \
+        $logfiles
+
+%weekly -u @l_rusr@
+    rcService clamav enable yes || exit 0
+    if [ ".$clamav_update" = .weekly ]; then
+        @l_prefix@/bin/freshclam
+        if [ $? -ge 10 ]; then exit $?; fi
+    fi
+

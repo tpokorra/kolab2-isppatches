@@ -1,0 +1,35 @@
+INSTALLATION
+
+To install this module type the following:
+
+   perl Makefile.PL
+   make
+   make test
+   make install
+
+DEPENDENCIES
+
+This package requires the following Perl modules:
+
+* Perl core packages
+
+IO::File
+IO::Select
+IO::Socket::INET
+Sys::Syslog
+Time::Local
+URI
+
+* Perl addon modules
+
+Convert::ASN1
+DB_File
+Net::LDAP
+Net::LDAP::ASN
+Net::LDAP::Control
+Net::LDAP::Constant
+Net::LDAP::Util
+Net::LDAPS
+Cyrus::IMAP::Admin
+
+package.

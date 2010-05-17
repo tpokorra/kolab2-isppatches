@@ -1,0 +1,20 @@
+diff -urN db.orig/db.spec db/db.spec
+--- db.orig/db.spec	2007-06-28 00:03:05.000000000 +0200
++++ db/db.spec	2009-09-23 18:09:09.503979301 +0200
+@@ -37,7 +37,7 @@
+ Group:        Database
+ License:      BSD
+ Version:      %{V_version}.%{V_revision}
+-Release:      20070628
++Release:      20070628_kolab1
+ 
+ #   package options
+ %option       with_compat no
+@@ -91,6 +91,7 @@
+     case "%{l_platform -p}" in
+         ix86-*   ) mutex="x86/gcc-assembly"   ;;
+         ia64-*   ) mutex="ia64/gcc-assembly"  ;;
++        amd64-*  ) mutex="x86_64/gcc-assembly" ;;
+         sparc*-* ) mutex="Sparc/gcc-assembly" ;;
+         ppc*-*   ) mutex="PPC/gcc-assembly"   ;;
+         alpha*-* ) mutex="ALPHA/gcc-assembly" ;;

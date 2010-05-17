@@ -1,0 +1,27 @@
+DESCRIPTION:
+
+This provides the imap_myrights function within PHP. This is needed 
+for correct share handling within Horde-3.2.
+
+IMPACT:
+
+The Horde share system won't work without this patch. User won't be
+able to share folders.
+
+REFERENCES:
+
+Kolab bug tracker merge: 
+
+https://intevation.de/roundup/kolab/merge77
+
+Mercurial patch repository:
+
+http://hg.pardus.de/cgi-bin/hg.cgi/kolab/patches/php/summary
+
+HISTORY
+
+The patch has been submitted upstream:
+
+http://aspn.activestate.com/ASPN/Mail/Message/php-dev/3602193
+
+

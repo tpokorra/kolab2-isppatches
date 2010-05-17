@@ -1,0 +1,422 @@
+<chapter><title> PHP based web frontend </title>
+
+<para>The PHP driven web frontend starts at the users authentication and
+presents its forms according to the answer of an LDAP group query. We
+distinguish between three groups for now. Every groupware user is automatically
+placed in the users group. For administration purposes of the server we have two
+additional groups and one special account.
+</para>
+
+<para>The special account used for administration purposes is called
+<filename>manager</filename>. We use this account which is linked just beneath
+the root node of <filename>k=kolab</filename> in the LDAP directory to connect
+to Kolab with the PHP driven web interface and the Perl driven backend. This
+account has read and write access to the whole LDAP tree. The password of this
+account is automatically generated at installation time by a script and written 
+into the backend.
+</para>
+
+<para> The regular groupware user group has access rights granted by LDAP which
+allow him only to modify his own user data except for changes to his lastname,
+his uid and his primary E-Mail address.
+</para>
+
+<para>The maintainer group is focused on the administration of groupware users
+issues. A maintainer can do the following from within the web interface:
+</para>
+
+<para>
+<inlinegraphic entityref="testmaintainer-users-create" fileref="testmaintainer-users-create" scale="50"></inlinegraphic>
+</para>
+
+<itemizedlist Mark="bullet">
+<listitem><para>add, modify and delete groupware users
+</para></listitem>
+<listitem><para>add, modify and delete addressbook users (users do not have
+accounts on the Kolab server)
+</para></listitem>
+<listitem><para>add, modify and delete shared folders
+</para></listitem>
+</itemizedlist>
+
+<para>The administrator group (like the <filename>manager</filename> account) 
+has the full control over all LDAP objects:
+</para>
+
+<itemizedlist Mark="bullet">
+<listitem><para>add, modify and delete groupware users
+</para></listitem>
+<listitem><para>add, modify and delete addressbook users (users do not have
+accounts on the Kolab server)
+</para></listitem>
+<listitem><para>add, modify and delete shared folders
+</para></listitem>
+<listitem><para>add, modify and delete the maintainer and administrator group 
+accounts
+</para></listitem>
+<listitem><para>change server settings (hostname and maildomain)
+</para></listitem>
+<listitem><para>toggle the non secure legacy services (POP3, IMAP, FTP, HTTP)
+</para></listitem>
+<listitem><para>display server logs
+</para></listitem>
+</itemizedlist>
+
+<para>The frontend only has an interface to OpenLDAP and does not manipulate
+IMAP data directly in any way. Manipulation of users mailboxes and shared folder
+within IMAP are exclusively done by the backend.
+</para>
+
+<sect1><title>User form</title>
+
+<para>Start page of the web interface as a user authenticated:
+<inlinegraphic entityref="testuser-main" fileref="testuser-main" scale="50"></inlinegraphic>
+</para>
+
+<para>This form allows normal groupware users to change their user data. The
+form is presented to everyone who authenticated successfully as a valid 
+groupware user to the Kolab administration module.
+</para>
+
+<para>Note, that the user can not change his own name. This would require a
+repositioning within the LDAP tree. Although this is possible and can be
+performed by an administrator. The users uid and primary E-Mail address can only
+not be changed anymore once the user has been created. The user can also add an
+additional E-Mail address for his account.
+</para>
+
+<para>
+<inlinegraphic entityref="testuser-settings" fileref="testuser-settings" scale="50"></inlinegraphic>
+</para>
+
+<para>Also the user can activate a vacation messaging service as well as an
+E-Mail forwarding service. As these services are mutually exclusive the user has
+to deactivate the already made settings to switch to another one. Note that the 
+chosen action (vacation or forward) will go into action immediately and last 
+until the user deletes the action via the web interface (or the Kolab client).
+</para>
+
+<para>
+<inlinegraphic entityref="testuser-forward" fileref="testuser-forward" scale="50"></inlinegraphic>
+<inlinegraphic entityref="testuser-vacation" fileref="testuser-vacation" scale="50"></inlinegraphic>
+</para>
+
+<para>The possible actions which a user can perform are given in the following
+list:
+</para>
+
+<itemizedlist Mark="bullet">
+<listitem><para>modify the users data held in the LDAP object
+   <itemizedlist Mark="dash">
+   <listitem><para>change the password
+   </para></listitem>
+   <listitem><para>change the users title
+   </para></listitem>
+   <listitem><para>optionally add an E-Mail alias
+   </para></listitem>
+   <listitem><para>change the Organization and Organizational Unit
+   </para></listitem>
+   <listitem><para>change the postal address (Room No., Street, Postal
+Address,PO Box, City and Country)
+   </para></listitem>
+   <listitem><para>change the telephone and telefax numbers
+   </para></listitem>
+   </itemizedlist>
+</para></listitem>
+<listitem><para>vacation message (activate and deactivate)
+   <itemizedlist Mark="dash">
+   <listitem><para>adjust the notification frequency
+   </para></listitem>
+   <listitem><para>enter a vacation text
+   </para></listitem>
+   </itemizedlist>
+</para></listitem>
+<listitem><para>forward mail to other E-Mail address (activate and deactivate)
+   <itemizedlist Mark="dash">
+   <listitem><para>enter the forwarding E-Mail address
+   </para></listitem>
+   <listitem><para>choose if mails should also kept on server while forward is
+active
+   </para></listitem>
+   </itemizedlist>
+</para></listitem>
+</itemizedlist>
+
+</sect1>
+
+<sect1><title>Maintainer form</title>
+
+<para>Start page of the web interface as a maintainer authenticated:
+<inlinegraphic entityref="testmaintainer-main" fileref="testmaintainer-main" scale="50"></inlinegraphic>
+</para>
+
+<para>As already written above a maintainer account can administer all user
+related settings on the server (except editing the maintainer and administrator
+groups). So special accounts can be given to people who are responsible to keep
+the users data up to date on the Kolab server. Users data thereby also means the
+shared folder functionality. The shared folders are IMAP folders that can be
+shared simultanuosly by many users. Access to this shared folders are regulated
+by using LDAP ACL settings. Also a users name can be changed by the maintainer.
+Note the difference between the name of a user and his uid and E-Mail address
+which can not be changed in the web interface. A maintainer can additionally
+choose if the users data should be made available to the public addressbook.
+</para>
+
+<para>
+The possible subscription of shared folders is controlled via ACLs.
+Mail is sent to the public folder either via IMAP (e.g. d&amp;d, need writing permissions) or via SMTP.
+</para>
+
+<para>
+The follwing rules apply:
+</para>
+
+<para>
+The SMTP mail address of a shared folder is UID+foldername@domain. 
+
+Where UID is the UID of the folder's OWNER, and foldername is the name of the shared folder to which you're sending mail. 
+</para>
+
+<para>
+Note:
+Mail incorrectly addressed to a shared folder's address will be delivered to the INBOX of the shared folder's owner. 
+</para>
+
+<para>
+<inlinegraphic entityref="testmaintainer-users" fileref="testmaintainer-users" scale="50"></inlinegraphic>
+<inlinegraphic entityref="testmaintainer-create-sharedfldr" fileref="testmaintainer-create-sharedfldr" scale="50"></inlinegraphic>
+</para>
+
+<para>To maintain an external addressbook is also one of the duties of a
+maintainer. The addresses kept in this external addressbook are contact data
+of persons who do not have an account on the Kolab server. This can be 
+i.e. business contacts.
+</para>
+
+<para>
+<inlinegraphic entityref="testmaintainer-addrsbk" fileref="testmaintainer-addrsbk" scale="50"></inlinegraphic>
+<inlinegraphic entityref="testmaintainer-create-addr" fileref="testmaintainer-create-addr" scale="50"></inlinegraphic>
+</para>
+
+<para>The possible actions which a maintainer can perform are given in the
+following list:
+</para>
+
+<itemizedlist Mark="bullet">
+<listitem><para>add or modify users data held in the LDAP object
+   <itemizedlist Mark="dash">
+   <listitem><para>add/change the first and last name of the user
+   </para></listitem>
+   <listitem><para>add/change the password
+   </para></listitem>
+   <listitem><para>add/change the users title
+   </para></listitem>
+   <listitem><para>specify a uid for the user (only if creating a new user!)
+   </para></listitem>
+   <listitem><para>optionally add/change an E-Mail alias
+   </para></listitem>
+   <listitem><para>add/change the Organization and Organizational Unit
+   </para></listitem>
+   <listitem><para>add/change the postal address (Room No., Street, Postal
+Address,PO Box, City and Country)
+   </para></listitem>
+   <listitem><para>add/change the telephone and telefax numbers
+   </para></listitem>
+   <listitem><para>choose if the users address should be added to the global
+address book
+   </para></listitem>
+   </itemizedlist>
+</para></listitem>
+<listitem><para>add or modify external addressbook
+   <itemizedlist Mark="dash">
+   <listitem><para>add/change the first and last name of the user
+   </para></listitem>
+   <listitem><para>add/change the users title
+   </para></listitem>
+   <listitem><para>add/change the E-Mail address and an alias
+   </para></listitem>
+   <listitem><para>add/change the Organization and Organizational Unit
+   </para></listitem>
+   <listitem><para>add/change the postal address (Room No., Street, Postal
+Address,PO Box, City and Country)
+   </para></listitem>
+   <listitem><para>add/change the telephone and telefax numbers
+   </para></listitem>
+   </itemizedlist>
+</para></listitem>
+<listitem><para>add or modify shared folders
+   <itemizedlist Mark="dash">
+   <listitem><para>specify the folder name (only if creating a folder)
+   </para></listitem>
+   <listitem><para>specify permissions (append,read,write,post and all) for a
+uid
+   </para></listitem>
+   <listitem><para>add/modify folder quota limit
+   </para></listitem>
+   </itemizedlist>
+</para></listitem>
+</itemizedlist>
+
+</sect1>
+
+<sect1><title>Administrator form</title>
+
+<para>Start page of the web interface as an administrator authenticated:
+<inlinegraphic entityref="testadministrator-main" fileref="testadministrator-main" scale="50"></inlinegraphic>
+</para>
+
+<para>Apart from the actions the maintainer group can perform, the administrator
+group can also administer basic server settings. The hostname and the domain
+name of the E-Mail domain can be set in the server menue. Note that changes 
+within those settings directly affect the mail transport system and can result 
+in delivery problems of E-Mails.
+</para>
+
+<para>
+You may set the hostname of the kolab environment in the kolab 
+web administration interface. This does not change the hostname of the 
+underlaying operating system though. The primary purpose of this setting is 
+to enable the administration to easily tell all kolab components about the 
+hostname to be used for the kolab groupware solution. This is due to two 
+potential things: Firstly it may happen that the hostname of the machine did 
+change since the initial installation and therefor kolab has to be made aware 
+of this fact. Secondly a unix like OS may have several hostnames and via the 
+kolab webinterface you may tell kolab which hostname to use.
+Last but not least: Please be aware of the fact that the kolab webinterface 
+s not intended to adminstrate a unix operating system but only to administrate 
+the kolab groupware component. If you are interested in a web based os 
+administration tool you may have a look at webmin or others. This operating
+system agnostic approach is due to the platform independent nature of the kolab
+solution.
+</para>
+
+<para>
+<inlinegraphic entityref="testadministrator-server" fileref="testadministrator-server" scale="50"></inlinegraphic>
+</para>
+
+<para>The administration of the two groups administrator and maintainer is
+possible from within the menues Administrator or Maintainer. Accounts
+within the groups can be created or removed. As those accounts do not possess 
+own E-Mail addresses only few information is needed to specify an account. These
+credentials are first and last name, a password and a uid.
+</para>
+
+<para>
+<inlinegraphic entityref="testadministrator-maintnr" fileref="testadministrator-maintnr" scale="50"></inlinegraphic>
+<inlinegraphic entityref="testadministrator-create-admin" fileref="testadministrator-create-admin" scale="50"></inlinegraphic>
+</para>
+
+<para>Although the Kolab server has the ability to interoperate with legacy
+clients this behaviour can be turned off. The preferred services of
+the Kolab server are: POP3S, IMAPS, SIEVE and HTTPS. In legacy mode the services
+POP3, IMAP, FTP and HTTP are also supported. Within the menue services of the
+web interface an administrator can disable some or all of the legacy services.
+</para>
+
+<para>
+<inlinegraphic entityref="testadministrator-services" fileref="testadministrator-services" scale="50"></inlinegraphic>
+</para>
+
+<para>To ensure the correct operation of the Kolab server an administrator can
+take a look at the system logs from within the Kolab log menue.
+</para>
+
+<para>The possible actions which an administrator can perform are given in the
+following list:
+</para>
+
+<itemizedlist Mark="bullet">
+<listitem><para>add or modify users data held in the LDAP object
+   <itemizedlist Mark="dash">
+   <listitem><para>add/change the first and last name of the user
+   </para></listitem>
+   <listitem><para>add/change the password
+   </para></listitem>
+   <listitem><para>add/change the users title
+   </para></listitem>
+   <listitem><para>specify a uid for the user (only if creating a new user!)
+   </para></listitem>
+   <listitem><para>optionally add/change an E-Mail alias
+   </para></listitem>
+   <listitem><para>add/change the Organization and Organizational Unit
+   </para></listitem>
+   <listitem><para>add/change the postal address (Room No., Street, Postal
+Address,PO Box, City and Country)
+   </para></listitem>
+   <listitem><para>add/change the telephone and telefax numbers
+   </para></listitem>
+   <listitem><para>choose if the users address should be added to the global
+address book
+   </para></listitem>
+   </itemizedlist>
+</para></listitem>
+<listitem><para>add or modify external addressbook
+   <itemizedlist Mark="dash">
+   <listitem><para>add/change the first and last name of the user
+   </para></listitem>
+   <listitem><para>add/change the users title
+   </para></listitem>
+   <listitem><para>add/change the E-Mail address and an alias
+   </para></listitem>
+   <listitem><para>add/change the Organization and Organizational Unit
+   </para></listitem>
+   <listitem><para>add/change the postal address (Room No., Street, Postal
+Address,PO Box, City and Country)
+   </para></listitem>
+   <listitem><para>add/change the telephone and telefax numbers
+   </para></listitem>
+   </itemizedlist>
+</para></listitem>
+<listitem><para>add or modify shared folders
+   <itemizedlist Mark="dash">
+   <listitem><para>specify the folder name (only if creating a folder)
+   </para></listitem>
+   <listitem><para>specify permissions (append,read,write,post and all) for a
+uid
+   </para></listitem>
+   <listitem><para>add/modify folder quota limit
+   </para></listitem>
+   </itemizedlist>
+</para></listitem>
+<listitem><para>add or modify maintainer or administrator group accounts
+   <itemizedlist Mark="dash">
+   <listitem><para>add/change the first and last name of the user
+   </para></listitem>
+   <listitem><para>add/change the password
+   </para></listitem>
+   <listitem><para>set the unique uid (only if creating a new account)
+   </para></listitem>
+   </itemizedlist>
+</para></listitem>
+<listitem><para>server administration
+   <itemizedlist Mark="dash">
+   <listitem><para>set/change the hostname
+   </para></listitem>
+   <listitem><para>set/change the E-Mail domain
+   </para></listitem>
+   </itemizedlist>
+</para></listitem>
+<listitem><para>services administration
+   <itemizedlist Mark="dash">
+   <listitem><para>enable/disable the service POP3
+   </para></listitem>
+   <listitem><para>enable/disable the service IMAP
+   </para></listitem>
+   <listitem><para>enable/disable the service FTP
+   </para></listitem>
+   <listitem><para>enable/disable the service HTTP
+   </para></listitem>
+   </itemizedlist>
+</para></listitem>
+<listitem><para>Kolab Logs and Statistics
+   <itemizedlist Mark="dash">
+   <listitem><para>display the Apache access and error logs
+   </para></listitem>
+   <listitem><para>display the Kolab services system log
+   </para></listitem>
+   </itemizedlist>
+</para></listitem>
+</itemizedlist>
+
+</sect1>
+</chapter>

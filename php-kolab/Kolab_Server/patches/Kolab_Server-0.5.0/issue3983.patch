@@ -1,0 +1,67 @@
+From: Gunnar Wrobel <wrobel@pardus.de>
+Subject: [PATCH] issue3983.patch
+
+Fixes unit testing for PHP 5.3.*.
+
+STATUS: UNMERGED
+
+REF: http://issues.kolab.org/issue3983
+
+Signed-off-by: Gunnar Wrobel <wrobel@pardus.de>
+
+diff -Naur a/framework/Kolab_Server/lib/Horde/Kolab/IMAP/test.php b/framework/Kolab_Server/lib/Horde/Kolab/IMAP/test.php
+--- a/framework/Kolab_Server/lib/Horde/Kolab/IMAP/test.php	2010-03-24 18:00:45.675755281 +0100
++++ b/framework/Kolab_Server/lib/Horde/Kolab/IMAP/test.php	2010-03-24 18:01:16.512484657 +0100
+@@ -93,7 +93,7 @@
+     function _parseFolder($folder)
+     {
+         if (substr($folder, 0, 5) == 'INBOX') {
+-            $user = split('@', $this->_user);
++            $user = explode('@', $this->_user);
+             return 'user/' . $user[0] . substr($folder, 5);
+         }
+         return $folder;
+@@ -346,7 +346,7 @@
+     function getMailboxes()
+     {
+         $mboxes = array_keys($GLOBALS['KOLAB_TESTING']);
+-        $user = split('@', $this->_user);
++        $user = explode('@', $this->_user);
+         $pattern = '#^user/' . $user[0] . '#';
+         $result = array();
+         foreach ($mboxes as $mbox) {
+diff -Naur --exclude='*~' a/framework/Kolab_Server/lib/Horde/Kolab/Server/Object/adminrole.php b/framework/Kolab_Server/lib/Horde/Kolab/Server/Object/adminrole.php
+--- a/framework/Kolab_Server/lib/Horde/Kolab/Server/Object/adminrole.php	2010-03-25 14:06:52.000000000 +0100
++++ b/framework/Kolab_Server/lib/Horde/Kolab/Server/Object/adminrole.php	2010-03-25 14:19:04.000000000 +0100
+@@ -151,7 +151,7 @@
+             $members = array($this->_uid);
+ 
+             //FIXME: This is not okay and also contains too much LDAP knowledge
+-            $parts = split(',', $this->required_group);
++            $parts = explode(',', $this->required_group);
+             list($groupname) = sscanf($parts[0], 'cn=%s');
+ 
+             $result = $this->_db->add(array(KOLAB_ATTR_CN => $groupname,
+diff -Naur --exclude='*~' a/framework/Kolab_Server/lib/Horde/Kolab/Server/Object.php b/framework/Kolab_Server/lib/Horde/Kolab/Server/Object.php
+--- a/framework/Kolab_Server/lib/Horde/Kolab/Server/Object.php	2010-03-25 14:06:52.000000000 +0100
++++ b/framework/Kolab_Server/lib/Horde/Kolab/Server/Object.php	2010-03-25 14:19:12.000000000 +0100
+@@ -359,7 +359,7 @@
+     {
+         switch ($attr) {
+         case KOLAB_ATTR_ID:
+-            $result = split(',', $this->_uid);
++            $result = explode(',', $this->_uid);
+             if (substr($result[0], 0, 3) == 'cn=') {
+                 return substr($result[0], 3);
+             } else {
+--- a/framework/Kolab_Server/lib/Horde/Kolab/IMAP.php	2010-03-25 14:22:33.000000000 +0100
++++ b/framework/Kolab_Server/lib/Horde/Kolab/IMAP.php	2010-03-25 15:59:33.000000000 +0100
+@@ -129,7 +129,7 @@
+ 
+         $class = 'Horde_Kolab_IMAP_' . $driver;
+         if (class_exists($class)) {
+-            $driver = &new $class($server, $port);
++            $driver = new $class($server, $port);
+         } else {
+             return PEAR::raiseError(sprintf(_("Failed to load Kolab IMAP driver %s"), $driver));
+         }

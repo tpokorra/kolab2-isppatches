@@ -1,0 +1,508 @@
+Kolab Server 2.2 Install and Upgrade Information
+================================================
+(Version 2009????, Kolab Server 2.???)
+
+See http://kolab.org/ for general information about Kolab,
+or look at http://wiki.kolab.org/ for specific topics.
+
+It is recommended to subscribe to the announcement mailing list at
+http://kolab.org/mailman/listinfo/kolab-announce
+to receive security advisories and release announcements.
+
+
+Quick install instructions
+--------------------------
+
+Kolab server and the Kolab web client (based on Horde) will use about 1GB
+of disk space for the initial install. By default the directory /kolab
+will be used, which should be an empty directory or a symbolic link to an
+empty directory. If this directory does not yet exist, it will be
+automatically created.
+
+For production use it is recommended to create a separate partition for
+/kolab (2GB to have some spare) and partitions for /kolab/var (at least
+2GB for log files, virus filtering and caches) and /kolab/var/imapd/spool
+(with enough space for your users' mails). For evaluation you could
+start with the 2GB partition for /kolab (or 2GB free space on / if you
+only have one big partition for your test system) and create the other
+partitions when needed. Do _not_ use an NFS mounted drive!
+
+Make sure that the following names are not in /etc/passwd or /etc/groups,
+as OpenPKG will want to create them: "kolab" "kolab-r" "kolab-n"
+
+To install the Kolab server, you need to download the files from the
+directory containing this file (1st.README) to some local directory.
+
+You can check the integrity of the downloaded files by importing our file
+distribution key and verify the OpenPGP signature and SHA1 checksums:
+
+$ wget https://ssl.intevation.de/Intevation-Distribution-Key.asc
+$ gpg --import Intevation-Distribution-Key.asc
+$ gpg --verify SHA1SUMS.sig
+$ sha1sum -c SHA1SUMS
+
+Then as root, cd into that local directory and run
+
+# sh install-kolab.sh 2>&1 | tee /root/kolab-install.log
+
+to build and install packages in /kolab. The command output will be logged
+to install-kolab.log so that you have a reference in case an error occurs
+during installation.
+
+The install script needs to store some files and creates a subdirectory
+below /tmp (or $TMPDIR if set) for this purpose.
+
+The web client might create much load on your server if there are many
+concurrent users, so you can choose to not install it by adding the option
+"-x kolab-webclient" to the call to install-kolab.sh.  Installing the web
+client on a separate host is possible, but not discussed here.
+
+If you do not want to install the free/busy view tool, add the option
+"-x kolab-fbview".
+
+The binary packages distributed via kolab.org are compiled with the web
+client and the free/busy view tool. Currently you need to compile from the
+source packages to install without these features, see kolab/issue2440
+for details.
+
+By default, the Kolab server will now be started at boottime, so you
+have to bootstrap the server configuration now to prevent unconfigured
+components from being started, see kolab/issue1745 for details.
+
+Please run:
+
+# /kolab/sbin/kolab_bootstrap -b
+
+and follow the instructions.
+
+Check http://www.openpkg.org/documentation/ for additional documentation
+about the OpenPKG packaging system.
+
+
+General update instructions
+---------------------------
+
+Generally an update of the Kolab server works as described in this
+section, but often you will need to deviate from these instructions as
+described in the sections below.  Please read the release specific update
+instructions for all releases newer than the one you already have before
+you start the update, e.g. for upgrading from 2.2.0 to 2.2.1-rc1 you have
+to follow the instructions for upgrading from 2.2.0 to 2.2.1-beta1, too.
+
+In any case you should completely read *all* relevant update instructions
+*before* starting the upgrade procedure.  Always make sure you have a
+recent backup of your /kolab directory before you attempt the upgrade.
+
+The installation of the new packages works just as for the initial
+installation.  Download the files as described above and run
+
+# sh install-kolab.sh 2>&1 | tee /root/kolab-update.log
+
+If you installed without kolab-webclient or kolab-fbview you need to add
+the corresponding -x options again.  install-kolab.sh will usually
+automatically determine which packages need to be built.
+
+If you have made changes to configuration files or an updated package
+includes configuration files which are usually regenerated from files
+in /kolab/etc/kolab/templates/ the old configuration file will be saved
+with the extension .rpmsave.  For files generated from templates you
+just have to remove the rpmsave file, because services will refuse to
+start if there still is an rpmsave file, e.g.:
+
+# rm /kolab/etc/clamav/*.conf.rpmsave
+
+For other changed files (e.g. the template files themselves) you may
+want to transfer your changes from the .rpmsave backup to the new files.
+
+Then regenerate the configuration and restart all Kolab services with:
+
+# /kolab/sbin/kolabconf -n
+# /kolab/bin/openpkg rc all restart
+
+Or alternatively if the Kolab server was stopped before the upgrade:
+
+# /kolab/bin/openpkg rc openldap start
+# /kolab/sbin/kolabconf -n
+# /kolab/bin/openpkg rc all start
+
+
+Upgrade from 2.2.2 to 2.2.3
+---------------------------
+
+The default format for the mailboxes.db and annotations.db of the
+imapd (originally changed to berkeley-db in Kolab Server 2.1-beta3)
+was changed back to skiplist.
+
+When upgrading from an existing Kolab Server installation you should
+check /kolab/etc/kolab/templates/imapd.conf.template before upgrading,
+if it contains the lines:
+annotation_db: berkeley
+mboxlist_db: berkeley
+you should make sure, that these lines are put back in the file after
+upgrading (they are included as an commented out example in the new
+template), otherwise the IMAP server will not be able to act upon the
+mail spool.
+
+It is possible to convert existing berkeley database files to the now
+default skiplist format, but the necessary procedure is not well
+tested and therefore currently not recommended.  The documentation of
+the actual conversion is beyond the scope of this document.
+
+
+Upgrade from 2.2.1 to 2.2.2
+---------------------------
+
+Nothing special has to be done for this upgrade.
+
+
+Upgrade from 2.2.1-rc1 to 2.2.1
+-------------------------------------
+
+Nothing special has to be done for this upgrade.
+
+
+Upgrade from 2.2.1-beta1 to 2.2.1-rc1
+-------------------------------------
+
+Nothing special has to be done for this upgrade.
+
+
+Upgrade from 2.2.0 to 2.2.1-beta1
+---------------------------------
+
+0. Make a backup of your installation and data stored inside /kolab
+
+1. The Kolab server must be stopped:
+
+    # /kolab/bin/openpkg rc all stop
+
+2. Save the current LDAP data:
+
+   Copy the contents of the openldap database, use a different output
+   filename if you want. You should make sure that no other users can
+   read the sensitive data contained in the ldif file, e.g. with umask
+   (limited to the slapcat call by using parentheses):
+
+   # (umask 077 && /kolab/sbin/slapcat > ~/kolab-2.2.0.ldif)
+
+3. Start the standard upgrade:
+   (as described in the General update instructions)
+
+   # sh install-kolab.sh 2>&1 | tee /root/kolab-update.log
+
+4. /kolab/etc/kolab/kolab.conf will be saved as kolab.conf.rpmsave,
+   please move it back to the original name:
+
+   # cd /kolab/etc/kolab && mv kolab.conf.rpmsave kolab.conf
+
+5. Look at *.conf.rpmsave files in the subdirectories of /kolab/etc/,
+   transfer your changes and remove these files.
+   (as described in the General update instructions)
+
+6. Before starting the LDAP server the database must be restored from
+   the ldif (with Horde preferences filtered out, since these are now
+   stored in files):
+
+   # rm /kolab/var/openldap/openldap-data/*
+   # /kolab/bin/awk '!/^ / {ok=1;}
+      /^objectClass: horde(Person|Group)$/ {ok=0;}
+      /^([a-z]*Prefs|turba(Contact|Members|PGPPublicKey|Type)):/ {ok=0;}
+      {if(ok) print;}' ~/kolab-2.2.0.ldif | /kolab/sbin/slapadd
+
+7. Start the OpenLDAP, generate the configuration files and start the
+   Kolab server:
+
+   # /kolab/bin/openpkg rc openldap start
+   # /kolab/sbin/kolabconf -n
+   # /kolab/bin/openpkg rc all start
+
+
+Upgrade from 2.2-rc3 to 2.2.0
+-----------------------------
+
+Nothing special has to be done for this upgrade.
+
+
+Upgrade from 2.2-rc2 to 2.2-rc3
+-------------------------------
+
+You should regenerated the free/busy cache again, as described in the
+upgrading instructions from 2.2-rc1 to 2.2-rc2.
+
+The IMAP annotation /vendor/kolab/xfb-readable (introduced in 2.2-beta3)
+was renamed to /vendor/kolab/pxfb-readable-for to reflect the actual meaning.
+After the upgrade the old annotations are still readable, but unused by the
+server. If you still need to write this annotation for some reason, you have
+to add it to imapd.annotation_definitions.template and run kolabconf.
+
+
+Upgrade from 2.2-rc1 to 2.2-rc2
+-------------------------------
+
+You have to regenerated the free/busy cache, which now can be done
+automatically. First (optional, but recommended) step is to remove the
+current cache below /kolab/var/kolab-freebusy/cache:
+
+# su - kolab-n
+$ rm -r /kolab/var/kolab-freebusy/cache/*
+
+Now you can use the following command (still as user kolab-n):
+
+$ PHP_AUTH_USER=manager PHP_AUTH_PW='managerpassword' /kolab/bin/php \
+  -c /kolab/etc/apache/php.ini /kolab/var/kolab/www/freebusy/regenerate.php
+
+As this will show the manager's password on the command line, you can
+alternatively open https://yourserver.example.com/freebusy/regenerate.php
+in a web browser and login as "manager". This needs "Allow unauthenticated
+downloading of Free/Busy information" to be disabled, which is the default.
+
+
+Upgrade from 2.2-beta3 to 2.2-rc1
+---------------------------------
+
+Updating the free/busy cache has to be triggered for all calendar
+folders of all accounts:
+- Users need to create or update an appointment in their folders.
+- Resources can be invited to a new appointment or send them an update
+  to an existing appointment.
+
+
+Upgrade from 2.2-beta2 to 2.2-beta3
+-----------------------------------
+
+After upgrading, you should remove the package "kolab-horde-framework",
+which is no longer needed:
+
+# /kolab/bin/openpkg rpm -e kolab-horde-framework
+
+
+Upgrade from 2.2-beta1 to 2.2-beta2
+-----------------------------------
+
+Before running install-kolab.sh, you should stop the running Kolab server and
+remove some packages which got renamed or will no longer be needed by running
+this command:
+
+# /kolab/bin/openpkg rc all stop
+# /kolab/bin/openpkg rpm -e --nodeps apache2 apache2-php getopt proftpd \
+    pth sharutils kolab-horde-fbview kolab-resource-handlers
+
+Ignore errors about pth or sharutils not being installed, these
+were included in the beta1 release but not installed by default.
+
+
+Upgrade from Kolab server 2.1 or before
+---------------------------------------
+
+Instructions for upgrading from Kolab server 2.0 will be added in a
+future version of this document.  These instructions are for upgrading
+from Kolab server 2.1.0 to 2.2.1:
+
+0.  Make a backup of your installation and data stored inside /kolab
+
+1.  Before upgrading the Kolab server must be stopped:
+
+    # /kolab/bin/openpkg rc all stop
+
+2.  Save the current LDAP data:
+
+    Copy the contents of the openldap database, use a different output
+    filename if you want. You should make sure that no other users can
+    read the sensitive data contained in the ldif file, e.g. with umask
+    (limited to the slapcat call by using parentheses):
+
+    # (umask 077 && /kolab/sbin/slapcat > ~/kolab-2.1.ldif)
+
+3.  Some of the old Kolab packages must be removed to avoid conflicts
+    during the upgrade process:
+
+    # /kolab/bin/openpkg rpm -e --nodeps \
+        kolabd kolab-webadmin kolab-horde-fbview kolab-horde-framework \
+        kolab-resource-handlers getopt patch proftpd sharutils
+
+4.  New versions of openpkg and openpkg-tools are needed for the upgrade, so
+    you have to install them manually beforehand.
+
+    As root, cd into the directory of kolab server 2.2 binary packages and run:
+
+    # /kolab/bin/openpkg rpm -Uvh \
+        ./openpkg-20071227-20071227_kolab1.<ARCH>-<OS>-kolab.rpm
+    # /kolab/bin/openpkg rpm -Uvh \
+        ./openpkg-tools-1.4.6-20071231.<ARCH>-<OS>-kolab.rpm
+
+    If you do not have binary packages for you platform, you have to build
+    them from source first. As root, cd into the Kolab server 2.2 source
+    directory and run:
+
+    # /kolab/bin/openpkg rpm --rebuild \
+        ./openpkg-20071227-20071227_kolab1.src.rpm
+    # /kolab/bin/openpkg rpm -Uvh \
+        /kolab/RPM/PKG/openpkg-20071227-20071227_kolab1.<ARCH>-<OS>-kolab.rpm
+    # /kolab/bin/openpkg rpm --rebuild ./openpkg-tools-1.4.6-20071231.src.rpm
+    # /kolab/bin/openpkg rpm -Uvh \
+        /kolab/RPM/PKG/openpkg-tools-1.4.6-20071231.<ARCH>-<OS>-kolab.rpm
+
+    (<ARCH> and <OS> must be replaced by the correct values for your system).
+
+5.  Start the standard upgrade (as described above):
+
+    # sh install-kolab.sh 2>&1 | tee /root/kolab-update.log
+
+6.  Before starting the LDAP server the database must be restored from
+    the ldif:
+
+    # rm /kolab/var/openldap/openldap-data/*
+    # /kolab/sbin/slapadd -l ~/kolab-2.1.ldif
+
+7.  The format of the TLS session cache changed, therefore you have to
+    truncate it to zero length:
+
+    # > /kolab/var/imapd/tls_sessions.db
+
+8.  /kolab/etc/kolab/kolab.conf will be saved as kolab.conf.rpmsave,
+    please move it back to the original name.
+
+    # cd /kolab/etc/kolab && mv kolab.conf.rpmsave kolab.conf
+
+9.  Remove all *.conf.rpmsave files in the subdirectories of
+    /kolab/etc/ as described above.
+
+10. Start the OpenLDAP, generate the configuration files and start the
+    Kolab server:
+
+    # /kolab/bin/openpkg rc openldap start
+    # /kolab/sbin/kolabconf -n
+    # /kolab/bin/openpkg rc all start
+
+11. After the successful upgrade some cleanup can be done, by
+    removing obsolete files/directories:
+
+    # rm -r /kolab/etc/resmgr
+    # rm -r /kolab/etc/proftpd
+    # rm -r /kolab/var/kolab/www/freebusy/cache/*
+
+12. The free/busy cache has to be regenerated for all calendar folders
+    of all accounts, see "Upgrade from 2.2-rc1 to 2.2-rc2" in this file.
+
+Additional hints may be available in the Kolab wiki:
+http://wiki.kolab.org/index.php/Kolab2_Upgrading
+
+Direct upgrade from Kolab1 is not supported. We suggest that you back
+up your IMAP store, install Kolab2 and manually recreate user accounts
+and then restore the IMAP data from the backup.
+
+
+Generating your own 00INDEX.rdf for installations or upgrades
+-------------------------------------------------------------
+
+The source and binary downloads contain the 00INDEX.rdf file needed by
+the "openpkg build" command used by install-kolab.sh to install or upgrade
+a Kolab server.
+
+If you already have your own set of binary packages from a previous build,
+you can use these to create a full binary installer (e.g. to install the
+packages on a second machine) or or a partial binary installer (for upgrades
+where you only want to compile the new .src.rpm files instead of everything).
+
+To generate this file, you always need all .src.rpm files, so link or copy
+them in a new directory (needs to be writable by the kolab user of your
+installation). After this you can link/copy the install-kolab.sh file and
+your binary rpm files (e.g. openpkg-20071227-20071227_kolab1.*-kolab.rpm from
+/tmp/install-kolab.*/ and the others from /kolab/RPM/PKG/) into this
+directory and run the following command as user kolab or root to create the
+new 00INDEX.rdf file:
+
+$ sh install-kolab.sh -X
+
+If you want a pure binary installer, you can remove the .src.rpm files
+now. To be able to use this directory for fresh installations (i.e. not
+only for upgrades), you need to put the OpenPKG bootstrap file
+(openpkg-*.src.sh or openpkg-*.<ARCH>-<OS>-kolab.sh) into this directory,
+too.
+
+Index generation tries to cache information about source RPMs in the file
+/kolab/RPM/DB/00INDEX-cache.db, you might want to remove it to save some
+disk space or restore it after new installations to save some time.
+
+
+Known problems and workarounds
+------------------------------
+
+    - Your system (C library) has to support all languages you want to
+      have available in the web admin interface, the web client and
+      fbview. For most languages you have to use the non-UTF-8 and
+      non-euro locales, i.e. de_DE, fr_FR, it_IT, nl_NL instead of
+      e.g. de_DE@euro. For fbview some languages need a UTF-8 locale,
+      e.g. ja_JP.UTF-8 for Japanese.  The web client needs UTF-8
+      locale in addition to the non-UTF-8 ones in some situations.  So
+      it's best to install all variants for every language which shall
+      be supported.  See kolab/issue2732 (Horde and Web Admin
+      Interface Language Selection depends on OS locale support) for
+      details.
+
+    - If login on https://yourserver.example.com/fbview and triggering
+      free/busy regeneration does not work, try as user kolab:
+
+        /kolab/bin/php -r 'imap_open("{localhost:143/notls}", "" ,"");'
+
+      If it yields "Segmentation fault (core dumped)", then there probably is
+      a conflict between a dynamically loaded libdb3 from your system and a
+      statically linked libdb4 from the OpenpPKG php package. If it yields a
+      "PHP Warning: ...", this part of the system works correctly.
+
+      One reason for such a conflict could be the mere presence of
+      /lib/libnss_db.so.*, which is installed on some distributions by
+      default. On Debian systems it is contained in the package "libnss-db".
+      If you really need this library, you could work around the loading of
+      libdb3 by placing a symbolic link with the correct name in /kolab/lib,
+      e.g.:
+
+        ldd /lib/libnss_db.so.2
+                libnss_files.so.2 => /lib/tls/libnss_files.so.2 (0xb7f16000)
+           ---> libdb3.so.3 => /usr/lib/libdb3.so.3 (0xb7e6b000)
+                libc.so.6 => /lib/tls/libc.so.6 (0xb7d36000)
+                /lib/ld-linux.so.2 => /lib/ld-linux.so.2 (0x80000000)
+        ln -s /dev/null /kolab/lib/libdb3.so.3
+
+      See kolab/issue1607 (need to replace gdbm for pfbcache, because of
+      license clash gdbm vs php) for details.
+
+    - /kolab/sbin/kolab_bootstrap -b fails to start the temporary
+      slapd on Linux 2.4 kernels if binaries compiled on Linux 2.6 (as
+      provided on kolab.org) are used. See kolab/issue1795 for details.
+
+    - Under some circumstance the Kolab server may not create or delete
+      users or update the configuration after changes have been made in
+      the web interface.  This happens most often immediately after the
+      bootstrap.  In that case restart the kolabd:
+
+        /kolab/bin/openpkg rc kolabd restart
+
+      If user accounts are still not created or deleted, you can try removing
+      the file /kolab/var/kolab/mailbox-uidcache.db and restarting kolabd.
+
+      See kolab/issue1068 (Mailboxes are not created until kolabd restart)
+      and kolab/issue1098 (Changes in the service tab are not accepted after
+      bootstrap) for details.
+
+    - If modifying or deleting of address book entries doesn't work,
+      restarting openldap can help, see kolab/issue854 for details.
+
+    - There is a report that the manager can only see users in the primary
+      domain, see kolab/issue1485. We can't reproduce this problem, please
+      tell us if you can.
+
+    - Calendar folders for group/resource accounts can't be created for
+      domains which were added after bootstrap, i.e. via the web admin
+      interface. See kolab/issue1313 for details.
+
+    - When deleting domains via the web admin interface, the corresponding
+      LDAP data and IMAP spool stay on the server and have to be deleted
+      manually. See kolab/issue1571 and kolab/issue1576 for details.
+
+    - A domain maintainer can not always edit the email aliases for a user,
+      even if the user and the alias is in domains the domain maintainer has
+      access to. See kolab/issue2825 for details.
+
+
+$Id: 1st.README,v 1.11 2010/04/21 10:41:50 thomas Exp $

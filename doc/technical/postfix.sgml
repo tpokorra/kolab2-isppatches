@@ -1,0 +1,8 @@
+<chapter><title> Postfix Mail Server </title>
+
+<para> The postfix mailserver was taken entirely from OpenPKG.
+No modifications were done, except that the spec file does
+a download of the sources in case they are not already 
+locally available.</para>
+
+</chapter>

@@ -1,0 +1,240 @@
+<chapter><title> Monit Daemon </title>
+
+<para> As the Kolab server requires different services like MTA, webserver etc. it is necessary to control and monitor
+them. This is done via the deamon Monit. Unfortunately this program is not available from OpenPKG. So we made an
+OpenPKG specfile to have monit available within the Kolab environment.
+</para>
+
+<para><programlisting>
+%ifndef       with_fsl
+%define       with_fsl     no
+%endif
+
+#   package information
+Name:         monit
+Summary:      Process monitor and restart utility
+URL:          http://www.tildeslash.com/monit/
+Vendor:       Contributors to the monit codebase
+Packager:     The OpenPKG Project
+Distribution: OpenPKG 
+Group:        Utilities/Console
+License:      GPL
+Version:      3.1
+Release:      20030125
+
+#   list of sources
+%define url   http://www.tildeslash.com/monit/dist/
+		%{name}-%{version}.tar.gz
+Source0:      %( [ ! -f %{SOURCE monit-%{version}.tar.gz} ] \
+		&& wget -c %url; echo %url )
+Source1:      rc.monit
+Source2:      Makefile
+Patch0:	      nopermcheck.patch
+Patch1:       kolab.patch
+
+#   build information
+Prefix:       %{l_prefix}
+BuildRoot:    %{l_buildroot}
+BuildPreReq:  OpenPKG, openpkg &gt;= 1.1.0, gcc
+PreReq:       OpenPKG, openpkg &gt;= 1.1.0
+%if "%{with_fsl}" == "yes"
+BuildPreReq:  fsl
+PreReq:       fsl
+%endif
+AutoReq:      no
+AutoReqProv:  no
+
+%description
+monit is an utility for monitoring daemons or similar programs running on
+a Unix system. It will start specified programs if they are not running
+and restart programs not responding. 
+
+%prep
+%setup -q
+%patch -p0
+%patch1 -p0
+
+%build
+    CC="%{l_cc}" \
+    CFLAGS="%{l_cflags -O}" \
+%if "%{with_fsl}" == "yes"
+    LIBS="`%{l_prefix}/bin/fsl-config --libs`" \
+    LDFLAGS="`%{l_prefix}/bin/fsl-config --ldflags`" \
+%endif
+    ./configure \
+	--prefix=%{l_prefix} \
+	--with-ssl-dir=%{l_prefix} \
+	--sysconfdir=%{l_prefix}/etc/monit \
+ 	--sharedstatedir=%{l_prefix}/var
+    #%{l_shtool} subst -e "s;check_rcfile\(controlfile\);FALSE;" p.y
+    %{l_shtool} subst -e "s;/var/run;%{l_prefix}/var/monit;g" config.h
+    %{l_shtool} subst -e "s;@@@l_prefix@@@;%{l_prefix};g" files.c
+    %{l_shtool} subst -e "s;@@@l_prefix@@@;%{l_prefix};g" monitor.h
+    %{l_make} %{l_mflags}
+
+%install
+    rm -rf $RPM_BUILD_ROOT
+    %{l_make} %{l_mflags} install DESTDIR=$RPM_BUILD_ROOT
+    strip $RPM_BUILD_ROOT%{l_prefix}/bin/* &gt;/dev/null 2&gt;&1 || true
+    mkdir -p $RPM_BUILD_ROOT%{l_prefix}/etc/rc.d/
+    mkdir -p $RPM_BUILD_ROOT%{l_prefix}/etc/monit
+    mkdir -p $RPM_BUILD_ROOT%{l_prefix}/var/monit
+    %{l_shtool} install -c -e "s;@l_prefix@;%{l_prefix};g" \
+	-m 755 %{SOURCE rc.monit} \
+	$RPM_BUILD_ROOT%{l_prefix}/etc/rc.d/rc.monit
+    %{l_shtool} install -c -m 700 monitrc  \
+	$RPM_BUILD_ROOT%{l_prefix}/etc/monit/monit.conf
+    %{l_rpmtool} files -v -ofiles -r$RPM_BUILD_ROOT %{l_files_std}
+
+%files -f files
+
+%clean
+    rm -rf $RPM_BUILD_ROOT
+</programlisting></para>
+
+<para> We need to alter the configuration in order to be able to adapt it with the
+bootstrapping procedure. See this kolab.patch:
+</para>
+
+<para><programlisting>
+--- monitor.h.orig	2003-01-26 16:14:56.000000000 +0100
++++ monitor.h	2003-01-27 11:34:25.000000000 +0100
+@@ -39,7 +39,7 @@
+ #include "ssl.h"
+ 
+ #define VERSION            PACKAGE_VERSION
+-#define MONITRC            "monitrc"
++#define MONITRC            "@@@l_prefix@@@/etc/monit/monit.conf"
+ #define TIMEFORMAT         "%Z %b %e %T"
+ #define STRERROR            strerror(errno)
+ #define STRLEN             256
+--- files.c.orig	2003-01-26 16:15:14.000000000 +0100
++++ files.c	2003-01-26 16:17:57.000000000 +0100
+@@ -159,7 +159,8 @@
+   if(exist_file(MONITRC)) {
+     
+     memset(rcfile, 0, STRLEN);
+-    snprintf(rcfile, STRLEN, "%s/%s", Run.Env.cwd, MONITRC);
++   // snprintf(rcfile, STRLEN, "%s/%s", Run.Env.cwd, MONITRC);
++    snprintf(rcfile, STRLEN, "@@@l_prefix@@@/etc/monit/monit.conf");
+     
+     return (rcfile);
+     
+@@ -171,8 +172,8 @@
+   if(exist_file(rcfile)) 
+     return (rcfile);
+   
+- log("%s: Cannot find the control file at ~/.%s, ./%s or at /etc/%s\n",
+-      prog, MONITRC, MONITRC, MONITRC);
++ log("%s: Cannot find the control file at ~/.%s, ./%s or at \
+	@@@l_prefix@@@/etc/monit/monit.conf\n",
++       prog, MONITRC, MONITRC);
+   
+   exit(1);
+   
+</programlisting></para>
+<para> As there was a bug within monit we corrected it right away with the nopermcheck.patch:
+</para>
+
+<para><programlisting>
+--- p.y.orig	2003-01-26 16:12:46.000000000 +0100
++++ p.y	2003-01-26 16:13:04.000000000 +0100
+@@ -644,11 +644,11 @@
+ 
+   processlist= tail= current= NULL;
+   
+-  if(! check_rcfile(controlfile)) {
++/*  if(! check_rcfile(controlfile)) {
+     
+     return (FALSE);
+     
+-  }
++  }*/
+   
+   if ((yyin = fopen(controlfile,"r")) == (FILE *)NULL) {
+</programlisting></para>
+
+<para> To make monit aware of the changed config file location (/kolab/etc/monit/monit.conf)
+this patch is supplied:</para>
+
+<para><programlisting>
+--- monitor.h.orig      2003-01-26 16:14:56.000000000 +0100
++++ monitor.h   2003-01-27 11:34:25.000000000 +0100
+@@ -39,7 +39,7 @@
+ #include "ssl.h"
+
+ #define VERSION            PACKAGE_VERSION
+-#define MONITRC            "monitrc"
++#define MONITRC            "@@@l_prefix@@@/etc/monit/monit.conf"
+ #define TIMEFORMAT         "%Z %b %e %T"
+ #define STRERROR            strerror(errno)
+ #define STRLEN             256
+--- files.c.orig        2003-01-26 16:15:14.000000000 +0100
++++ files.c     2003-01-26 16:17:57.000000000 +0100
+@@ -159,7 +159,8 @@
+   if(exist_file(MONITRC)) {
+
+     memset(rcfile, 0, STRLEN);
+-    snprintf(rcfile, STRLEN, "%s/%s", Run.Env.cwd, MONITRC);
++   // snprintf(rcfile, STRLEN, "%s/%s", Run.Env.cwd, MONITRC);
++    snprintf(rcfile, STRLEN, "@@@l_prefix@@@/etc/monit/monit.conf");
+
+     return (rcfile);
+
+@@ -171,8 +172,8 @@
+   if(exist_file(rcfile))
+     return (rcfile);
+
+-  log("%s: Cannot find the control file at ~/.%s, ./%s or at /etc/%s\n",
+-      prog, MONITRC, MONITRC, MONITRC);
++  log("%s: Cannot find the control file at ~/.%s, ./%s or at @@@l_prefix@@@/etc/monit/monit.conf\n",
++       prog, MONITRC, MONITRC);
+
+   exit(1);
+</programlisting></para>
+
+<para> An OpenPKG startup script was developed:</para>
+<para><programlisting>
+#!@l_prefix@/lib/openpkg/bash @l_prefix@/etc/rc
+#
+##
+##  rc.monit -- Run-Commands for monit
+##
+# description: monit is a simple daemon process to restart processes if \
+#               they die. It can also check tcp and udp ports to make sure \
+#               that they are responding.
+
+
+%config
+    monit_enable="yes"
+
+%start -p 200 -u root
+    if opServiceEnabled monit; then
+        @l_prefix@/bin/monit -c @l_prefix@/etc/monit/monit.conf -l syslog -d 60
+    fi
+
+%stop -p 200 -u root
+    if opServiceEnabled monit; then
+        if [ -f @l_prefix@/var/monit/monit.pid ]; then
+            kill -TERM `cat @l_prefix@/var/monit/monit.pid`
+        fi
+    fi
+
+%restart -u root
+    if opServiceEnabled monit; then
+        if [ -f @l_prefix@/var/monit/monit.pid ]; then
+            kill -TERM `cat @l_prefix@/var/monit/monit.pid`
+            sleep 2
+        fi
+        @l_prefix@/bin/monit -c @l_prefix@/etc/monit/monit.conf -l syslog -d 60
+    fi
+
+%reload -u root
+    if opServiceEnabled monit; then
+        if [ -f @l_prefix@/var/monit/monit.pid ]; then
+            kill -HUP `cat @l_prefix@/var/monit/monit.pid`
+        fi
+    fi
+</programlisting></para>
+
+</chapter>

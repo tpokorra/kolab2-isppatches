@@ -1,0 +1,21 @@
+--- postfix.spec.orig	2008-01-01 15:32:38.000000000 +0100
++++ postfix.spec	2008-05-02 12:08:43.724783000 +0200
+@@ -37,7 +37,7 @@
+ Group:        Mail
+ License:      IPL
+ Version:      %{V_postfix}
+-Release:      20080101
++Release:      20080101_kolab
+ 
+ #   package options
+ %option       with_fsl       yes
+@@ -186,6 +186,9 @@
+     if [ -f /usr/lib/libdl.so -o -f /usr/lib/libdl.a ]; then
+         AUXLIBS="$AUXLIBS -ldl"
+     fi
++    if [ -f /usr/lib64/libdl.so -o -f /usr/lib64/libdl.a ]; then
++        AUXLIBS="$AUXLIBS -ldl"
++    fi
+ %endif
+ %if "%{with_ssl}" == "yes"
+     CCARGS="$CCARGS -DUSE_TLS"

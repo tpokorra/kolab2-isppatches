@@ -1,0 +1,53 @@
+diff -urN openpkg/openpkg.boot openpkg-kolab/openpkg.boot
+--- openpkg/openpkg.boot	2007-07-18 19:47:35.000000000 +0200
++++ openpkg-kolab/openpkg.boot	2009-09-23 15:09:39.603405000 +0200
+@@ -142,7 +142,7 @@
+ name="openpkg"
+ spec="$name.spec"
+ version=`grep V_openpkg $spec | sed -e 'q' | awk '{ printf("%s", $3); }'`
+-release="$version"
++release=`grep V_release $spec | sed -e 'q' | awk '{ printf("%s", $3); }'`
+ 
+ ##
+ ##  display headline
+diff -urN openpkg/openpkg.spec openpkg-kolab/openpkg.spec
+--- openpkg/openpkg.spec	2007-12-27 11:41:34.000000000 +0100
++++ openpkg-kolab/openpkg.spec	2009-09-23 15:09:39.603405000 +0200
+@@ -40,6 +40,7 @@
+ 
+ #   the package version/release
+ %define       V_openpkg  20071227
++%define       V_release  20071227_kolab2
+ 
+ #   the used software versions
+ %define       V_rpm      4.2.1
+@@ -51,7 +52,7 @@
+ %define       V_gzip     1.3.12
+ %define       V_gzip_r   1.13
+ %define       V_patch    2.5.9
+-%define       V_tar      1.19
++%define       V_tar      1.22
+ %define       V_bash     3.2
+ %define       V_uuid     1.6.0
+ %define       V_config   20060923
+@@ -72,7 +73,7 @@
+ Group:        Bootstrapping
+ License:      MIT/BSD/LGPL/GPL
+ Version:      %{V_openpkg}
+-Release:      %{V_openpkg}
++Release:      %{V_release}
+ 
+ #   list of sources
+ Source0:      ftp://alpha.gnu.org/gnu/patch/patch-%{V_patch}.tar.gz
+diff -urN openpkg/rpmtool openpkg-kolab/rpmtool
+--- openpkg/rpmtool	2007-10-11 22:40:43.000000000 +0200
++++ openpkg-kolab/rpmtool	2009-09-23 15:45:25.946152864 +0200
+@@ -475,7 +475,7 @@
+                 #   more than required. We also can assume that the C
+                 #   compiler is always GCC, either the OpenPKG one or
+                 #   the FreeBSD one.
+-                cflags="-fPIC"
++                cflags="-fPIC $cflags"
+                 ;;
+         esac
+         echo "x$cflags" | sed -e 's;^x;;'

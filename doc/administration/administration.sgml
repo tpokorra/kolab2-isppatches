@@ -1,0 +1,69 @@
+<!doctype book PUBLIC "-//Davenport//DTD DocBook V3.0//EN" [
+<!entity chapter-intro SYSTEM "intro.sgml">
+<!entity chapter-frontend SYSTEM "frontend.sgml">
+<!entity chapter-backend SYSTEM "backend.sgml">
+<!ENTITY erfrakon-big SYSTEM "erfrakon-big.eps" NDATA EPS>
+<!ENTITY erfrakon-small SYSTEM "erfrakon-small.eps" NDATA EPS>
+<!ENTITY kolab-ldap SYSTEM "kolab-ldap.eps" NDATA EPS>
+<!ENTITY kolab-structure SYSTEM "kolab-structure.eps" NDATA EPS>
+<!ENTITY testuser-main SYSTEM "testuser-main.eps" NDATA EPS>
+<!ENTITY testuser-settings SYSTEM "testuser-settings.eps" NDATA EPS>
+<!ENTITY testuser-vacation SYSTEM "testuser-vacation.eps" NDATA EPS>
+<!ENTITY testuser-forward SYSTEM "testuser-forward.eps" NDATA EPS>
+<!ENTITY testmaintainer-main SYSTEM "testmaintainer-main.eps" NDATA EPS>
+<!ENTITY testmaintainer-users SYSTEM "testmaintainer-users.eps" NDATA EPS>
+<!ENTITY testmaintainer-create-sharedfldr SYSTEM "testmaintainer-create-sharedfldr.eps" NDATA EPS>
+<!ENTITY testmaintainer-users-create SYSTEM "testmaintainer-users-create.eps" NDATA EPS>
+<!ENTITY testmaintainer-addrsbk SYSTEM "testmaintainer-addrsbk.eps" NDATA EPS>
+<!ENTITY testmaintainer-create-addr SYSTEM "testmaintainer-create-addr.eps" NDATA EPS>
+<!ENTITY testadministrator-main SYSTEM "testadministrator-main.eps" NDATA EPS>
+<!ENTITY testadministrator-server SYSTEM "testadministrator-server.eps" NDATA EPS>
+<!ENTITY testadministrator-maintnr SYSTEM "testadministrator-maintnr.eps" NDATA EPS>
+<!ENTITY testadministrator-create-admin SYSTEM "testadministrator-create-admin.eps" NDATA EPS>
+<!ENTITY testadministrator-services SYSTEM "testadministrator-services.eps" NDATA EPS>
+]>
+
+<book>
+<bookinfo>
+<title>Kolab web administration</title>
+<subtitle>Technical Description</subtitle>
+
+<authorgroup>
+<othercredit>
+<othername> Erlewein, Frank, Konold & Partner </othername>
+<othername> Beratende Ingenieure und Physiker </othername>
+<othername> Nobelstr. 15 </othername>
+<othername> 70569 Stuttgart </othername>
+<othername> Germany </othername>
+<othername> http://www.erfrakon.de </othername>
+<othername> email: info@erfrakon.de</othername>
+<othername> phone: +49 700-erfrakon </othername>
+</othercredit>
+</authorgroup>
+<pubdate>February 20, 2003</pubdate>
+<legalnotice>
+<para> This documentation was written in SGML using the DocBook DTD. HTML
+and Postscript output is generated automatically and depends on the
+tools used. </para>
+<para>
+Windows, Exchange, and Outlook are registered trademarks of Microsoft
+Corporation Inc.
+Insight Connector is a registered trademark of Bynari Inc.
+HotSync is a registered trademark of Palm Inc. All other herein mentioned
+trademarks belong
+to their respective owners.
+</para>
+</legalnotice>
+<revhistory>
+<revision>
+<revnumber>1.0</revnumber>
+<date>February 20, 2002</date>
+<revremark>final version</revremark>
+</revision>
+</revhistory>
+</bookinfo>
+
+&chapter-intro
+&chapter-frontend
+
+</book>

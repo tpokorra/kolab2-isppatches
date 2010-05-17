@@ -1,0 +1,4 @@
+cp -pr ../../kolabd/kolabd/dist_conf .
+touch README
+autoreconf -f -i
+

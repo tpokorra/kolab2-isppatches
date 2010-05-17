@@ -1,0 +1,84 @@
+This includes extra parameters into the free/busy view. The params are hardcoded so this patch won't make it upstream.
+
+diff -r 735b35f9f866 kronolith/lib/FBView.php
+--- a/kronolith/lib/FBView.php	Thu Nov 29 11:32:43 2007 +0100
++++ b/kronolith/lib/FBView.php	Thu Nov 29 11:35:20 2007 +0100
+@@ -86,8 +86,8 @@ class Kronolith_FreeBusy_View {
+             $template = new Horde_Template();
+             $rows = '';
+             foreach ($this->_requiredMembers as $member) {
+-                $blocks = $this->_getBlocks($member, $member->getBusyPeriods(), 'busyblock.tpl', _("Busy"));
+-                $template = new Horde_Template();
++                $blocks = $this->_getBlocks($member, $member->getBusyPeriods(), 'busyblock.tpl', _("Busy"), $member->getExtraParams());
++                $template = &new Horde_Template();
+                 $template->set('blocks', $blocks);
+                 $template->set('name', $member->getName());
+                 $rows .= $template->fetch(KRONOLITH_TEMPLATES . '/fbview/row.tpl');
+@@ -107,8 +107,8 @@ class Kronolith_FreeBusy_View {
+             $template = new Horde_Template();
+             $rows = '';
+             foreach ($this->_optionalMembers as $member) {
+-                $blocks = $this->_getBlocks($member, $member->getBusyPeriods(), 'busyblock.tpl', _("Busy"));
+-                $template = new Horde_Template();
++                $blocks = $this->_getBlocks($member, $member->getBusyPeriods(), 'busyblock.tpl', _("Busy"), $member->getExtraParams());
++                $template = &new Horde_Template();
+                 $template->set('blocks', $blocks);
+                 $template->set('name', $member->getName());
+                 $rows .= $template->fetch(KRONOLITH_TEMPLATES . '/fbview/row.tpl');
+@@ -122,6 +122,9 @@ class Kronolith_FreeBusy_View {
+             $template->set('legend', '');
+             $html .= $template->fetch(KRONOLITH_TEMPLATES . '/fbview/section.tpl');
+         }
++
++	//**********
++	//This has been disabled in kolab-fbview. Make this optional?
+ 
+         // Possible meeting times.
+         $optimal->setAttribute('ORGANIZER', _("All Attendees"));
+@@ -144,6 +147,9 @@ class Kronolith_FreeBusy_View {
+         $template->set('name', _("Required Attendees"));
+         $template->set('blocks', $blocks);
+         $rows .= $template->fetch(KRONOLITH_TEMPLATES . '/fbview/row.tpl');
++
++	//This has been disabled in kolab-fbview. Make this optional?
++	//**********
+ 
+         // Reset locale.
+         setlocale(LC_NUMERIC, $lc);
+@@ -217,7 +223,7 @@ class Kronolith_FreeBusy_View {
+         return $instances[$view];
+     }
+ 
+-    function _getBlocks($member, $periods, $blockfile, $label)
++    function _getBlocks($member, $periods, $blockfile, $label, $extra = array())
+     {
+         $template = new Horde_Template();
+         $template->set('label', $label);
+@@ -250,6 +256,21 @@ class Kronolith_FreeBusy_View {
+ 
+                 $template->set('left', $left . '%');
+                 $template->set('width', $width . '%');
++                $template->set('evclick', '');
++
++                if (isset($extra[$periodStart])) {
++                    if (!empty($extra[$periodStart]['X-UID'])) {
++                        $link = "javascript:performAction('viewaction', '" 
++			  . addslashes($member->getName() . "#" 
++				       . String::convertCharset(base64_decode($extra[$periodStart]['X-UID']), 
++								'UTF-8',NLS::getCharset())) . "')";
++                        $template->set('evclick', $link);
++                    }
++                    if (!empty($extra[$periodStart]['X-SUMMARY'])) {
++                        $template->set('label', String::convertCharset(base64_decode($extra[$periodStart]['X-SUMMARY']),'UTF-8',
++				       NLS::getCharset()));
++                    }
++                }
+ 
+                 $blocks .= $template->fetch(KRONOLITH_TEMPLATES . '/fbview/' . $blockfile);
+             } else {
+diff -r 735b35f9f866 kronolith/templates/fbview/busyblock.tpl
+--- a/kronolith/templates/fbview/busyblock.tpl	Thu Nov 29 11:32:43 2007 +0100
++++ b/kronolith/templates/fbview/busyblock.tpl	Thu Nov 29 11:35:20 2007 +0100
+@@ -1,1 +1,1 @@
+-<td><div class="busy" style="left:<tag:left />;width:<tag:width />;">&nbsp;</div></td>
++<td><div class="busy" onclick="<tag:evclick />" style="cursor:pointer;left:<tag:left />;width:<tag:width />;" title="<tag:label />">&nbsp;</div></td>

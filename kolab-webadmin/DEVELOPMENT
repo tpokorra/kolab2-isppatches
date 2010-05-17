@@ -1,0 +1,70 @@
+Development notes
+=================
+
+The kolab-webadmin package is a PHP based web application. Since no
+compilation is necessary it is sufficient to package the "freebusy"
+directory for a release.
+
+The Kolab Server packages were usually not released as source
+packages. This should be changed with this new package layout. The
+"dist" target will produce a kolab-webadmin-*.tar.gz package that can
+be distributed as source package. The same run will produce a
+kolab-webadmin-*.src.rpm package that is suited for installation on an
+OpenPKG system.
+
+Version numbering
+=================
+
+kolab-webadmin is a Kolab Server core package. Released packages should
+have the same core version as the Server release. As a part of Kolab
+Server 2.1.0 the version number should be 2.1.0.
+
+Released source packages will look like this:
+
+ kolab-webadmin-2.1.0.tar.gz
+
+Released source RPMs will look like this:
+
+ kolab-webadmin-2.1.0-20070813.src.rpm
+
+A NEW VERSION AND RELEASE NUMBER HAVE TO BE SET IN
+
+  kolab-webadmin.spec
+
+Once development picks up after a release, please set
+
+%define       V_cvs 1
+
+in kolab-filter.spec.
+
+Source packages will then look like this:
+
+ kolab-webadmin-2.1.0.cvs-20070815.tar.gz
+
+Source RPMs will be named similar:
+
+ kolab-webadmin-2.1.0.cvs-20070815.src.rpm
+
+For tagging the next release the version number needs to be increased
+to the new Kolab Server version (e.g. 2.2.0) and the CVS variable needs
+to be reset to 0:
+
+%define       V_cvs 0
+
+Change log
+==========
+
+The change log for the package is provided in
+"admin/docs/ChangeLog". Please keep this file up-to-date if you
+change the source code of this package.
+
+Depending on the editor it may be helpful to link
+admin/docs/ChangeLog to ChangeLog in the top level directory of this
+package.
+
+Contributors
+============
+
+The developers of this package are listed in
+"admin/docs/AUTHORS". Please keep this file up-to-date if you
+change the source code of this package.

@@ -1,0 +1,4 @@
+*.src.rpm
+openpkg-*.sh
+*.tar.gz
+tar.patch

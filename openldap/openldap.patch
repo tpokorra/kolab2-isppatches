@@ -1,0 +1,52 @@
+Index: include/ac/fdset.h
+--- include/ac/fdset.h.orig	2008-02-12 00:26:40 +0100
++++ include/ac/fdset.h	2008-10-13 11:38:23 +0200
+@@ -22,6 +22,13 @@
+ #ifndef _AC_FDSET_H
+ #define _AC_FDSET_H
+ 
++#if defined(HAVE_SYS_TYPES_H)
++#include <sys/types.h>
++#endif
++#if defined(HAVE_SYS_SELECT_H)
++#include <sys/select.h>
++#endif
++
+ #if !defined( OPENLDAP_FD_SETSIZE ) && !defined( FD_SETSIZE )
+ #  define OPENLDAP_FD_SETSIZE 4096
+ #endif
+Index: include/ldap_int_thread.h
+--- include/ldap_int_thread.h.orig	2008-02-12 00:26:40 +0100
++++ include/ldap_int_thread.h	2008-10-13 11:38:23 +0200
+@@ -100,6 +100,7 @@
+  *                                 *
+  ***********************************/
+ 
++#define _POSIX_PTHREAD_SEMANTICS
+ #define PTH_SYSCALL_SOFT 1
+ #include <pth.h>
+ 
+Index: libraries/libldap_r/tpool.c
+--- libraries/libldap_r/tpool.c.orig	2008-03-21 01:46:03 +0100
++++ libraries/libldap_r/tpool.c	2008-10-13 11:38:23 +0200
+@@ -950,6 +950,6 @@
+ {
+ 	ldap_int_thread_userctx_t *ctx = vctx;
+ 
+-	return ctx->ltu_id;
++	return ctx != NULL ? ctx->ltu_id : 0;
+ }
+ #endif /* LDAP_THREAD_HAVE_TPOOL */
+Index: servers/slapd/back-perl/config.c
+--- servers/slapd/back-perl/config.c.orig	2008-02-12 00:26:47 +0100
++++ servers/slapd/back-perl/config.c	2008-10-13 11:38:23 +0200
+@@ -49,6 +49,9 @@
+ 		}
+ 
+ #ifdef PERL_IS_5_6
++		if (argc > 2)
++		    snprintf( eval_str, EVAL_BUF_SIZE, "require \"%s\";", argv[2] );
++		else
+ 		snprintf( eval_str, EVAL_BUF_SIZE, "use %s;", argv[1] );
+ 		eval_pv( eval_str, 0 );
+ 

@@ -1,0 +1,35 @@
+From: Gunnar Wrobel <wrobel@pardus.de>
+Subject: [PATCH] issue3967.patch
+
+kolab/issue3967 (UNTRUSTED vs. UNAUTHENTICATED, distinction considered harmful)
+
+STATUS: MERGED
+
+REF: http://issues.kolab.org/issue3967
+
+Signed-off-by: Gunnar Wrobel <wrobel@pardus.de>
+
+--- a/framework/Kolab_Filter/lib/Horde/Kolab/Filter/Content.php	15 Apr 2010 13:23:20 -0000	1.4.2.9
++++ b/framework/Kolab_Filter/lib/Horde/Kolab/Filter/Content.php	15 Apr 2010 14:08:11 -0000
+@@ -391,18 +391,10 @@
+             $allowed_addrs = false;
+         }
+ 
+-        if ($sasluser) {
+-            if (isset($conf['kolab']['filter']['untrusted_subject_insert'])) {
+-                $fmt = $conf['kolab']['filter']['untrusted_subject_insert'];
+-            } else {
+-                $fmt = _("(UNTRUSTED, sender is <%s>)");
+-            }
++        if (isset($conf['kolab']['filter']['unauthenticated_from_insert'])) {
++            $fmt = $conf['kolab']['filter']['unauthenticated_from_insert'];
+         } else {
+-            if (isset($conf['kolab']['filter']['unauthenticated_subject_insert'])) {
+-                $fmt = $conf['kolab']['filter']['unauthenticated_subject_insert'];
+-            } else {
+-                $fmt = _("(UNTRUSTED, sender <%s> is not authenticated)");
+-            }
++            $fmt = _("(UNTRUSTED, sender <%s> is not authenticated)");
+         }
+ 
+         $adrs = imap_rfc822_parse_adrlist($fromhdr, $domains[0]);

@@ -1,0 +1,31 @@
+KOLAB_META_START
+TARGET=@@@webserver_document_root@@@/client4/config/conf.d/20-kolab_local.php
+PERMISSIONS=0400
+OWNERSHIP=@@@webserver_usr@@@:@@@webserver_grp@@@
+KOLAB_META_END
+<?php
+/*
+@@@warning@@@
+*/
+
+$conf['cookie']['domain'] = '@@@fqdnhostname@@@';
+$conf['cookie']['path'] = '/client4';
+$conf['problems']['email'] = 'postmaster@@@@postfix-mydomain@@@';
+$conf['problems']['maildomain'] = '@@@postfix-mydomain@@@';
+$conf['kolab']['ldap']['server'] = '@@@ldap_uri@@@';
+$conf['kolab']['ldap']['basedn'] = '@@@base_dn@@@';
+$conf['kolab']['ldap']['phpdn'] = '@@@php_dn@@@';
+$conf['kolab']['ldap']['phppw'] = '@@@php_pw@@@';
+@@@if cyrus-imap@@@
+$conf['kolab']['imap']['server'] = '@@@fqdnhostname@@@';
+@@@else@@@
+$conf['kolab']['imap']['server'] = '@@@local_addr@@@';
+@@@endif@@@
+$conf['kolab']['imap']['maildomain'] = '@@@postfix-mydomain@@@';
+
+/*
+ * Kolab uses file based preferences by default. There is an alternative
+ * IMAP based driver that allows the users to keep their preferences in
+ * the IMAP storage. You can activate it here.
+ */
+//$conf['prefs']['driver'] = 'kolab_imap';

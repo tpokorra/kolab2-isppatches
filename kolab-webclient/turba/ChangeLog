@@ -1,0 +1,7 @@
+2010-03-09  Gunnar Wrobel  <p@rdus.de>
+
+	* patches/turba-2.3.3/t_turba_HK_GW_ConfigurationOverride.php:
+
+	kolab/issue3859 ([turba] optimized formatName function and
+	fallback to company attribute)
+

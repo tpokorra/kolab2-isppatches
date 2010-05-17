@@ -1,0 +1,1007 @@
+<chapter><title> Apache Web Server </title>
+
+<para> The Apache source package from the Current OpenPKG branch was
+modified to include Webdav and LDAP support (SPEC file). </para>
+
+<para><programlisting>
+#   the additionally used Apache modules (can be enabled without thinking)
+%{!?with_mod_ssl:            %define  with_mod_ssl            no}
+%{!?with_mod_perl:           %define  with_mod_perl           no}
+%{!?with_mod_php:            %define  with_mod_php            no}
+%{!?with_mod_php3:           %define  with_mod_php3           no}
+%{!?with_mod_dav:            %define  with_mod_dav            no}
+%{!?with_mod_layout:         %define  with_mod_layout         no}
+%{!?with_mod_macro:          %define  with_mod_macro          no}
+
+#   the additionally used Apache modules (you have to know what you do)
+%{!?with_mod_auth_pam:       %define  with_mod_auth_pam       no}
+%{!?with_mod_gzip:           %define  with_mod_gzip           no}
+%{!?with_mod_zmod:           %define  with_mod_zmod           no}
+%{!?with_mod_fastcgi:        %define  with_mod_fastcgi        no}
+%{!?with_mod_throttle:       %define  with_mod_throttle       no}
+%{!?with_mod_access_referer: %define  with_mod_access_referer no}
+%{!?with_mod_roaming:        %define  with_mod_roaming        no}
+%{!?with_mod_relocate:       %define  with_mod_relocate       no}
+
+#   more optional PHP4 specific settings
+#   (requires "with_mod_php" set to "yes" above!)
+%{!?with_mod_php_calendar:   %define  with_mod_php_calendar   no}
+%{!?with_mod_php_mysql:      %define  with_mod_php_mysql      no}
+%{!?with_mod_php_gd:         %define  with_mod_php_gd         no}
+%{!?with_mod_php_db:         %define  with_mod_php_db         no}
+%{!?with_mod_php_debug:      %define  with_mod_php_debug      no}
+%{!?with_mod_php_pdflib:     %define  with_mod_php_pdflib     no}
+%{!?with_mod_php_zlib:       %define  with_mod_php_zlib       no}
+%{!?with_mod_php_bzip2:      %define  with_mod_php_bzip2      no}
+%{!?with_mod_php_openssl:    %define  with_mod_php_openssl    no}
+%{!?with_mod_php_openldap:   %define  with_mod_php_openldap   no}
+%{!?with_mod_php_mm:         %define  with_mod_php_mm         no}
+%{!?with_mod_php_pcre:       %define  with_mod_php_pcre       no}
+%{!?with_mod_php_ftp:        %define  with_mod_php_ftp        no}
+%{!?with_mod_php_java:       %define  with_mod_php_java       no}
+%{!?with_mod_php_oci8:       %define  with_mod_php_oci8       no}
+%{!?with_mod_php_freetype:   %define  with_mod_php_freetype   no}
+%{!?with_mod_php_gettext:    %define  with_mod_php_gettext    no}
+%{!?with_mod_php_imap:       %define  with_mod_php_imap       no}
+%{!?with_mod_php_xml:        %define  with_mod_php_xml        no}
+%{!?with_mod_php_bc:         %define  with_mod_php_bc         no}
+%{!?with_mod_php_transsid:   %define  with_mod_php_transsid   no}
+%{!?with_mod_php_cyrus:      %define  with_mod_php_cyrus      no}
+
+#   more optional PHP3 specific settings
+#   (requires "with_mod_php3" set to "yes" above!)
+%{!?with_mod_php3_ftp:       %define  with_mod_php3_ftp       no}
+%{!?with_mod_php3_gd:        %define  with_mod_php3_gd        no}
+%{!?with_mod_php3_jpeg:      %define  with_mod_php3_jpeg      no}
+%{!?with_mod_php3_mysql:     %define  with_mod_php3_mysql     no}
+%{!?with_mod_php3_openssl:   %define  with_mod_php3_openssl   no}
+%{!?with_mod_php3_zlib:      %define  with_mod_php3_zlib      no}
+
+#   fixing implicit inter-module dependencies and correlations
+%if "%{with_mod_php}" == "yes"
+%if "%{with_mod_php3}" == "yes"
+%{error: with_mod_php conflicts with with_mod_php3}
+#   FIXME: error macro does not terminate execution
+exit 1
+%endif
+%if "%{with_mod_ssl}" == "yes"
+%define with_mod_php_openssl   yes
+%define with_mod_php_mm        yes
+%endif
+%if "%{with_mod_php_freetype}" == "yes"
+%define with_mod_php_gd        yes
+%endif
+%if "%{with_mod_php_mysql}" == "yes" || "%{with_mod_php_pdflib}" \
+    == "yes" || "%{with_mod_php_gd}" == "yes"
+%define with_mod_php_zlib      yes
+%endif
+%endif
+%if "%{with_mod_php3}" == "yes"
+%if "%{with_mod_ssl}" == "yes"
+%define with_mod_php3_openssl  yes
+%endif
+%if "%{with_mod_php3_mysql}" == "yes"
+%define with_mod_php3_zlib     yes
+%endif
+%endif
+
+#   package component versions
+%define       V_apache             1.3.27
+%define       V_mod_ssl            2.8.12-1.3.27
+%define       V_mod_perl           1.27
+%define       V_mod_php            4.3.0
+%define       V_mod_php3           3.0.18
+%define       V_mod_dav            1.0.3-1.3.6
+%define       V_mod_layout         3.2
+%define       V_mod_macro          1.1.2
+%define       V_mod_auth_pam       1.0a
+%define       V_mod_gzip           1.3.19.1a
+%define       V_mod_zmod           2_3
+%define       V_mod_fastcgi        2.4.0
+%define       V_mod_throttle       312
+%define       V_mod_access_referer 1.0.2
+%define       V_mod_roaming        1.0.2
+%define       V_mod_relocate       1.0
+
+#   package information
+Name:         apache
+Summary:      Apache HTTP Server
+URL:          http://httpd.apache.org/
+Vendor:       Apache Software Foundation
+Packager:     The OpenPKG Project
+Distribution: OpenPKG [BASE]
+Group:        Web
+License:      ASF
+Version:      %{V_apache}
+Release:      20030125
+
+#   list of sources
+%define url   http://www.apache.org/dist/httpd/apache_%{V_apache}.tar.gz
+Source0:      %( [ ! -f %{SOURCE apache_%{V_apache}.tar.gz} ] \
+		&& wget -c %url; echo %url )
+%define url   http://www.modssl.org/source/mod_ssl-%{V_mod_ssl}.tar.gz
+Source1:      %( [ ! -f %{SOURCE mod_ssl-%{V_mod_ssl}.tar.gz} ] \
+		&& wget -c %url; echo %url )
+%define url   http://perl.apache.org/dist/mod_perl-%{V_mod_perl}.tar.gz
+Source2:      %( [ ! -f %{SOURCE mod_perl-%{V_mod_perl}.tar.gz} ] \
+		&& wget -c %url; echo %url )
+%define url   http://www.php.net/distributions/php-%{V_mod_php}.tar.gz
+Source3:      %( [ ! -f %{SOURCE php-%{V_mod_php}.tar.gz} ] \
+		&& wget -c %url; echo %url )
+%define url   http://www.webdav.org/mod_dav/mod_dav-%{V_mod_dav}.tar.gz
+Source4:      %( [ ! -f %{SOURCE mod_dav-%{V_mod_dav}.tar.gz} ] \
+		&& wget -c %url; echo %url )
+%define url   http://software.tangent.org/download/
+			mod_layout-%{V_mod_layout}.tar.gz
+Source5:      %( [ ! -f %{SOURCE mod_layout-%{V_mod_layout}.tar.gz} ] \
+		&& wget -c %url; echo %url )
+%define url   http://www.cri.ensmp.fr/~coelho/mod_macro/
+			mod_macro-%{V_mod_macro}.tar.gz 
+Source6:      %( [ ! -f %{SOURCE mod_macro-%{V_mod_macro}.tar.gz} ] \
+		&& wget -c %url; echo %url )
+%define url   http://pam.sourceforge.net/mod_auth_pam/
+			dist/mod_auth_pam.tar.gz
+Source7:      %( [ ! -f %{SOURCE mod_auth_pam.tar.gz} ]\
+		&& wget -c %url; echo %url )
+# define url   http://www.remotecommunications.com/apache/mod_gzip/
+			src/%{V_mod_gzip}/mod_gzip.c
+# Source8:      %( [ ! -f %{SOURCE mod_gzip.c} ] \
+		&& wget -c %url; echo %url )
+Source8:      mod_gzip.c
+%define url   http://download.at.kde.org/opsys/linux/OpenPKG/
+		sources/DST/apache/src.apapi.FIN%{V_mod_zmod}.tar.gz
+Source9:      %( [ ! -f %{SOURCE src.apapi.FIN%{V_mod_zmod}.tar.gz} ] \
+		&& wget -c %url; echo %url )
+%define url   http://www.fastcgi.com/dist/
+			mod_fastcgi-%{V_mod_fastcgi}.tar.gz
+Source10:     %( [ ! -f %{SOURCE mod_fastcgi-%{V_mod_fastcgi}.tar.gz} ] \
+		&& wget -c %url; echo %url )
+%define url   http://www.snert.com/Software/mod_throttle/
+			mod_throttle%{V_mod_throttle}.tgz
+Source11:     %( [ ! -f %{SOURCE mod_throttle%{V_mod_throttle}.tgz} ] \
+		&& wget -c %url; echo %url )
+%define url   http://download.sourceforge.net/accessreferer/
+		mod_access_referer-%{V_mod_access_referer}.tar.gz
+Source12:     %( [ ! -f %{SOURCE mod_access_referer-
+	%{V_mod_access_referer}.tar.gz} ] && wget -c %url; echo %url )
+%define url   http://www.klomp.org/mod_roaming/
+			mod_roaming-%{V_mod_roaming}.tar.gz
+Source13:     %( [ ! -f %{SOURCE mod_roaming-%{V_mod_roaming}.tar.gz} ] \
+		&& wget -c %url; echo %url )
+%define url   http://software.tangent.org/download/
+		mod_relocate-%{V_mod_relocate}.tar.gz
+Source14:     %( [ ! -f %{SOURCE mod_relocate-%{V_mod_relocate}.tar.gz} ] \
+		&& wget -c %url; echo %url )
+%define url   http://www.php.net/distributions/php-%{V_mod_php3}.tar.gz
+Source15:     %( [ ! -f %{SOURCE php-%{V_mod_php3}.tar.gz} ] \
+		&& wget -c %url; echo %url )
+%define url   http://www.muquit.com/muquit/software/
+		mod_auth_ldap/mod_auth_ldap.tar.gz
+Source16:     %( [ ! -f %{SOURCE mod_auth_ldap.tar.gz} ] \
+		&& wget -c %url; echo %url )
+Source20:     apache.conf
+Source21:     apache.base
+Source22:     apache.vhost
+Source23:     rc.apache
+Source24:     Makefile
+Patch0:       mod-ldap.patch
+
+
+#   build information
+Prefix:       %{l_prefix}
+BuildRoot:    %{l_buildroot}
+BuildPreReq:  OpenPKG, openpkg &gt;= 1.1.0, gdbm
+PreReq:       OpenPKG, openpkg &gt;= 1.1.0
+%if "%{with_mod_ssl}" == "yes"
+BuildPreReq:  openssl, mm
+%endif
+%if "%{with_mod_auth_ldap}" == "yes"
+BuildPreReq:  openldap
+%endif
+%if "%{with_mod_perl}" == "yes"
+BuildPreReq:  perl
+PreReq:       perl
+%endif
+%if "%{with_mod_php}" == "yes"
+BuildPreReq:  make, bison, flex
+%if "%{with_mod_php_mysql}" == "yes"
+BuildPreReq:  mysql
+%endif
+%if "%{with_mod_php_gd}" == "yes"
+BuildPreReq:  GD, jpeg, png
+%endif
+%if "%{with_mod_php_db}" == "yes"
+BuildPreReq:  db
+%endif
+%if "%{with_mod_php_pdflib}" == "yes"
+BuildPreReq:  pdflib, jpeg, png
+%endif
+%if "%{with_mod_php_zlib}" == "yes"
+BuildPreReq:  zlib
+%endif
+%if "%{with_mod_php_bzip2}" == "yes"
+BuildPreReq:  bzip2
+%endif
+%if "%{with_mod_php_openssl}" == "yes"
+BuildPreReq:  openssl
+%endif
+%if "%{with_mod_php_openldap}" == "yes"
+BuildPreReq:  openldap, openssl
+%endif
+%if "%{with_mod_php_mm}" == "yes"
+BuildPreReq:  mm
+%endif
+%if "%{with_mod_php_pcre}" == "yes"
+BuildPreReq:  pcre
+%endif
+%if "%{with_mod_php_java}" == "yes"
+BuildPreReq:  j2se
+%endif
+%if "%{with_mod_php_freetype}" == "yes"
+BuildPreReq:  freetype
+%endif
+%if "%{with_mod_php_gettext}" == "yes"
+BuildPreReq:  gettext, libiconv
+%endif
+%if "%{with_mod_php_imap}" == "yes"
+BuildPreReq:  c-client
+%endif
+%if "%{with_mod_php_xml}" == "yes"
+BuildPreReq: expat
+%endif
+%endif
+
+%if "%{with_mod_php3}" == "yes"
+BuildPreReq:  make, bison, flex
+%if "%{with_mod_php3_gd}" == "yes"
+BuildPreReq:  GD
+%endif
+%if "%{with_mod_php3_jpeg}" == "yes"
+BuildPreReq:  jpeg
+%endif
+%if "%{with_mod_php3_mysql}" == "yes"
+BuildPreReq:  mysql
+%endif
+%if "%{with_mod_php3_openssl}" == "yes"
+BuildPreReq:  openssl
+%endif
+%if "%{with_mod_php3_zlib}" == "yes"
+BuildPreReq:  zlib
+%endif
+%endif
+
+%if "%{with_mod_auth_pam}" == "yes"
+BuildPreReq:  PAM
+PreReq:       PAM
+%endif
+AutoReq:      no
+AutoReqProv:  no
+
+%description
+    The Apache Project is a collaborative software development effort
+    aimed at creating a robust, commercial-grade, featureful, and
+    freely-available source code implementation of an HTTP (Web) server.
+    The project is jointly managed by a group of volunteers located
+    around the world, using the Internet and the Web to communicate,
+    plan, and develop the server and its related documentation. These
+    volunteers are known as the Apache Group. In addition, hundreds
+    of users have contributed ideas, code, and documentation to the
+    project.
+
+    Options (additional modules I):
+    --define 'with_mod_dav              %{with_mod_dav}' \
+    --define 'with_mod_layout           %{with_mod_layout}' \
+    --define 'with_mod_macro            %{with_mod_macro}' \
+    --define 'with_mod_perl             %{with_mod_perl}' \
+    --define 'with_mod_php              %{with_mod_php}' \
+    --define 'with_mod_php3             %{with_mod_php3}' \
+    --define 'with_mod_ssl              %{with_mod_ssl}' \
+
+    Options (additional modules II):
+    --define 'with_mod_access_referer   %{with_mod_access_referer}' \
+    --define 'with_mod_auth_pam         %{with_mod_auth_pam}' \
+    --define 'with_mod_fastcgi          %{with_mod_fastcgi}' \
+    --define 'with_mod_gzip             %{with_mod_gzip}' \
+    --define 'with_mod_relocate         %{with_mod_relocate}' \
+    --define 'with_mod_roaming          %{with_mod_roaming}' \
+    --define 'with_mod_throttle         %{with_mod_throttle}' \
+    --define 'with_mod_zmod             %{with_mod_zmod}' \
+
+    Options (additional extensions for mod_php):
+    --define 'with_mod_php_bzip2        %{with_mod_php_bzip2}' \
+    --define 'with_mod_php_bc           %{with_mod_php_bc}' \
+    --define 'with_mod_php_calendar     %{with_mod_php_calendar}' \
+    --define 'with_mod_php_db           %{with_mod_php_db}' \
+    --define 'with_mod_php_debug        %{with_mod_php_debug}' \
+    --define 'with_mod_php_ftp          %{with_mod_php_ftp}' \
+    --define 'with_mod_php_freetype     %{with_mod_php_freetype}' \
+    --define 'with_mod_php_gd           %{with_mod_php_gd}' \
+    --define 'with_mod_php_gettext      %{with_mod_php_gettext}' \
+    --define 'with_mod_php_imap         %{with_mod_php_imap}' \
+    --define 'with_mod_php_java         %{with_mod_php_java}' \
+    --define 'with_mod_php_mm           %{with_mod_php_mm}' \
+    --define 'with_mod_php_mysql        %{with_mod_php_mysql}' \
+    --define 'with_mod_php_oci8         %{with_mod_php_oci8}' \
+    --define 'with_mod_php_openldap     %{with_mod_php_openldap}' \
+    --define 'with_mod_php_openssl      %{with_mod_php_openssl}' \
+    --define 'with_mod_php_pcre         %{with_mod_php_pcre}' \
+    --define 'with_mod_php_pdflib       %{with_mod_php_pdflib}' \
+    --define 'with_mod_php_transsid     %{with_mod_php_transsid}' \
+    --define 'with_mod_php_xml          %{with_mod_php_xml}' \
+    --define 'with_mod_php_zlib         %{with_mod_php_zlib}' \
+
+    Options (additional extensions for mod_php3):
+    --define 'with_mod_php3_ftp         %{with_mod_php3_ftp}' \
+    --define 'with_mod_php3_gd          %{with_mod_php3_gd}' \
+    --define 'with_mod_php3_jpeg        %{with_mod_php3_jpeg}' \
+    --define 'with_mod_php3_mysql       %{with_mod_php3_mysql}' \
+    --define 'with_mod_php3_openssl     %{with_mod_php3_openssl}' \
+    --define 'with_mod_php3_zlib        %{with_mod_php3_zlib}' \
+
+%prep
+    #   unpack Apache distribution
+    %setup0 -q -c
+    #   unpack optional extension modules
+%if "%{with_mod_ssl}" == "yes"
+    %setup1 -q -T -D -a 1
+%endif
+%if "%{with_mod_perl}" == "yes"
+    %setup2 -q -T -D -a 2
+%endif
+%if "%{with_mod_php}" == "yes"
+    %setup3 -q -T -D -a 3
+%endif
+%if "%{with_mod_dav}" == "yes"
+    %setup4 -q -T -D -a 4
+%endif
+%if "%{with_mod_layout}" == "yes"
+    %setup5 -q -T -D -a 5
+%endif
+%if "%{with_mod_macro}" == "yes"
+    %setup6 -q -T -D -a 6
+%endif
+%if "%{with_mod_auth_pam}" == "yes"
+    %setup7 -q -T -D -a 7
+%endif
+%if "%{with_mod_zmod}" == "yes"
+    %setup9 -q -T -D -a 9
+%endif
+%if "%{with_mod_fastcgi}" == "yes"
+    %setup10 -q -T -D -a 10
+%endif
+%if "%{with_mod_throttle}" == "yes"
+    %setup11 -q -T -D -a 11
+%endif
+%if "%{with_mod_access_referer}" == "yes"
+    %setup12 -q -T -D -a 12
+%endif
+%if "%{with_mod_roaming}" == "yes"
+    %setup13 -q -T -D -a 13
+%endif
+%if "%{with_mod_relocate}" == "yes"
+    %setup14 -q -T -D -a 14
+%endif
+%if "%{with_mod_php3}" == "yes"
+    %setup15 -q -T -D -a 15
+%endif
+%if "%{with_mod_auth_ldap}" == "yes"
+    %setup16 -q -T -D -a 16
+    ( cd modauthldap
+      %patch0 -p0
+    )
+%endif
+
+
+%build
+    #   prepare environment
+    rm -rf $RPM_BUILD_ROOT
+    %{l_shtool} mkdir -f -p -m 755 $RPM_BUILD_ROOT%{l_prefix}
+
+    #   optionally prepare mod_ssl
+%if "%{with_mod_ssl}" == "yes"
+    ( cd mod_ssl-%{V_mod_ssl}
+      ./configure \
+          --with-apache=../apache_%{V_apache} \
+          --with-ssl=%{l_prefix} \
+          --with-mm=%{l_prefix} \
+          --expert --force
+    )
+%endif
+
+    #   optionally pre-configure Apache for mod_php, mod_php3 and mod_dav
+%if "%{with_mod_php}" == "yes" || "%{with_mod_php3}" == "yes" \
+		|| "%{with_mod_dav}" == "yes"
+    ( cd apache_%{V_apache}
+      CC="%{l_cc}" \
+      CFLAGS="%{l_cflags -O}" \
+      ./configure \
+%if "%{with_mod_ssl}" == "yes"
+          --enable-rule=EAPI \
+%endif
+          --target=apache \
+          --with-layout=GNU \
+          --prefix=%{l_prefix} \
+          --sbindir=%{l_prefix}/sbin \
+          --sysconfdir=%{l_prefix}/etc/apache \
+          --libexecdir=%{l_prefix}/lib/apache \
+          --datadir=%{l_prefix}/share/apache \
+          --localstatedir=%{l_prefix}/var/apache
+    )
+%endif
+
+    #   optionally prepare mod_perl
+%if "%{with_mod_perl}" == "yes"
+    ( cd mod_perl-%{V_mod_perl}
+      eval `%{l_prefix}/bin/perl -V:archname`
+      eval `%{l_prefix}/bin/perl -V:version`
+      %{l_shtool} mkdir -f -p -m 755 $RPM_BUILD_ROOT%{l_prefix}/bin
+      perl=$RPM_BUILD_ROOT%{l_prefix}/bin/perl
+      echo "#!/bin/sh" &gt;$perl
+      echo "exec %{l_prefix}/bin/perl \\" &gt;&gt;$perl
+      echo " -I$RPM_BUILD_ROOT%{l_prefix}/lib/perl5/${version} \\" \
+		 &gt;&gt;$perl
+      echo " -I$RPM_BUILD_ROOT%{l_prefix}/lib/perl5/
+		${version}/${archname} \\" &gt;&gt;$perl
+      echo " -I$RPM_BUILD_ROOT%{l_prefix}/lib/perl5/
+		site_perl \\" &gt;&gt;$perl
+      echo " -I$RPM_BUILD_ROOT%{l_prefix}/lib/perl5/
+		site_perl/${version} \\" &gt;&gt;$perl
+      echo " -I$RPM_BUILD_ROOT%{l_prefix}/lib/perl5/
+		site_perl/${version}/${archname} \\" &gt;&gt;$perl
+      echo " \"\$@\"" &gt;&gt;$perl
+      chmod a+x $perl
+      $perl Makefile.PL \
+          PREFIX=$RPM_BUILD_ROOT%{l_prefix} \
+          APACHE_SRC=../apache_%{V_apache}/src \
+          DO_HTTPD=1 \
+          USE_APACI=1 \
+          PREP_HTTPD=1 \
+          EVERYTHING=1 \
+          PERL_TIE_TABLES=1 \
+          PERL_DIRECTIVE_HANDLERS=1
+      %{l_make} %{l_mflags}
+      %{l_make} %{l_mflags} install
+      mkdir $RPM_BUILD_ROOT%{l_prefix}/perl5
+      mv $RPM_BUILD_ROOT%{l_prefix}/lib/* $RPM_BUILD_ROOT%{l_prefix}/perl5/
+      mv $RPM_BUILD_ROOT%{l_prefix}/perl5 $RPM_BUILD_ROOT%{l_prefix}/lib/
+      %{l_shtool} subst -e "s;^\\(PERL = \\).*;\\1 $perl;" \
+          ../apache_%{V_apache}/src/modules/perl/mod_perl.config
+    )
+%endif
+
+    #   optionally prepare mod_php
+%if "%{with_mod_php}" == "yes"
+    ( cd php-%{V_mod_php}
+      CC="%{l_cc}"; export CC
+      CFLAGS="%{l_cflags -O} -I%{l_prefix}/include"; export CFLAGS
+      CPPFLAGS="%{l_cflags -O} -I%{l_prefix}/include"; export CPPFLAGS
+      LDFLAGS="%{l_cflags -O} -L%{l_prefix}/lib"; export LDFLAGS
+      LIBS=""; export LIBS
+%if "%{with_mod_ssl}" == "yes"
+      CFLAGS="$CFLAGS -DEAPI"
+%endif
+%if "%{with_mod_php_gd}" == "yes" 
+      LIBS="$LIBS -lpng -lz"
+%endif
+%if "%{with_mod_php_gettext}" == "yes"
+      LIBS="$LIBS -liconv" \
+%endif
+%if "%{with_mod_php_openldap}" == "yes"
+      LIBS="$LIBS -lsasl2"
+%endif
+      ./configure \
+          --prefix=%{l_prefix} \
+          --with-apache=../apache_%{V_apache} \
+          --with-config-file-path=%{l_prefix}/etc/apache \
+%if "%{with_mod_php_calendar}" == "yes"
+          --enable-calendar \
+%endif
+%if "%{with_mod_php_mysql}" == "yes"
+          --with-mysql=%{l_prefix} \
+%endif
+%if "%{with_mod_php_gd}" == "yes"
+          --with-gd=%{l_prefix} \
+          --with-jpeg-dir=%{l_prefix} \
+          --with-png-dir=%{l_prefix} \
+%endif
+%if "%{with_mod_php_freetype}" == "yes"
+          --enable-gd-imgstrttf \
+          --enable-gd-native-ttf \
+          --with-freetype-dir=%{l_prefix} \
+%endif
+%if "%{with_mod_php_db}" == "yes"
+          --with-db3=%{l_prefix} \
+%endif
+%if "%{with_mod_php_debug}" == "yes"
+          --with-debug=yes \
+%else
+          --with-debug=no \
+%endif
+%if "%{with_mod_php_zlib}" == "yes"
+          --with-zlib=%{l_prefix} \
+%endif
+%if "%{with_mod_php_bzip2}" == "yes"
+          --with-bz2=%{l_prefix} \
+%endif
+%if "%{with_mod_php_pdflib}" == "yes"
+          --with-pdflib=%{l_prefix} \
+          --with-jpeg-dir=%{l_prefix} \
+          --with-png-dir=%{l_prefix} \
+%endif
+%if "%{with_mod_php_openssl}" == "yes" \
+   || "%{with_mod_php_openldap}" == "yes"
+          --with-openssl=%{l_prefix} \
+%endif
+%if "%{with_mod_php_openldap}" == "yes"
+          --with-ldap=%{l_prefix} \
+%endif
+%if "%{with_mod_php_cyrus}" == "yes"
+	  --with-cyrus=%{l_prefix} \
+%else
+          --without-cyrus \
+%endif
+%if "%{with_mod_php_mm}" == "yes"
+          --with-mm=%{l_prefix} \
+          --enable-session \
+%endif
+%if "%{with_mod_php_pcre}" == "yes"
+          --with-pcre=%{l_prefix} \
+%endif
+%if "%{with_mod_php_ftp}" == "yes"
+          --enable-ftp \
+%endif
+%if "%{with_mod_php_java}" == "yes"
+          --with-java=%{l_prefix}/libexec/j2se \
+%endif
+%if "%{with_mod_php_oci8}" == "yes"
+          --with-oci8 \
+%endif
+%if "%{with_mod_php_gettext}" == "yes"
+          --with-gettext=%{l_prefix} \
+%endif
+%if "%{with_mod_php_imap}" == "yes"
+          --with-imap=%{l_prefix} \
+%endif
+%if "%{with_mod_php_xml}" == "yes"
+          --with-xml=%{l_prefix} \
+%endif
+%if "%{with_mod_php_bc}" == "yes"
+          --enable-bcmath \
+%endif
+%if "%{with_mod_php_transsid}" == "yes"
+          --enable-trans-sid \
+%endif
+          --without-pear \
+          --disable-shared \
+          --enable-inline-optimization \
+          --enable-track-vars
+      %{l_make} %{l_mflags}
+      %{l_shtool} subst \
+          -e "s;^\\(EXTENSION_DIR = \\)\\(%{l_prefix}\\);
+			\\1$RPM_BUILD_ROOT\\2;" \
+          -e "s;^\\(PEAR_INSTALLDIR = \\)\\(%{l_prefix}\\);
+			\\1$RPM_BUILD_ROOT\\2;" \
+          config_vars.mk
+      %{l_make} %{l_mflags} install \
+          prefix=$RPM_BUILD_ROOT%{l_prefix}
+    )
+%endif
+
+    #   optionally prepare mod_php3
+%if "%{with_mod_php3}" == "yes"
+    ( cd php-%{V_mod_php3}
+      CC="%{l_cc}" \
+%if "%{with_mod_ssl}" == "yes"
+      CFLAGS="%{l_cflags -O} -I%{l_prefix}/include -DEAPI" \
+%else
+      CFLAGS="%{l_cflags -O} -I%{l_prefix}/include" \
+%endif
+      CPPFLAGS="%{l_cflags -O} -I%{l_prefix}/include" \
+      LDFLAGS="%{l_cflags -O} -L%{l_prefix}/lib" \
+      ./configure \
+          --prefix=%{l_prefix} \
+          --with-apache=../apache_%{V_apache} \
+          --with-config-file-path=%{l_prefix}/etc/apache \
+%if "%{with_mod_php3_ftp}" == "yes"
+          --with-ftp \
+%endif
+%if "%{with_mod_php3_mysql}" == "yes"
+          --with-mysql=%{l_prefix} \
+%endif
+%if "%{with_mod_php3_zlib}" == "yes"
+          --with-zlib=%{l_prefix} \
+%endif
+%if "%{with_mod_php3_jpeg}" == "yes"
+          --with-jpeg=${prefix} \
+%endif
+%if "%{with_mod_php3_gd}" == "yes"
+          --with-gd=${prefix} \
+%endif
+%if "%{with_mod_php3_openssl}" == "yes"
+          --with-openssl=%{l_prefix} \
+%endif
+          --disable-shared \
+          --enable-track-vars
+#   FIXME:
+#   --enable-safe-mode
+#   --with-exec-dir[=DIR]
+#   --enable-magic-quotes
+#   --enable-memory-limit
+#   --enable-sysvsem
+#   --enable-sysvshm
+      %{l_make} %{l_mflags}
+      %{l_make} %{l_mflags} install \
+          prefix=$RPM_BUILD_ROOT%{l_prefix}
+    )
+%endif
+
+    #   optionally prepare mod_dav
+%if "%{with_mod_dav}" == "yes"
+    ( cd mod_dav-%{V_mod_dav}
+      CC="%{l_cc}" \
+%if "%{with_mod_ssl}" == "yes"
+      CFLAGS="%{l_cflags -O}" \
+%else
+      CFLAGS="%{l_cflags -O} -DEAPI" \
+%endif
+      LDFLAGS="%{l_cflags -O}" \
+      ./configure \
+          --with-apache=../apache_%{V_apache}
+      %{l_make} %{l_mflags}
+      %{l_make} %{l_mflags} install
+    )
+%endif
+
+    #   optionally prepare mod_layout
+%if "%{with_mod_layout}" == "yes"
+    ( cd mod_layout-%{V_mod_layout}
+      mkdir ../apache_%{V_apache}/src/modules/layout
+      cp * ../apache_%{V_apache}/src/modules/layout/ \
+	 2&gt;/dev/null || true
+      chmod -R u+w ../apache_%{V_apache}/src/modules/layout
+    )
+%endif
+
+    #   optionally prepare mod_macro
+%if "%{with_mod_macro}" == "yes"
+    ( cd mod_macro-%{V_mod_macro}
+      cp mod_macro.c ../apache_%{V_apache}/src/modules/extra/
+    )
+%endif
+
+    #   optionally prepare mod_auth_pam
+%if "%{with_mod_auth_pam}" == "yes"
+    ( cd mod_auth_pam-%{V_mod_auth_pam}
+      cp mod_auth_pam.c ../apache_%{V_apache}/src/modules/extra/
+    )
+%endif
+
+    #   optionally prepare mod_gzip
+%if "%{with_mod_gzip}" == "yes"
+    cp %{SOURCE mod_gzip.c} apache_%{V_apache}/src/modules/extra/
+%endif
+
+    #   optionally prepare mod_zmod
+%if "%{with_mod_zmod}" == "yes"
+    ( cd src
+      mkdir ../apache_%{V_apache}/src/modules/zmod
+      %{l_shtool} subst -e 's;"compat.h";"ap_compat.h";' \
+	modules/zmod/mod_zmod.c
+      cp modules/zmod/* ../apache_%{V_apache}/src/modules/zmod/
+    )
+%endif
+
+    #   optionally prepare mod_fastcgi
+%if "%{with_mod_fastcgi}" == "yes"
+    ( cd mod_fastcgi-%{V_mod_fastcgi}
+      mkdir ../apache_%{V_apache}/src/modules/fastcgi
+      cp -rp * ../apache_%{V_apache}/src/modules/fastcgi/
+    )
+%endif
+
+    #   optionally prepare mod_throttle
+%if "%{with_mod_throttle}" == "yes"
+    ( cd mod_throttle-*
+      cp mod_throttle.c ../apache_%{V_apache}/src/modules/extra/
+    )
+%endif
+
+    #   optionally prepare mod_access_referer
+%if "%{with_mod_access_referer}" == "yes"
+    ( cd mod_access_referer-%{V_mod_access_referer}
+      cp mod_access_referer.c ../apache_%{V_apache}/src/modules/extra/
+    )
+%endif
+
+    #   optionally prepare mod_roaming
+%if "%{with_mod_roaming}" == "yes"
+    ( cd mod_roaming-%{V_mod_roaming}
+      cp mod_roaming.c ../apache_%{V_apache}/src/modules/extra/
+    )
+%endif
+
+    #   optionally prepare mod_relocate
+%if "%{with_mod_relocate}" == "yes"
+    ( cd mod_relocate-%{V_mod_relocate}
+      cp mod_relocate.c ../apache_%{V_apache}/src/modules/extra/
+    )
+%endif
+
+    # mod_auth_ldap
+%if "%{with_mod_auth_ldap}" == "yes"
+    %{l_shtool} subst -e "s;\@PREFIX\@;%{l_prefix};g" modauthldap/*
+    cp -r modauthldap apache_%{V_apache}/src/modules/ldap
+%endif
+
+    #   configure Apache
+    ( cd apache_%{V_apache}
+      cflags="%{l_cflags -O}"
+      ldflags="-L%{l_prefix}/lib"
+      libs=""
+%if "%{with_mod_auth_pam}" == "yes"
+      pam_incdir=`%{l_prefix}/etc/rc --query pam_incdir`
+      if [ ".$pam_incdir" != "./usr/include" -a ".$pam_incdir" \
+		 != "./include" ]; then
+          cflags="$cflags -I$pam_incdir"
+      fi
+      pam_libdir=`%{l_prefix}/etc/rc --query pam_libdir`
+      if [ ".$pam_libdir" != "./usr/lib" -a ".$pam_libdir" \
+		!= "./lib" ]; then
+          ldflags="$ldflags -L$pam_libdir"
+      fi
+      libs="$libs -lpam"
+%endif
+      CC="%{l_cc}" \
+      CFLAGS="$cflags" \
+      LDFLAGS="$ldflags" \
+      LIBS="$libs" \
+%if "%{with_mod_ssl}" == "yes"
+      EAPI_MM="%{l_prefix}" \
+      SSL_BASE="%{l_prefix}" \
+%endif
+%if "%{with_mod_auth_ldap}" == "yes"
+      LIBS="$LIBS -lldap -llber" \
+%endif
+      ./configure \
+          --target=apache \
+          --with-layout=GNU \
+          --prefix=%{l_prefix} \
+          --sbindir=%{l_prefix}/sbin \
+          --sysconfdir=%{l_prefix}/etc/apache \
+          --libexecdir=%{l_prefix}/lib/apache \
+          --datadir=%{l_prefix}/share/apache \
+          --localstatedir=%{l_prefix}/var/apache \
+%if "%{with_suexec}" == "yes"
+          --enable-suexec \
+          --suexec-caller=%{l_nusr} \
+          --suexec-userdir=.www \
+%endif
+          --enable-module=most \
+          --with-perl=%{l_prefix}/bin/perl \
+%if "%{with_mod_ssl}" == "yes"
+          --enable-rule=EAPI \
+          --enable-module=ssl \
+%endif
+%if "%{with_mod_perl}" == "yes"
+          --activate-module=src/modules/perl/libperl.a \
+%endif
+%if "%{with_mod_php}" == "yes"
+          --activate-module=src/modules/php4/libphp4.a \
+%endif
+%if "%{with_mod_php3}" == "yes"
+          --activate-module=src/modules/php3/libphp3.a \
+%endif
+%if "%{with_mod_dav}" == "yes"
+          --activate-module=src/modules/dav/libdav.a \
+%endif
+%if "%{with_mod_layout}" == "yes"
+          --activate-module=src/modules/layout/liblayout.a \
+%endif
+%if "%{with_mod_macro}" == "yes"
+          --activate-module=src/modules/extra/mod_macro.o \
+%endif
+%if "%{with_mod_auth_pam}" == "yes"
+          --activate-module=src/modules/extra/mod_auth_pam.o \
+%endif
+%if "%{with_mod_gzip}" == "yes"
+          --activate-module=src/modules/extra/mod_gzip.o \
+%endif
+%if "%{with_mod_zmod}" == "yes"
+          --activate-module=src/modules/zmod/libzmod.a \
+%endif
+%if "%{with_mod_fastcgi}" == "yes"
+          --activate-module=src/modules/fastcgi/libfastcgi.a \
+%endif
+%if "%{with_mod_throttle}" == "yes"
+          --activate-module=src/modules/extra/mod_throttle.o \
+%endif
+%if "%{with_mod_access_referer}" == "yes"
+          --activate-module=src/modules/extra/mod_access_referer.o \
+%endif
+%if "%{with_mod_roaming}" == "yes"
+          --activate-module=src/modules/extra/mod_roaming.o \
+%endif
+%if "%{with_mod_relocate}" == "yes"
+          --activate-module=src/modules/extra/mod_relocate.o \
+%endif
+%if "%{with_mod_auth_ldap}" == "yes"
+          --activate-module=src/modules/ldap/mod_auth_ldap.o \
+%endif
+          --enable-module=so \
+          --disable-module=auth_dbm
+      %{l_make} %{l_mflags -O} build-quiet
+    )
+
+%install
+    #   install Apache
+    ( cd apache_%{V_apache}
+      #   perform standard Apache installation procedure
+      %{l_make} %{l_mflags} install root=$RPM_BUILD_ROOT
+      #   post-adjustments to installation tree
+      mv $RPM_BUILD_ROOT%{l_prefix}/share/apache/icons/small/* \
+         $RPM_BUILD_ROOT%{l_prefix}/share/apache/icons/
+      rm -rf $RPM_BUILD_ROOT%{l_prefix}/share/apache/icons/small
+      rm -f $RPM_BUILD_ROOT%{l_prefix}/share/apache/icons/README*
+      rm -f $RPM_BUILD_ROOT%{l_prefix}/etc/apache/*.default
+      rm -f $RPM_BUILD_ROOT%{l_prefix}/etc/apache/srm.conf
+      rm -f $RPM_BUILD_ROOT%{l_prefix}/etc/apache/access.conf
+      mv $RPM_BUILD_ROOT%{l_prefix}/share/apache/htdocs/index.html.en \
+         $RPM_BUILD_ROOT%{l_prefix}/share/apache/htdocs/index.html
+      rm -f $RPM_BUILD_ROOT%{l_prefix}/share/apache/htdocs/index.html.*
+      chmod a+rx $RPM_BUILD_ROOT%{l_prefix}/share/apache/cgi-bin/*
+      mv $RPM_BUILD_ROOT%{l_prefix}/share/apache/cgi-bin \
+         $RPM_BUILD_ROOT%{l_prefix}/cgi/
+      rm -rf $RPM_BUILD_ROOT%{l_prefix}/cgi/test-cgi
+    )
+
+    #   optionally cleanup for mod_perl
+%if "%{with_mod_perl}" == "yes"
+    rm -f $RPM_BUILD_ROOT%{l_prefix}/bin/perl
+%endif
+
+    #   create default configuration
+    l_hostname=`%{l_shtool} echo -e %h`
+    l_domainname=`%{l_shtool} echo -e %d | cut -c2-`
+    %{l_shtool} install -c -m 644 \
+        -e 's;@l_prefix@;%{l_prefix};g' \
+        -e "s;@l_hostname@;$l_hostname;g" \
+        -e "s;@l_domainname@;$l_domainname;g" \
+        -e 's;@l_nusr@;%{l_nusr};g' \
+        -e 's;@l_ngrp@;%{l_ngrp};g' \
+        %{SOURCE apache.base} \
+        %{SOURCE apache.conf} \
+        %{SOURCE apache.vhost} \
+        $RPM_BUILD_ROOT%{l_prefix}/etc/apache/
+    mv $RPM_BUILD_ROOT%{l_prefix}/etc/apache/magic \
+	$RPM_BUILD_ROOT%{l_prefix}/etc/apache/mime.magic
+    find $RPM_BUILD_ROOT%{l_prefix} -name perllocal.pod \
+	-print | xargs rm -f
+
+    #   create run-command script
+    %{l_shtool} mkdir -f -p -m 755 $RPM_BUILD_ROOT%{l_prefix}/etc/rc.d
+    %{l_shtool} install -c -m 755 -e 's;@l_prefix@;%{l_prefix};g'    \
+        -e 's;@l_musr@;%{l_musr};g' -e 's;@l_mgrp@;%{l_mgrp};g'  \
+        %{SOURCE rc.apache} $RPM_BUILD_ROOT%{l_prefix}/etc/rc.d/
+
+    #   strip installation binaries
+    strip $RPM_BUILD_ROOT%{l_prefix}/bin/*  2&gt; /dev/null || true
+    strip $RPM_BUILD_ROOT%{l_prefix}/sbin/* 2&gt; /dev/null || true
+
+    #   determine installation tree files
+    %{l_rpmtool} files -v -ofiles -r$RPM_BUILD_ROOT \
+        %{l_files_std} \
+%if "%{with_suexec}" == "yes"
+        '%attr(4755,root,%{l_mgrp}) %{l_prefix}/sbin/suexec' \
+%endif
+        '%config %{l_prefix}/etc/apache/*' \
+%if "%{with_mod_ssl}" == "yes"
+        '%config %{l_prefix}/etc/apache/ssl.crl/*.crl' \
+        '%config %{l_prefix}/etc/apache/ssl.crt/*.crt' \
+        '%config %{l_prefix}/etc/apache/ssl.csr/*.csr' \
+        '%config %{l_prefix}/etc/apache/ssl.key/*.key' \
+        '%config %{l_prefix}/etc/apache/ssl.prm/*.prm' \
+%endif
+        '%config %attr(444,%{l_musr},%{l_mgrp}) %{l_prefix}
+			/etc/apache/apache.base'
+
+%files -f files
+
+%clean
+    rm -rf $RPM_BUILD_ROOT
+
+%post
+%if "%{with_mod_auth_pam}" == "yes"
+    #   add PAM configuration entry
+    if [ $1 -eq 1 ]; then
+        $RPM_INSTALL_PREFIX/sbin/pamtool --add --smart --name=apache
+    fi
+%endif
+
+%preun
+%if "%{with_mod_auth_pam}" == "yes"
+    #   remove PAM configuration entry
+    if [ $1 -eq 0 ]; then
+        $RPM_INSTALL_PREFIX/sbin/pamtool --remove --smart --name=apache
+    fi
+%endif
+
+</programlisting></para>
+
+<para> To reflect the OpenPKG dependencies a patch was created for the
+Apache configure script.</para>
+
+<para><programlisting>
+--- srclib/apr-util/configure   2002-09-23 21:41:29.000000000 +0200
++++ srclib/apr-util/configure   2002-09-23 21:41:51.000000000 +0200
+@@ -4255,7 +4255,7 @@
+
+   if test ${apu_has_ldap} != "define"; then
+     ldaplib="ldap"
+-    extralib="-llber"
++    extralib="-llber -ldl -lresolv -lcrypt -lsasl2 -lssl -lcrypto -ldb"
+     unset ac_cv_lib_${ldaplib}_ldap_init
+     as_ac_Lib=`echo "ac_cv_lib_${ldaplib}''_ldap_init" | $as_tr_sh`
+ echo "$as_me:$LINENO: checking for ldap_init in -l${ldaplib}" &gt;&5
+</programlisting></para>
+
+<para> Inconsistencies with respect to the linking of LDAP libraries made it necessary to introduce the mod-ldap.patch:
+</para>
+
+<para><programlisting>
+--- mod_auth_ldap.module	Sun Oct 13 03:51:05 2002
++++ mod_auth_ldap.module	Sun Oct 13 03:52:10 2002
+@@ -8,14 +8,14 @@
+     # if you installed LDAP headers in an unusual place, 
+     # modify the variable below to specify the ldap libraries, example:
+     #     LDAP_INCLUDES="-I/usr/local/foo/include"
+-    LDAP_INCLUDES=''
++    LDAP_INCLUDES='-I@PREFIX@/include'
+ 
+ 
+     #########################  LDAP Libraries ######################
+     # if you installed LDAP stuff in an unusual place, 
+     # modify the variable below to specify the ldap libraries, example:
+     #    LDAP_LIB="-L/usr/foo/lib -lldap -llber"
+-    LDAP_LIBS=''
++    LDAP_LIBS='-L@PREFIX@/lib'
+ 
+ 
+     error_occurred=0
+--- Makefile	Sun Oct 13 01:30:17 2002
++++ Makefile	Sun Oct 13 01:47:12 2002
+@@ -24,16 +24,16 @@
+ CPP=gcc -E
+ TARGET=httpd
+ OPTIM=
+-SSL_BASE=/usr/local/ssl
++SSL_BASE=@PREFIX@
+ SSL_BINDIR=$(SSL_BASE)/bin
+ SSL_INCDIR=$(SSL_BASE)/include
+ SSL_LIBDIR=$(SSL_BASE)/lib
+-SSL_PROGRAM=/usr/local/ssl/bin/openssl
++SSL_PROGRAM=@PREFIX@/bin/openssl
+ SSL_VERSION=-DMOD_SSL_VERSION=\"2.7.1\"
+ SSL_CFLAGS= -DSSL_COMPAT -DSSL_USE_SDBM -I$(SSL_INCDIR)
+ SSL_VENDOR_OBJS=
+ SSL_VENDOR_OBJS_PIC=
+-CFLAGS1= -DLINUX=2 -DMOD_SSL=207101 -I/usr/local/open-ldap/include \
+  -DUSE_HSREGEX -DEAPI -DUSE_EXPAT -I$(SRCDIR)/lib/expat-lite \
+  -DNO_DL_NEEDED
++CFLAGS1= -DLINUX=2 -DMOD_SSL=207101 -I@PREFIX@/include -DUSE_HSREGEX \
+  -DEAPI -DUSE_EXPAT -I$(SRCDIR)/lib/expat-lite -DNO_DL_NEEDED
+ INCLUDES1=
+ LIBS_SHLIB=
+ LDFLAGS1=  -L$(SSL_LIBDIR)
+@@ -41,7 +41,7 @@
+ REGLIB=regex/libregex.a
+ EXPATLIB=lib/expat-lite/libexpat.a
+ RANLIB=ranlib
+-LIBS1= /usr/local/open-ldap/lib/libldap.a \
+  /usr/local/open-ldap/lib/liblber.a  -lm -lcrypt  -lssl -lcrypto 
++LIBS1= @PREFIX@/lib/libsasl2.a @PREFIX@/lib/libldap.a \
+  @PREFIX@/lib/liblber.a  -lm -lcrypt  -lssl -lcrypto 
+ ##
+ ##  (End of automatically generated section)
+ ##
+</programlisting></para>
+</chapter>

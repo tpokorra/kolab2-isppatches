@@ -1,0 +1,104 @@
+#!/usr/bin/env python
+#
+# Copyright (C) 2008 by Intevation GmbH
+# Authors:
+# Thomas Arendsen Hein <thomas@intevation.de>
+#
+# This program is free software under the GPL (>=v2)
+
+"""
+rpmdircmp olddir newdir [ext]
+
+Prints list of removed/added/updated/unchanged rpm packages
+"""
+
+import sys, os
+
+_packagermap = {
+    'OpenPKG Foundation e.V.': 'OpenPKG'
+}
+_packagercache = {}
+
+def rpmpackager(rpmdir, rpm):
+    if rpm in _packagercache:
+        packager = _packagercache[rpm]
+    else:
+        name = os.path.join(rpmdir, rpm)
+        rpmcall = os.popen("rpm -qp --qf '%%{packager}' '%s'" % name)
+        packager = _packagermap.get(rpmcall.read(), 'Kolab')
+        rpmcall.close()
+        _packagercache[rpm] = packager
+    return packager
+
+def rpmdir2list(rpmdir, ext):
+    """Returns list of all rpm files in the given directory.
+
+    rpm files must have the extension "ext", e.g. ".src.rpm".
+    The list contains tuples: (name, version, release, packager)
+    """
+    rpms = []
+    dirlist = os.listdir(rpmdir)
+    todo = len(dirlist)
+    sys.stderr.write("Checking %s ...\n" % rpmdir)
+    for rpm in dirlist:
+        sys.stderr.write("%d ...    \r" % todo)
+        todo -= 1
+        if rpm.endswith(ext):
+            entry = rpm[:-len(ext)].rsplit('-', 2)
+            entry.append(rpmpackager(rpmdir, rpm))
+            rpms.append(tuple(entry))
+    sys.stderr.write('OK.        \n')
+    return rpms
+
+def rpmsets(rpmdir, ext):
+    names = {}
+    rpms = rpmdir2list(rpmdir, ext)
+    for rpm in rpms:
+        name = rpm[0]
+        if name in names:
+            sys.stderr.write("DUPLICATE in '%s': %s\n" % (rpmdir, name))
+        names[name] = rpm
+    return set(rpms), set(names), names
+
+def main(olddir, newdir, ext=None):
+    if not ext:
+        ext = '.src.rpm'
+    elif not ext.startswith('.'):
+        ext = ".%s" % ext
+    oldrpms, oldnames, olddict = rpmsets(olddir, ext)
+    newrpms, newnames, newdict = rpmsets(newdir, ext)
+
+    removed = [olddict[name] for name in list(oldnames.difference(newnames))]
+    added = [newdict[name] for name in list(newnames.difference(oldnames))]
+    updated = list(newrpms.difference(oldrpms).difference(added))
+    unchanged = list(oldrpms.intersection(newrpms))
+
+    sys.stdout.write('    Packages in the OpenPKG based Kolab server release:\n\n')
+
+    for packager in ['Kolab', 'OpenPKG']:
+        sys.stdout.write('    - %s packages:\n\n' % packager)
+
+        for title, rpms in [
+            ('Removed', removed),
+            ('Added', added),
+            ('Updated', updated),
+            ('Unchanged', unchanged),
+        ]:
+            wrote_title = False
+            rpms.sort()
+            for rpm in rpms:
+                if rpm[3] == packager:
+                    if not wrote_title:
+                        sys.stdout.write("      %s:\n\n" % title)
+                        wrote_title = True
+                    sys.stdout.write("\t%s-%s-%s\n" % rpm[:3])
+            if wrote_title:
+                sys.stdout.write("\n")
+
+
+if __name__ == "__main__":
+    if 2 <= len(sys.argv[1:]) <= 3:
+        main(*sys.argv[1:])
+    else:
+        sys.stderr.write("%s\n" % __doc__)
+

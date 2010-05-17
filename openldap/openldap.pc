@@ -1,0 +1,10 @@
+prefix=@l_prefix@
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: openldap
+Description: OpenLDAP Libraries
+Version: @version@
+Libs: -L${libdir} @libs@
+Cflags: -I${includedir}

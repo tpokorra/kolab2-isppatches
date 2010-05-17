@@ -1,0 +1,18 @@
+DESCRIPTION:
+
+Adds a reduced menu to the attendees view. This won't make it upstream
+since the the view is used by upstream as a popup and does not need a
+menu.
+
+IMPACT:
+
+The menu will be missing in fbview.
+
+REFERENCES:
+
+Mercurial patch repository:
+
+http://hg.pardus.de/cgi-bin/hg.cgi/horde/HORDE_3_2_RC1/summary
+
+HISTORY
+

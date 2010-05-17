@@ -1,0 +1,9 @@
+2010-02-11  Gunnar Wrobel  <p@rdus.de>
+
+	* package.info: Converted to newer packaging style.
+
+2009-05-26  Gunnar Wrobel  <p@rdus.de>
+
+	* Kolab_Server-H4.spec: Added horde4 branch version of the
+	Kolab_Server package to CVS.
+

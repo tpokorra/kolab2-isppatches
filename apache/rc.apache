@@ -1,0 +1,100 @@
+#!@l_prefix@/bin/openpkg rc
+##
+##  rc.apache -- Run-Commands
+##
+
+%config
+    apache_enable="$openpkg_rc_def"
+    apache_log_files="@l_prefix@/var/apache/log/access.log"
+    apache_log_rotsteps="10"
+    apache_log_rotminsize="10M"
+    apache_log_rotcomplevel="9"
+    apache_log_rotprolog="true"
+    apache_log_rotepilog="true"
+    apache_err_files="@l_prefix@/var/apache/log/error.log"
+    apache_err_rotsteps="10"
+    apache_err_rotminsize="1M"
+    apache_err_rotcomplevel="9"
+    apache_err_rotprolog="true"
+    apache_err_rotepilog="true"
+    apache_cgi_files="@l_prefix@/var/apache/log/script.log"
+    apache_cgi_rotsteps="10"
+    apache_cgi_rotminsize="1M"
+    apache_cgi_rotcomplevel="9"
+    apache_cgi_rotprolog="true"
+    apache_cgi_rotepilog="true"
+    apache_cachesize="10M"
+
+%common
+    apache_pidfile="@l_prefix@/var/apache/run/apache.pid"
+    apache_cachedir="@l_prefix@/var/apache/run/apache.cache"
+    apache_signal () {
+        [ -f $apache_pidfile ] && kill -$1 `cat $apache_pidfile`
+    }
+
+%status -u @l_susr@ -o
+    apache_usable="no"
+    apache_active="no"
+    @l_prefix@/sbin/apache -t 2>/dev/null && apache_usable="yes"
+    rcService apache enable yes && \
+        apache_signal 0 && apache_active="yes"
+    echo "apache_enable=\"$apache_enable\""
+    echo "apache_usable=\"$apache_usable\""
+    echo "apache_active=\"$apache_active\""
+
+%start -u @l_susr@
+    rcService apache enable yes || exit 0
+    rcService apache active yes && exit 0
+    ( cd @l_prefix@/var/apache/run
+      [ -e @l_prefix@/etc/apache/apache.sh ] &&
+          . @l_prefix@/etc/apache/apache.sh
+      @l_prefix@/sbin/apache
+    ) || exit $?
+
+%stop -u @l_susr@
+    rcService apache enable yes || exit 0
+    rcService apache active no  && exit 0
+    @l_prefix@/sbin/apache -k stop
+    sleep 2
+
+%restart -u @l_susr@
+    rcService apache enable yes || exit 0
+    rcService apache active no  && exit 0
+    rc apache stop start
+
+%reload -u @l_susr@
+    rcService apache enable yes || exit 0
+    rcService apache active no  && exit 0
+    @l_prefix@/sbin/apache -k graceful
+
+%daily -u @l_susr@
+    rcService apache enable yes || exit 0
+    rcTmp -i
+    hintfile=`rcTmp -f -n hint`
+    shtool rotate -f \
+        -n ${apache_log_rotsteps} -s ${apache_log_rotminsize} -d \
+        -z ${apache_log_rotcomplevel} -o @l_susr@ -g @l_mgrp@ -m 644 \
+        -P "$apache_log_rotprolog" \
+        -E "$apache_log_rotepilog; echo 1 >$hintfile" \
+        ${apache_log_files}
+    shtool rotate -f \
+        -n ${apache_err_rotsteps} -s ${apache_err_rotminsize} -d \
+        -z ${apache_err_rotcomplevel} -o @l_susr@ -g @l_mgrp@ -m 644 \
+        -P "$apache_err_rotprolog" \
+        -E "$apache_err_rotepilog; echo 1 >$hintfile" \
+        ${apache_err_files}
+    shtool rotate -f \
+        -n ${apache_cgi_rotsteps} -s ${apache_cgi_rotminsize} -d \
+        -z ${apache_cgi_rotcomplevel} -o @l_susr@ -g @l_mgrp@ -m 644 \
+        -P "$apache_cgi_rotprolog" \
+        -E "$apache_cgi_rotepilog; echo 1 >$hintfile" \
+        ${apache_cgi_files}
+    if [ ".@with_mod_filecache@" = .yes ]; then
+        @l_prefix@/sbin/htcacheclean \
+            -n -t -l "$apache_cachesize" -p "$apache_cachedir"
+    fi
+    if [ -s $hintfile ]; then
+        @l_prefix@/sbin/apache -k graceful
+    fi
+    rcTmp -k
+

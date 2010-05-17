@@ -1,0 +1,16 @@
+##
+##  fsl.openldap -- OSSP fsl configuration
+##
+
+ident (slap.*|slurp.*)/.+ q{
+    prefix(
+        prefix="%b %d %H:%M:%S %N <%L> $1[%P]: "
+    )
+    -> {
+        debug: file(
+            path="@l_prefix@/var/openldap/openldap.log",
+            perm=0644
+        )
+    }
+};
+

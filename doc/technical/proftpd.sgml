@@ -1,0 +1,219 @@
+<chapter><title> ProFTP Daemon </title>
+
+<para> The server ProFTPd is built with an altered spec file in order to
+use additional funtionality we need for the Kolab server.
+</para>
+
+<para><programlisting>
+#   package options
+%ifndef       with_pam
+%define       with_pam  no
+%endif
+%ifndef	      with_fsl
+%define       with_fsl  no
+%endif
+
+#   package information
+Name:         proftpd
+Summary:      Professional FTP Daemon
+URL:          http://www.proftpd.net/
+Vendor:       The ProFTPD Project
+Packager:     The OpenPKG Project
+Distribution: OpenPKG [BASE]
+Group:        FTP
+License:      GPL
+Version:      1.2.8rc1
+Release:      20030125
+
+#   list of sources
+%define url   ftp://ftp.proftpd.net/distrib/source/
+		    proftpd-%{version}.tar.bz2
+Source0:      %( [ ! -f %{SOURCE proftpd-%{version}.tar.bz2} ] \
+		 && wget -c %url; echo %url )
+Source1:      proftpd.conf
+Source2:      proftpd.msg.goaway
+Source3:      proftpd.msg.login
+Source4:      rc.proftpd
+Source5:      Makefile
+Patch0:	      mod_ldap.patch
+
+#   build information
+Prefix:       %{l_prefix}
+BuildRoot:    %{l_buildroot}
+BuildPreReq:  OpenPKG, openpkg &gt;= 1.1.0, make
+PreReq:       OpenPKG, openpkg &gt;= 1.1.0
+%if "%{with_pam}" == "yes"
+BuildPreReq:  PAM
+PreReq:       PAM
+%endif
+%if "%{with_fsl}" == "yes"
+BuildPreReq:  fsl
+PreReq:       fsl
+%endif
+
+AutoReq:      no
+AutoReqProv:  no
+
+%description
+    ProFTPD grew out of the desire to have a secure and configurable FTP
+    server, and out of a significant admiration of the Apache web server.
+    There are currently a very limited number of FTP servers running on unix
+    (or unix-like) hosts. The most commonly used server is probably wu-ftpd.
+    While wu-ftpd provides excellent performance and is generally a good
+    product, it lacks numerous features found in newer Win32 FTP servers, and
+    has a poor security history. Many people, including the developers who
+    work on ProFTPD have spent a great deal of time fixing bugs and hacking
+    features into wu-ftpd.  Unfortunately, it quickly became clear that a
+    complete redesign was necessary in order to implement the configurability
+    and features desired. ProFTPD is not a hack based on any other server,
+    it's an independent source tree from the ground up. Click here for a small
+    list of some of the sites ProFTPD powers -- many of them handling large
+    volumes of traffic on a daily basis.
+
+    Options: 
+    --define 'with_pam %{with_pam}'
+
+%prep
+    %setup -q
+    %patch -p0
+
+%build
+    #   make non-standard "rundir" the same as standard "sysconfdir"
+    %{l_shtool} subst \
+        -e 's;^\(rundir=@localstatedir@\)/proftpd;\1;' \
+        Make.rules.in
+
+    #   configure the ProFTPd source tree
+    CC="%{l_cc}" \
+    CFLAGS="%{l_cflags -O}" \
+%if "%{with_fsl}" == "yes"
+    LDFLAGS="-L %{l_prefix}/lib `%{l_prefix}/bin/fsl-config --ldflags`" \
+%else
+    LDFLAGS="-L %{l_prefix}/lib" \
+%endif
+%if "%{with_pam}" == "yes"
+    CPPFLAGS="-I`%{l_prefix}/etc/rc --query pam_incdir`" \
+    LDFLAGS="$LDFLAGS -L`%{l_prefix}/etc/rc --query pam_libdir`" \
+%endif
+    LDFLAGS="$LDFLAGS -lcrypto"
+    ./configure \
+        --prefix=%{l_prefix} \
+        --sysconfdir=%{l_prefix}/etc/proftpd \
+        --localstatedir=%{l_prefix}/var/proftpd \
+	--with-libraries=%{l_prefix}/lib \
+	--with-includes=%{l_prefix}/include \
+%if "%{with_pam}" == "yes"
+        --enable-pam \
+%else
+	--disable-pam \
+%endif
+        --with-modules=mod_ratio:mod_readme:mod_ldap
+
+%ifdef syslog_facility
+    %{l_shtool} subst -e \
+     's/syslog([a-zA-Z]*,/syslog(LOG_%{syslog_facility},/g;' src/log.c
+%endif
+    #   build ProFTPd programs
+    %{l_make} %{l_mflags -O}
+
+%install
+    rm -rf $RPM_BUILD_ROOT
+
+    #   make sure the "install" procedure does not try
+    #   to perform explicit ownership assignments
+    %{l_shtool} subst -v \
+        -e 's;-o $(INSTALL_USER) -g $(INSTALL_GROUP);;g' \
+        -e 's;chown;true;g' \
+        Makefile
+
+    #   perform the "install" procedure while redirecting
+    #   it to the temporarily install area
+    %{l_make} %{l_mflags} \
+        install-proftpd install-utils install-man \
+        prefix=$RPM_BUILD_ROOT%{l_prefix} \
+        sysconfdir=$RPM_BUILD_ROOT%{l_prefix}/etc/proftpd \
+        localstatedir=$RPM_BUILD_ROOT%{l_prefix}/var/proftpd \
+        rundir=$RPM_BUILD_ROOT%{l_prefix}/var/proftpd
+
+    #   strip installation
+    rm -f $RPM_BUILD_ROOT%{l_prefix}/sbin/in.proftpd
+
+    #   install more stuff manually
+    %{l_shtool} mkdir -f -p -m 755 \
+	$RPM_BUILD_ROOT%{l_prefix}/share/proftpd
+    %{l_shtool} install -c -m 644 doc/faq.html \
+        $RPM_BUILD_ROOT%{l_prefix}/share/proftpd/faq.html
+    %{l_shtool} install -c -m 644 doc/Configuration.html \
+        $RPM_BUILD_ROOT%{l_prefix}/share/proftpd/cfg.html
+
+    #   extended installation with own stuff
+    l_pam="#"
+%if "%{with_pam}" == "yes"
+    l_pam=""
+%endif
+    %{l_shtool} install -c -m 644 \
+        -e 's;@l_prefix@;%{l_prefix};g' \
+        -e 's;@l_nusr@;%{l_nusr};g' \
+        -e 's;@l_ngrp@;%{l_ngrp};g' \
+        -e "s;@l_pam@;${l_pam};g" \
+        %{SOURCE proftpd.conf} $RPM_BUILD_ROOT%{l_prefix}/etc/proftpd/
+    %{l_shtool} install -c -m 644 \
+        %{SOURCE proftpd.msg.goaway} \
+        %{SOURCE proftpd.msg.login} \
+        $RPM_BUILD_ROOT%{l_prefix}/etc/proftpd/
+    %{l_shtool} install -c -m 644 \
+        %{SOURCE proftpd.msg.login} \
+        $RPM_BUILD_ROOT%{l_prefix}/share/proftpd/.msg.login
+    %{l_shtool} install -c -m 644 \
+        %{SOURCE proftpd.msg.goaway} \
+        $RPM_BUILD_ROOT%{l_prefix}/share/proftpd/.msg.goaway
+    %{l_shtool} mkdir -f -p -m 755 $RPM_BUILD_ROOT%{l_prefix}/etc/rc.d
+    %{l_shtool} install -c -m 755 -e 's;@l_prefix@;%{l_prefix};g' \
+        %{SOURCE rc.proftpd} $RPM_BUILD_ROOT%{l_prefix}/etc/rc.d/
+
+    #   determine the package ingredients
+    %{l_rpmtool} files -v -ofiles -r$RPM_BUILD_ROOT \
+        %{l_files_std} \
+        '%config %{l_prefix}/etc/proftpd/proftpd.conf'
+
+%files -f files
+
+%clean
+    rm -rf $RPM_BUILD_ROOT
+
+%post
+%if "%{with_pam}" == "yes"
+    #   add PAM configuration entry
+    if [ $1 -eq 1 ]; then
+        $RPM_INSTALL_PREFIX/sbin/pamtool --add --smart --name=proftpd
+    fi
+%endif
+
+%preun
+%if "%{with_pam}" == "yes"
+    #   remove PAM configuration entry
+    if [ $1 -eq 0 ]; then
+        $RPM_INSTALL_PREFIX/sbin/pamtool --remove --smart --name=proftpd
+    fi
+%endif
+    if [ $1 -eq 0 ]; then
+        $RPM_INSTALL_PREFIX/etc/rc proftpd stop
+        rm -f $RPM_INSTALL_PREFIX/var/proftpd/*.log
+        rm -f $RPM_INSTALL_PREFIX/var/proftpd/*.pid
+    fi
+</programlisting></para>
+
+<para> In order to have LDAP support linked into proftpd the following patch must be applied:
+</para>
+
+<para><programlisting>
+*** contrib/mod_ldap.c.orig	2003-01-26 17:45:20.000000000 +0100
+--- contrib/mod_ldap.c	2003-01-26 17:45:30.000000000 +0100
+***************
+*** 64 ****
+!  * $Libraries: -lldap -llber$
+--- 64 ----
+!  * $Libraries: -lldap -llber -lssl -lcrypto$
+</programlisting></para>
+
+</chapter>

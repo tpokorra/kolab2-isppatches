@@ -1,0 +1,28 @@
+DESCRIPTION:
+
+Logs IMAP expunge events.
+
+IMPACT:
+
+Not absolutely required for the Kolab server. Just adds some more information
+to your logs.
+
+REFERENCES:
+
+Kolab bug tracker merge: 
+
+https://intevation.de/roundup/kolab/merge13
+
+Wiki page:
+
+http://wiki.kolab.org/index.php/Template:Patches_cyrus
+
+Mercurial patch repository:
+
+http://hg.pardus.de/cgi-bin/hg.cgi/kolab/patches/cyrus-imapd/summary
+
+HISTORY
+
+The patch has been submitted upstream on 2007-05-21.
+
+https://bugzilla.andrew.cmu.edu/show_bug.cgi?id=2964

@@ -1,0 +1,31 @@
+From: Gunnar Wrobel <wrobel@pardus.de>
+Subject: [PATCH] issue3983.patch
+
+Fixes unit testing for PHP 5.3.*.
+
+STATUS: UNMERGED
+
+REF: http://issues.kolab.org/issue3983
+
+Signed-off-by: Gunnar Wrobel <wrobel@pardus.de>
+
+--- a/kolab/php/Group.php	2010-02-09 22:37:34.000000000 +0100
++++ b/kolab/php/Group.php	2010-03-25 15:17:47.000000000 +0100
+@@ -155,7 +155,7 @@
+             $name = $this->getGroupName($parent) . ':' . DataTree::encodeName($name);
+         }
+ 
+-        $group = &new DataTreeObject_Group($name);
++        $group = new DataTreeObject_Group($name);
+         $group->setGroupOb($this);
+         return $group;
+     }
+@@ -638,7 +638,7 @@
+ 
+         $class = Group::_loadDriver($driver);
+         if (class_exists($class)) {
+-            $group = &new $class($params);
++            $group = new $class($params);
+         } else {
+             $group = PEAR::raiseError('Class definition of ' . $class . ' not found.');
+         }

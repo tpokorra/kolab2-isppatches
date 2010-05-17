@@ -1,0 +1,29 @@
+DESCRIPTION:
+
+Specifies the allowed characters in IMAP folder names.
+
+IMPACT:
+
+Without this patch some folder names will not work.
+
+REFERENCES:
+
+Kolab bug tracker merge: 
+
+https://intevation.de/roundup/kolab/merge34
+
+Wiki page:
+
+http://wiki.kolab.org/index.php/Template:Patches_cyrus
+
+Mercurial patch repository:
+
+http://hg.pardus.de/cgi-bin/hg.cgi/kolab/patches/cyrus-imapd/summary
+
+HISTORY
+
+This patch hardwires the acceptable characters for folder names. 
+This is something that will probably not be accepted upstream and 
+the patch was never submitted. It would be good if this would be 
+rewritten to make the acceptable characters a configuration option.
+

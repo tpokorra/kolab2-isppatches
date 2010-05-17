@@ -1,0 +1,98 @@
+diff -urN clamav-0.95.3.orig/clamav-milter/clamav-milter.c clamav-0.95.3/clamav-milter/clamav-milter.c
+--- clamav-0.95.3.orig/clamav-milter/clamav-milter.c	2009-10-28 16:34:13.000000000 +0100
++++ clamav-0.95.3/clamav-milter/clamav-milter.c	2009-10-30 17:14:50.137580674 +0100
+@@ -32,7 +32,7 @@
+ #include <syslog.h>
+ #endif
+ #include <time.h>
+-#include <libmilter/mfapi.h>
++#include "milter/mfapi.h"
+ 
+ #include "clamav.h"
+ 
+diff -urN clamav-0.95.3.orig/clamav-milter/clamfi.c clamav-0.95.3/clamav-milter/clamfi.c
+--- clamav-0.95.3.orig/clamav-milter/clamfi.c	2009-10-28 16:34:13.000000000 +0100
++++ clamav-0.95.3/clamav-milter/clamfi.c	2009-10-30 17:14:50.137580674 +0100
+@@ -29,7 +29,7 @@
+ #include <unistd.h>
+ #include <ctype.h>
+ 
+-#include <libmilter/mfapi.h>
++#include "milter/mfapi.h"
+ 
+ #include "shared/optparser.h"
+ #include "shared/output.h"
+diff -urN clamav-0.95.3.orig/clamav-milter/clamfi.h clamav-0.95.3/clamav-milter/clamfi.h
+--- clamav-0.95.3.orig/clamav-milter/clamfi.h	2009-07-06 15:21:58.000000000 +0200
++++ clamav-0.95.3/clamav-milter/clamfi.h	2009-10-30 17:14:50.137580674 +0100
+@@ -22,7 +22,7 @@
+ #define _CLAMFI_H
+ 
+ #include "shared/optparser.h"
+-#include <libmilter/mfapi.h>
++#include "milter/mfapi.h"
+ 
+ extern uint64_t maxfilesize;
+ extern int addxvirus;
+diff -urN clamav-0.95.3.orig/configure clamav-0.95.3/configure
+--- clamav-0.95.3.orig/configure	2009-10-28 16:34:13.000000000 +0100
++++ clamav-0.95.3/configure	2009-10-30 17:15:15.994173225 +0100
+@@ -16692,9 +16692,6 @@
+ 
+         save_LIBS="$LIBS"
+     CLAMAV_MILTER_LIBS="$CLAMAV_MILTER_LIBS -lpthread"
+-    if test -d /usr/lib/libmilter ; then
+-	CLAMAV_MILTER_LIBS="$CLAMAV_MILTER_LIBS -L/usr/lib/libmilter"
+-    fi
+     LIBS="$LIBS -lmilter $CLAMAV_MILTER_LIBS"
+     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for mi_stop in -lmilter" >&5
+ $as_echo_n "checking for mi_stop in -lmilter... " >&6; }
+@@ -16834,7 +16831,7 @@
+   CLAMAV_MILTER_LIBS="-lmilter $CLAMAV_MILTER_XLIB $CLAMAV_MILTER_LIBS"
+ else
+ 
+-	    as_fn_error "Cannot find libmilter" "$LINENO" 5
++	    as_fn_error "Cannot find milter" "$LINENO" 5
+ 
+ fi
+ 
+@@ -16842,10 +16839,10 @@
+ fi
+ 
+     LIBS="$save_LIBS"
+-    for ac_header in libmilter/mfapi.h
++    for ac_header in milter/mfapi.h
+ do :
+-  ac_fn_c_check_header_mongrel "$LINENO" "libmilter/mfapi.h" "ac_cv_header_libmilter_mfapi_h" "$ac_includes_default"
+-if test "x$ac_cv_header_libmilter_mfapi_h" = x""yes; then :
++  ac_fn_c_check_header_mongrel "$LINENO" "milter/mfapi.h" "ac_cv_header_milter_mfapi_h" "$ac_includes_default"
++if test "x$ac_cv_header_milter_mfapi_h" = x""yes; then :
+   cat >>confdefs.h <<_ACEOF
+ #define HAVE_LIBMILTER_MFAPI_H 1
+ _ACEOF
+diff -urN clamav-0.95.3.orig/libclamav/others.c clamav-0.95.3/libclamav/others.c
+--- clamav-0.95.3.orig/libclamav/others.c	2009-10-28 16:34:13.000000000 +0100
++++ clamav-0.95.3/libclamav/others.c	2009-10-30 17:14:50.141580766 +0100
+@@ -177,8 +177,10 @@
+     if(is_rar_initd) return;
+     is_rar_initd = 1;
+ 
++#if 0
+     rhandle = lt_dlfind("libclamunrar_iface", "unrar");
+     if (!rhandle)
++#endif
+ 	return;
+ 
+     if (!(cli_unrar_open = (int(*)(int, const char *, unrar_state_t *))lt_dlsym(rhandle, "libclamunrar_iface_LTX_unrar_open")) ||
+diff -urN clamav-0.95.3.orig/shared/output.c clamav-0.95.3/shared/output.c
+--- clamav-0.95.3.orig/shared/output.c	2009-10-28 16:34:13.000000000 +0100
++++ clamav-0.95.3/shared/output.c	2009-10-30 17:14:50.141580766 +0100
+@@ -67,7 +67,7 @@
+ pthread_mutex_t logg_mutex = PTHREAD_MUTEX_INITIALIZER;
+ #endif
+ 
+-#ifdef  C_LINUX
++#if 0
+ #include <libintl.h>
+ #include <locale.h>
+ 

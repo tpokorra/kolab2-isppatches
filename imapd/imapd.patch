@@ -1,0 +1,204 @@
+Index: com_err/et/com_err.c
+--- com_err/et/com_err.c.orig	2008-03-24 19:53:40 +0100
++++ com_err/et/com_err.c	2009-03-26 18:45:35 +0100
+@@ -52,7 +52,7 @@
+ #include <string.h>
+ #include "mit-sipb-copyright.h"
+ 
+-#if defined(HAVE_STDARG_H) || defined(_WINDOWS)
++#if defined(HAVE_STDARG_H) || defined(__STDC__) || defined(_WINDOWS)
+ #include <stdarg.h>
+ #else
+ #include <varargs.h>
+Index: com_err/et/com_err.h
+--- com_err/et/com_err.h.orig	2008-03-24 19:53:40 +0100
++++ com_err/et/com_err.h	2009-03-26 18:45:35 +0100
+@@ -104,5 +104,7 @@
+ extern void (*reset_com_err_hook ()) ();
+ #endif
+ 
++struct et_list;
++
+ #define __COM_ERR_H
+ #endif /* ! defined(__COM_ERR_H) */
+Index: configure
+--- configure.orig	2009-03-25 12:37:47 +0100
++++ configure	2009-03-26 18:45:35 +0100
+@@ -11907,7 +11907,7 @@
+ done
+ 
+ 	if test "$ac_cv_header_pcreposix_h" == "yes"; then
+-		LIBS="$LIBS -lpcre -lpcreposix";
++		LIBS="$LIBS -lpcreposix -lpcre";
+ 
+ cat >>confdefs.h <<\_ACEOF
+ #define ENABLE_REGEX /**/
+Index: imap/fud.c
+--- imap/fud.c.orig	2009-02-09 06:01:56 +0100
++++ imap/fud.c	2009-03-26 18:46:21 +0100
+@@ -104,23 +104,23 @@
+ 
+ char who[16];
+ 
+-#define MAXLOGNAME 16		/* should find out for real */
+-#define MAXDOMNAME 20		/* should find out for real */
++#define MY_MAXLOGNAME 16		/* should find out for real */
++#define MY_MAXDOMNAME 20		/* should find out for real */
+ 
+ int begin_handling(void)
+ {
+         struct sockaddr_storage sfrom;
+         socklen_t sfromsiz = sizeof(sfrom);
+         int r;
+-        char    buf[MAXLOGNAME + MAXDOMNAME + MAX_MAILBOX_BUFFER];
+-        char    username[MAXLOGNAME + MAXDOMNAME];
++        char    buf[MY_MAXLOGNAME + MY_MAXDOMNAME + MAX_MAILBOX_BUFFER];
++        char    username[MY_MAXLOGNAME + MY_MAXDOMNAME];
+         char    mbox[MAX_MAILBOX_BUFFER];
+         char    *q;
+         int     off;
+-	int     maxuserlen = MAXLOGNAME;
++	int     maxuserlen = MY_MAXLOGNAME;
+ 
+ 	if (config_virtdomains) 
+-	    maxuserlen += MAXDOMNAME + 1; /* @ + DOM */
++	    maxuserlen += MY_MAXDOMNAME + 1; /* @ + DOM */
+ 
+         while(1) {
+             /* For safety */
+Index: imap/idled.c
+--- imap/idled.c.orig	2008-03-24 18:09:16 +0100
++++ imap/idled.c	2009-03-26 18:45:35 +0100
+@@ -52,6 +52,7 @@
+ #include <syslog.h>
+ #include <sys/stat.h>
+ #include <stdlib.h>
++#include <string.h>
+ #include <errno.h>
+ #ifdef HAVE_UNISTD_H
+ #include <unistd.h>
+Index: imap/mboxname.c
+--- imap/mboxname.c.orig	2009-02-09 06:01:58 +0100
++++ imap/mboxname.c	2009-03-26 18:45:35 +0100
+@@ -131,7 +131,11 @@
+ 		sprintf(result, "%s!", cp);
+ 	    }
+ 	}
++#ifdef ATVDOM /* allow '@' being a regular character in mboxname even when using virtual domains */
++	else if ((cp = strrchr(name, '@'))) {
++#else
+ 	if ((cp = strrchr(name, '@'))) {
++#endif /* ATVDOM */
+ 	    /* mailbox specified as mbox@domain */
+ 	    namelen = cp - name;
+ 
+Index: imap/sync_log.c
+--- imap/sync_log.c.orig	2009-02-09 06:01:59 +0100
++++ imap/sync_log.c	2009-03-26 18:45:35 +0100
+@@ -58,6 +58,7 @@
+ #include <varargs.h>
+ #endif
+ #include <stdlib.h>
++#include <string.h>
+ #include <stdio.h>
+ #include <string.h>
+ #include <syslog.h>
+Index: imap/xversion.sh
+--- imap/xversion.sh.orig	2008-03-24 18:09:20 +0100
++++ imap/xversion.sh	2009-03-26 18:45:35 +0100
+@@ -62,7 +62,7 @@
+ 	match ($0, pattern) {
+ 	    printf "\"%s\"\n", substr($0, RSTART, RLENGTH)
+ 	}' pattern="$DATEPAT $TIMEPAT" | \
+-	sort | tail -1 >> $TMPF
++	sort | sed -n -e '$p' >> $TMPF
+ 
+ if [ -f xversion.h ] && cmp -s $TMPF xversion.h
+ then
+Index: lib/cyrusdb_berkeley.c
+--- lib/cyrusdb_berkeley.c.orig	2009-03-10 03:56:22 +0100
++++ lib/cyrusdb_berkeley.c	2009-03-26 18:45:35 +0100
+@@ -173,6 +173,7 @@
+ 
+     dbenv->set_lk_detect(dbenv, CONFIG_DEADLOCK_DETECTION);
+ 
++#if (DB_VERSION_MAJOR < 4) || (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR < 5)
+     if ((opt = libcyrus_config_getint(CYRUSOPT_BERKELEY_LOCKS_MAX)) < 0) {
+ 	syslog(LOG_WARNING,
+ 	       "DBERROR: invalid berkeley_locks_max value, using internal default");
+@@ -192,6 +193,7 @@
+ 	    abort();
+ 	}
+     }
++#endif
+ 
+     if ((opt = libcyrus_config_getint(CYRUSOPT_BERKELEY_TXNS_MAX)) < 0) {
+ 	syslog(LOG_WARNING,
+Index: lib/cyrusdb_skiplist.c
+--- lib/cyrusdb_skiplist.c.orig	2008-10-08 17:47:08 +0200
++++ lib/cyrusdb_skiplist.c	2009-03-26 18:45:35 +0100
+@@ -75,6 +75,13 @@
+ 
+ #define PROB (0.5)
+ 
++#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
++/* #define fdatasync(fd) fsync(fd) */
++#ifndef O_DSYNC
++#define O_DSYNC 0
++#endif
++#endif
++
+ /* 
+  *
+  * disk format; all numbers in network byte order
+Index: lib/prot.h
+--- lib/prot.h.orig	2008-03-24 18:43:09 +0100
++++ lib/prot.h	2009-03-26 18:45:35 +0100
+@@ -49,6 +49,7 @@
+ #include <time.h>
+ #include <stdio.h>
+ #include <stdlib.h>
++#include <sys/time.h>
+ 
+ #include <sasl/sasl.h>
+ 
+Index: perl/Makefile.in
+--- perl/Makefile.in.orig	2008-04-04 14:47:07 +0200
++++ perl/Makefile.in	2009-03-26 18:45:35 +0100
+@@ -84,7 +84,8 @@
+ 			   BDB_LIB="$(BDB_LIB)" BDB_INC="$(BDB_INC)" \
+ 			   OPENSSL_LIB="$(OPENSSL_LIB)" OPENSSL_INC="$(OPENSSL_INC)" \
+ 			   SASL_LIB="$(SASL_LIB)" SASL_INC="$(SASL_INC)" CC="$(CC)" \
+-			     $(PERL) Makefile.PL PREFIX=$(prefix); \
++			     $(PERL) Makefile.PL PREFIX=$(prefix) \
++			         INSTALLDIRS="vendor" INSTALLMAN3DIR="none" INSTALLSITEMAN3DIR="none" INSTALLVENDORMAN3DIR="none"; \
+ 			fi; \
+ 			$(MAKE) $(MFLAGS) DESTDIR=$(DESTDIR) all) || exit 1; \
+ 	done
+Index: perl/sieve/Makefile.in
+--- perl/sieve/Makefile.in.orig	2008-04-04 14:47:16 +0200
++++ perl/sieve/Makefile.in	2009-03-26 18:45:35 +0100
+@@ -84,7 +84,8 @@
+ 			   BDB_LIB="$(BDB_LIB)" BDB_INC="$(BDB_INC)" \
+ 			   OPENSSL_LIB="$(OPENSSL_LIB)" OPENSSL_INC="$(OPENSSL_INC)" \
+ 			   SASL_LIB="$(SASL_LIB)" SASL_INC="$(SASL_INC)" CC="$(CC)" \
+-			     $(PERL) Makefile.PL PREFIX=$(prefix); \
++			     $(PERL) Makefile.PL PREFIX=$(prefix) \
++			         INSTALLDIRS="vendor" INSTALLMAN3DIR="none" INSTALLSITEMAN3DIR="none" INSTALLVENDORMAN3DIR="none"; \
+ 			fi; \
+ 			$(MAKE) $(MFLAGS) DESTDIR=$(DESTDIR) all) || exit 1; \
+ 	done
+Index: perl/sieve/lib/isieve.c
+--- perl/sieve/lib/isieve.c.orig	2009-02-16 19:18:10 +0100
++++ perl/sieve/lib/isieve.c	2009-03-26 18:45:35 +0100
+@@ -41,9 +41,7 @@
+  * $Id: imapd.patch,v 1.3 2009/12/04 10:58:01 gunnar Exp $
+  */
+ 
+-#ifdef HAVE_CONFIG_H
+-#include <config.h>
+-#endif
++#include "../../../config.h"
+ 
+ #ifdef HAVE_UNISTD_H
+ #include <unistd.h>

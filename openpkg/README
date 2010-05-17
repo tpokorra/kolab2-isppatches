@@ -1,0 +1,4 @@
+Fix kolab/issue2871 (openpkg-20071227-20071227 does not compile with gcc 4.3)
+
+This is done by replacing the embedded tar 1.19 with 1.22, including tar.patch
+taken from the updated OpenPKG tar package.

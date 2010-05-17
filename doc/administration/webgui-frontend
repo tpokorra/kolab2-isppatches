@@ -1,0 +1,156 @@
+
+Several notes with regards to the www based GUI for the kolab server
+
+-------------------------------------------------------------------------=
+
+Login Dialog (not coded in php but use of browser login window)
+
+	Kolab Secure Web Logon
+		Username:
+		Password:
+
+-------------------------------------------------------------------------=
+----------------------------
+
+Depending on Username either normal User Form is shown or Admin Form.
+A user is always a real user=20
+-------------------------------------------------------------------------=
+---------------------------
+
+User Form:
+
+Submenu
+	User Settings (default)
+		User Name: non editable=20
+		change PW button
+		.... actually all usable attributes from LDAP in a single form.
+		distinguish between editable and non editable elements
+		Editable: (postal Address, telecom stuff, Raum, Abteilung...)
+		non-edit: (SN,CN, UID, Aliases, Quota, Delete Flag)=20
+	Message/Email Routing
+		Forward all Messages to: foo@foobar.com=20
+		(Bounce/Return all Messages back to sender)
+
+  	Vacation Settings
+		Vacation enable/disable
+		Vacation Text Wizard Layout (Text, date,...)
+		Testbutton
+
+	[Webmail] (default)
+
+-------------------------------------------------------------------------=
+---------------------------
+
+Admin Form:
+
+	User Settings
+		Manage Users (default)
+			Offer Search/Select Register
+			User Name: non editable
+			.... actually all usable attributes from LDAP in a single form.
+			distinguish between editable and non editable elements
+			User Quota
+			Remove User
+		Create User
+			User Name: editable --> goto Manage automatically
+
+	Shared Folders Settings
+		Manage Shared Folders (default)
+			Offer Search/Select Register
+			Folder Name: non editable
+			ACLs (noch nicht perfekt!)
+				Show=20
+				Create new ACL
+				Manage ACLs
+			Remove Shared Folder
+		Create Shared Folder
+			Folder Name: editable --> goto Manage automatically
+
+	Maintainer Settings
+		Manage Maintainer Accounts (default)
+			Offer Search/Select Register
+			User Name: non editable
+			.... actually all usable attributes from LDAP in a single form.
+			distinguish between editable and non editable elements
+			Remove Maintainer
+		Create Maintainer
+			User Name: editable --> goto Manage automatically
+
+	Administrator Settings
+		Manage Administrator Accounts (default)
+			(Offer Search/Select Register)
+			User Name: non editable
+			.... actually all usable attributes from LDAP in a single form.
+			distinguish between editable and non editable elements
+			Remove Administrator
+		Create Administrator
+			User Name: editable --> goto Manage automatically
+
+	Server Settings
+		Hostname
+		Domainname
+		restart Kolab Server
+		
+	Services
+		Enable/Disable IMAP
+		Enable/Disable IMAP over TLS
+		Enable/Disable POP3=20
+		Enable/Disable POP3 over TLS
+		Enable/Disable LDAP
+		Enable/Disable LDAP over TLS	
+		Enable/Disable SMTP
+		Enable/Disable SMTP over TLS
+		Enable/Disable WebDAV Freebusy Support over TLS
+		Enable/Disable Legacy Freebusy Support (via FTP/HTTP)
+			Change Password
+			Quota [MB]
+		[Enable/Disable virus scanner]
+		[Enable/Disable spam filter]
+		[Enable/Disable blacklist]
+
+	Expert
+		[Manage Certificates]
+		[Manage virus scanner]=20
+		[Manage spam filter]
+		[Manage blacklists]
+		[Manage Header Rewriting]
+		[Manage SMTP static routes]
+		[Manage Relay Options]
+		[Browser LDAP Tree]=20
+		[Manage Kolab Backup]
+			[Create Backup]
+			[Rollback to Backup]
+			[Delete Backup]
+		[Migrate User from OL to Kolab client]
+		[manage mailqueue]
+
+	Logs & Statistics
+		[Show MTA usage]=20
+		Show Kolab Log (simple tail -300 initially)
+		[Show System Load (Load, network I/O, filesystems)]
+		
+
+		
+		
+			
+-------------------------------------------------------------------------=
+
+Add 1:
+
+All pages are basically constructed the following way:
+
+        Seitenkopf
+	Navigation Haupteil
+	        Fusszeile
+
+		Diesen Teile sind insbesondere folgenden include
+		Dateiten zugeordnet:
+		head.inc
+		footer.inc
+		
+----------------------------------------------------------------------------
+
+Add 2: 
+
+We use session with PHP4. Initially we base our session support onthe
+usage of cookies. (Later probably HTTP GET)

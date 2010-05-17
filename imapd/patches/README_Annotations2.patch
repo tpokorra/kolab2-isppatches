@@ -1,0 +1,39 @@
+DESCRIPTION:
+
+There is an imap extension for adding "annotations" (eg. metadata) to
+imap folders in the form of key/value pairs. The key is typically
+something like /vendor/<vendorname>/<attributename>. Cyrus imapd only
+supports a few special annotation keys for internal use (such as being
+able to mark a folder for indexing etc.). The patch extends cyrus imapd
+to allow arbitrary annotations on IMAP folders.
+
+IMPACT:
+
+The annotation patch is critical to kolab. Without the patch, the clients
+will not know which folder is for calender, tasks etc.
+
+REFERENCES:
+
+Kolab bug tracker merge: 
+
+https://intevation.de/roundup/kolab/merge4
+
+Wiki page:
+
+http://wiki.kolab.org/index.php/Template:Patches_cyrus
+
+Mercurial patch repository:
+
+http://hg.pardus.de/cgi-bin/hg.cgi/kolab/patches/cyrus-imapd/summary
+
+HISTORY
+
+The patch has been submitted upstream and the original version was rejected.
+
+https://bugzilla.andrew.cmu.edu/show_bug.cgi?id=2458
+
+A new version of the patch has been provided recently by Thomas Viemann 
+(http://vman.de/cyrus/).
+
+It looked as though upstream would accept the patch but so far nothing has 
+happened. Another status inquiry on 2007-05-21.

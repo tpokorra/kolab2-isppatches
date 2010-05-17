@@ -1,0 +1,136 @@
+diff -ur imapd.spec.orig imapd.spec
+--- imapd.spec.orig	2008-10-20 20:12:23.000000000 +0200
++++ imapd.spec	2010-02-08 17:49:08.705491666 +0100
+@@ -31,23 +31,25 @@
+ Class:        BASE
+ Group:        Mail
+ License:      BSD
+-Version:      2.3.13
+-Release:      20081020
++Version:      2.3.16
++Release:      20081020_kolab7
+ 
+ #   package options
+-%option       with_fsl           yes
+-%option       with_group         no
+-%option       with_group_igncase no
+-%option       with_atvdom        no
+-%option       with_drac          no
+-%option       with_replication   no
+-%option       with_murder        no
+-%option       with_listext       no
+-%option       with_nntp          no
+-%option       with_ldap          no
+-%option       with_annotate      no
+-%option       with_morelogging   no
+-%option       with_kolab         no
++%option       with_fsl             yes
++%option       with_group           no
++%option       with_group_igncase   no
++%option       with_atvdom          no
++%option       with_drac            no
++%option       with_replication     no
++%option       with_murder          no
++%option       with_listext         no
++%option       with_nntp            no
++%option       with_ldap            no
++%option       with_annotate        no
++%option       with_morelogging     no
++%option       with_kolab           no
++%option       with_kolab_nocaps    no
++%option       with_crossdomain_acl no
+ 
+ #   fixing implicit inter-module dependencies and correlations
+ %if "%{with_kolab}" == "yes"
+@@ -67,12 +69,13 @@
+ Source3:      imapd.conf
+ Source4:      fsl.imapd
+ Patch0:       imapd.patch
+-Patch1:       imapd.patch.group
+-Patch2:       http://kolab.org/cgi-bin/viewcvs-kolab.cgi/*checkout*/server/patches/cyrus-imapd/cyrus-imapd-2.3.11/KOLAB_cyrus-imapd-2.3.11-_Annotations2.patch
+-Patch3:       http://kolab.org/cgi-bin/viewcvs-kolab.cgi/*checkout*/server/patches/cyrus-imapd/cyrus-imapd-2.3.11/KOLAB_cyrus-cyradm-2.3.11_Annotations.patch
+-Patch4:       http://kolab.org/cgi-bin/viewcvs-kolab.cgi/*checkout*/server/patches/cyrus-imapd/cyrus-imapd-2.3.11/KOLAB_cyrus-imapd-2.3.11-_Logging.patch
+-Patch5:       http://kolab.org/cgi-bin/viewcvs-kolab.cgi/*checkout*/server/patches/cyrus-imapd/cyrus-imapd-2.3.11/KOLAB_cyrus-imapd-2.3.11-_UID.patch
+-Patch6:       http://kolab.org/cgi-bin/viewcvs-kolab.cgi/*checkout*/server/patches/cyrus-imapd/cyrus-imapd-2.3.11/KOLAB_cyrus-imapd-2.3.11-_Folder-names.patch
++Patch1:       patches/cyrus-imapd-%{version}/KOLAB_cyrus-imapd-%{version}_Groups2.patch
++Patch2:       patches/cyrus-imapd-%{version}/KOLAB_cyrus-imapd-%{version}_cross-domain-acls.patch
++Patch3:       patches/cyrus-imapd-%{version}/KOLAB_cyrus-imapd-%{version}_Cyradm_Annotations.patch
++Patch4:       patches/cyrus-imapd-%{version}/KOLAB_cyrus-imapd-%{version}_Logging.patch
++Patch5:       patches/cyrus-imapd-%{version}/KOLAB_cyrus-imapd-%{version}_UID.patch
++Patch6:       patches/cyrus-imapd-%{version}/KOLAB_cyrus-imapd-%{version}_Folder-names.patch
++Patch7:       patches/cyrus-imapd-%{version}/KOLAB_cyrus-imapd-%{version}_timsieved_starttls-sendcaps.patch
+ 
+ #   build information
+ Prefix:       %{l_prefix}
+@@ -120,19 +123,19 @@
+ 
+     #   add optional group file support with support to ignore case
+ %if "%{with_group}" == "yes"
+-    cp %{PATCH imapd.patch.group} imapd.patch.group
+-%if "%{with_group_igncase}" == "yes"
+-    %{l_shtool} subst -e 's;^\(\+.*\)strcmp;\1strcasecmp;' imapd.patch.group
+-%endif
+-    %{l_patch} -p1 <imapd.patch.group
++    %patch -p1 -P 1
+     %{l_shtool} subst \
+         -e 's;/etc/imapd\.group;%{l_prefix}/etc/imapd/imapd.group;' \
+         lib/auth_unix.c
+ %endif
+ 
++    # kolab/issue1141 (Cannot give users from other domains access to a folder (rt#5747))
++%if "%{with_crossdomain_acl}" == "yes"
++    %patch -p0 -P 2
++%endif
++
+     #   add optional folder annotation support
+ %if "%{with_annotate}" == "yes"
+-    sed <%{PATCH2} -e '5,27d' | %{l_patch} -p1
+     %patch -p1 -P 3
+ %endif
+ 
+@@ -152,6 +155,11 @@
+      %patch -p1 -P 6
+ %endif
+ 
++    #   kolab/issue2443 (kontact aborts sieve when imapd sends capabilities after starttls)
++%if "%{with_kolab_nocaps}" == "yes"
++     %patch -p1 -P 7
++%endif
++
+     #   add optional DRAC file support
+ %if "%{with_drac}" == "yes"
+     %{l_shtool} subst -e 's;@DRACLIBS@;-ldrac;g' contrib/drac_auth.patch
+@@ -287,7 +295,11 @@
+ %if "%{with_nntp}" == "yes"
+         --enable-nntp \
+ %endif
++%if "%{with_kolab_nocaps}" == "yes"
++        --with-extraident=kolab-nocaps \
++%else
+         --with-extraident=openpkg \
++%endif
+         --without-krb
+ 
+     #   build program
+@@ -411,9 +423,6 @@
+     #   before erase, stop service and remove log and temporary files
+     if [ $1 -eq 0 ]; then
+         %{l_rc} imapd stop 2>/dev/null
+-        rm -f  $RPM_INSTALL_PREFIX/var/imapd/*.db       >/dev/null 2>&1 || true
+-        rm -f  $RPM_INSTALL_PREFIX/var/imapd/db.backup* >/dev/null 2>&1 || true
+-        rm -f  $RPM_INSTALL_PREFIX/var/imapd/log/*.log  >/dev/null 2>&1 || true
+         rm -f  $RPM_INSTALL_PREFIX/var/imapd/socket/*   >/dev/null 2>&1 || true
+         rm -rf $RPM_INSTALL_PREFIX/var/imapd/tmp/*      >/dev/null 2>&1 || true
+     fi
+diff -ur fsl.imapd.orig fsl.imapd
+--- fsl.imapd.orig	2007-12-11 10:53:12.000000000 +0100
++++ fsl.imapd	2010-02-08 17:35:54.886390975 +0100
+@@ -14,7 +14,7 @@
+     }
+ };
+ 
+-ident (pop3.)/.+ q{
++ident (pop3d|pop3s|pop3)/.+ q{
+     prefix(
+         prefix="%b %d %H:%M:%S %N <%L> $1[%P]: "
+     )

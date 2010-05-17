@@ -1,0 +1,33 @@
+DESCRIPTION:
+
+Plain cyrus imapd reads groups from /etc/group, and OpenPKG includes
+a patch that allows us to use a private file (for example 
+/kolab/etc/imapd/groupfile) for this instead of the system one. Groups 
+in cyrus can be used in ACLs. To cater for MS windows users who are not 
+used to "case matters", the kolab developers patched the openpkg patch 
+to use case-insignificant string comparison when looking up groups.
+
+IMPACT:
+
+Groups won't work for the Kolab server if this patch is missing.
+
+REFERENCES:
+
+Kolab bug tracker merge: 
+
+https://intevation.de/roundup/kolab/merge6
+
+Wiki page:
+
+http://wiki.kolab.org/index.php/Template:Patches_cyrus
+
+Mercurial patch repository:
+
+http://hg.pardus.de/cgi-bin/hg.cgi/kolab/patches/cyrus-imapd/summary
+
+HISTORY
+
+The patch has been submitted upstream but upstream never reacted.
+Another status inquiry on 2007-05-21.
+
+https://bugzilla.andrew.cmu.edu/show_bug.cgi?id=2632

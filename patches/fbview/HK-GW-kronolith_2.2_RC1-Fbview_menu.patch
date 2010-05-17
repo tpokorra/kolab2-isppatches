@@ -1,0 +1,67 @@
+diff -r 538d4c6293be kronolith/attendees.php
+--- a/kronolith/attendees.php	Thu Nov 29 12:33:18 2007 +0100
++++ b/kronolith/attendees.php	Thu Nov 29 12:34:39 2007 +0100
+@@ -236,6 +236,7 @@ Imple::factory('ContactAutoCompleter', a
+ 
+ $title = _("Edit attendees");
+ require KRONOLITH_TEMPLATES . '/common-header.inc';
++require KRONOLITH_TEMPLATES . '/fbview-menu.inc';
+ 
+ if ($browser->hasFeature('javascript')) {
+     Horde::addScriptFile('open_savedattlist_win.js');
+diff -r 538d4c6293be kronolith/calendars.php
+--- a/kronolith/calendars.php	Thu Nov 29 12:33:18 2007 +0100
++++ b/kronolith/calendars.php	Thu Nov 29 12:34:39 2007 +0100
+@@ -134,6 +134,6 @@ Horde::addScriptFile('popup.js', 'horde'
+ Horde::addScriptFile('popup.js', 'horde', true);
+ $title = _("My Calendars");
+ require KRONOLITH_TEMPLATES . '/common-header.inc';
+-require KRONOLITH_TEMPLATES . '/menu.inc';
++require KRONOLITH_TEMPLATES . '/fbview-menu.inc';
+ require KRONOLITH_TEMPLATES . '/calendars/calendars.inc';
+ require $registry->get('templates', 'horde') . '/common-footer.inc';
+diff -r 538d4c6293be kronolith/lib/Kronolith.php
+--- a/kronolith/lib/Kronolith.php	Thu Nov 29 12:33:18 2007 +0100
++++ b/kronolith/lib/Kronolith.php	Thu Nov 29 12:34:39 2007 +0100
+@@ -1968,6 +1968,33 @@ class Kronolith {
+     }
+ 
+     /**
++     * Builds Kronolith's list of menu items.
++     */
++    function getFbviewMenu($returnType = 'object')
++    {
++        global $conf, $registry, $browser, $prefs;
++
++        /* Check here for guest calendars so that we don't get multiple
++         * messages after redirects, etc. */
++        if (!Auth::getAuth() && !count($GLOBALS['all_calendars'])) {
++            $GLOBALS['notification']->push(_("No calendars are available to guests."));
++        }
++
++        require_once 'Horde/Menu.php';
++        $menu = new Menu(HORDE_MENU_MASK_HELP | HORDE_MENU_MASK_LOGIN);
++
++        $menu->add(Horde::applicationUrl('attendees.php'), _("Attendees"), 'attendees.png', null, null, null, '__noselection');
++
++        $menu->add(Horde::applicationUrl('calendars.php'), _("Calendars"), 'calendars.png', null, null, null, '__noselection');
++
++        if ($returnType == 'object') {
++            return $menu;
++        } else {
++            return $menu->render();
++        }
++    }
++
++    /**
+      * Used with usort() to sort events based on their start times.
+      * This function ignores the date component so recuring events can
+      * be sorted correctly on a per day basis.
+diff -r 538d4c6293be kronolith/templates/fbview-menu.inc
+--- /dev/null	Thu Jan 01 00:00:00 1970 +0000
++++ b/kronolith/templates/fbview-menu.inc	Thu Nov 29 12:34:39 2007 +0100
+@@ -0,0 +1,4 @@
++<div id="menu">
++ <?php echo Kronolith::getFbviewMenu('string') ?>
++</div>
++<?php $GLOBALS['notification']->notify(array('listeners' => 'status')) ?>

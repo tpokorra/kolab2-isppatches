@@ -1,0 +1,86 @@
+<!doctype book PUBLIC "-//Davenport//DTD DocBook V3.0//EN" [
+<!entity chapter-intro SYSTEM "intro.sgml">
+<!entity chapter-openpkg SYSTEM "openpkg.sgml">
+<!entity chapter-sasl SYSTEM "sasl.sgml">
+<!entity chapter-ldap SYSTEM "ldap.sgml">
+<!entity chapter-cyrus SYSTEM "cyrus.sgml">
+<!entity chapter-postfix SYSTEM "postfix.sgml">
+<!entity chapter-openssl SYSTEM "openssl.sgml">
+<!entity chapter-proftpd SYSTEM "proftpd.sgml">
+<!entity chapter-apache SYSTEM "apache.sgml">
+<!entity chapter-monit SYSTEM "monit.sgml">
+<!entity chapter-kolab SYSTEM "kolab.sgml">
+<!entity chapter-extensions SYSTEM "extensions.sgml">
+<!entity chapter-appendix SYSTEM "appendix.sgml">
+<!ENTITY erfrakon SYSTEM "erfrakon.eps" NDATA EPS>
+<!ENTITY kolab SYSTEM "kolab.eps" NDATA EPS>
+<!ENTITY kdab SYSTEM "kdablogo.eps" NDATA EPS>
+]>
+
+<book>
+<bookinfo>
+<title>Kolab Server</title>
+<subtitle>Technical Description</subtitle>
+<authorgroup>
+<corpauthor><inlinegraphic entityref="kdab"
+fileref="kdablogo" scale="50"></inlinegraphic> </corpauthor>
+<corpauthor><inlinegraphic entityref="erfrakon"
+fileref="erfrakon"></inlinegraphic> </corpauthor>
+<othercredit>
+<othername> Klarälvdalens Datakonsult AB </othername>
+<othername> http://www.klaralvdalens-datakonsult.se </othername>
+<othername> email: info@klaralcdalens-datakonsult.se </othername>
+<othername> Erlewein, Frank, Konold & Partner </othername>
+<othername> http://www.erfrakon.de </othername>
+<othername> email: info@erfrakon.de </othername>
+</othercredit>
+</authorgroup>
+<pubdate>February 21th, 2003</pubdate>
+<legalnotice>
+<para> This documentation was written in SGML using the DocBook DTD. HTML
+and Postscript output is generated automatically and depends on the
+tools used. </para>
+<para>
+Windows, Exchange, and Outlook are registered trademarks of Microsoft
+Corporation Inc.
+Insight Connector is a registered trademark of Bynari Inc.
+HotSync is a registered trademark of Palm Inc. All other herein mentioned
+trademarks belong
+to their respective owners.
+</para>
+</legalnotice>
+<revhistory>
+<revision>
+<revnumber>1.0</revnumber>
+<date>February 20th, 2003</date>
+</revision>
+<revision>
+<revnumber>1.0.1</revnumber>
+<date>February 21th, 2003</date>
+</revision>
+<revision>
+<revnumber>1.0.x</revnumber>
+<date>CVS</date>
+</revision>
+<revision>
+<revnumber>pre-2.0</revnumber>
+<date>CVS</date>
+</revision>
+</revhistory>
+</bookinfo>
+
+&chapter-intro
+&chapter-openpkg
+&chapter-openssl
+&chapter-ldap
+&chapter-sasl
+&chapter-postfix
+&chapter-cyrus
+&chapter-proftpd
+&chapter-apache
+&chapter-monit
+&chapter-kolab
+&chapter-extensions
+&chapter-appendix
+
+</book>

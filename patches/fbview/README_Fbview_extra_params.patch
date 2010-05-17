@@ -1,0 +1,20 @@
+DESCRIPTION:
+
+Allows to display extended parameters of events in the free/busy
+list. The patch implements this is a Kolab specific fashion and 
+thus it makes no sense to submit it upstream.
+
+IMPACT:
+
+The free/busy view won't display extended attributes.
+
+REFERENCES:
+
+Mercurial patch repository:
+
+http://hg.pardus.de/cgi-bin/hg.cgi/horde/HORDE_3_2_RC1/summary
+
+HISTORY
+
+The patch has been originally developed by Stuart Binge
+(Codefusion).

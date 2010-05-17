@@ -1,0 +1,44 @@
+2010-04-28  Gunnar Wrobel  <p@rdus.de>
+
+	* patches/Kolab_Storage-0.4.0/issue3416.patch:
+
+	kolab/issue3416 (webclient hangs if freebusy triggering/retrieving hangs)
+
+2010-03-25  Gunnar Wrobel  <p@rdus.de>
+
+	* patches/Kolab_Storage-0.4.0/issue3983.patch:
+
+	kolab/issue3983 (Phpunit testsuite fails on OpenPKG Kolab 2.2.2)
+
+2010-03-23  Gunnar Wrobel  <p@rdus.de>
+
+	* patches/Kolab_Storage-0.4.0/t_framework_HK_GW_NamespaceSupport.diff:
+
+	kolab/issue4165 (kolab-webclient does not show shared/ calendar
+	and contact folders)
+
+2009-04-25  Gunnar Wrobel  <p@rdus.de>
+
+	* Kolab_Storage_0.4.0_p2.patch: Fixes unit testing in
+	Kolab_FreeBusy.
+
+2009-04-24  Gunnar Wrobel  <p@rdus.de>
+
+	* Kolab_Storage.spec: Fixed unit testing.
+
+2009-02-24  Gunnar Wrobel  <p@rdus.de>
+
+	* Kolab_Storage.spec: Update to 0.4.0.
+
+2008-12-05  Gunnar Wrobel  <p@rdus.de>
+
+	* Kolab_Storage.spec: Update to 0.3.0.
+
+2008-11-08  Gunnar Wrobel  <p@rdus.de>
+
+	* Kolab_Storage.spec: Update to 0.2.0.
+
+2008-09-11  Gunnar Wrobel  <p@rdus.de>
+
+	* PEAR-Date.spec: Added package to Kolab CVS.
+

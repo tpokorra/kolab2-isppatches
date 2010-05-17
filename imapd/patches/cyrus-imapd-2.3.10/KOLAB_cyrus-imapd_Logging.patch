@@ -1,0 +1,58 @@
+Provides improved logging for the cyrus imapd server [Version: 2.3.9]
+
+diff -r e60d8aee10e9 imap/append.c
+--- a/imap/append.c	Thu Oct 25 08:30:15 2007 +0200
++++ b/imap/append.c	Thu Oct 25 08:30:23 2007 +0200
+@@ -648,6 +648,9 @@ int append_fromstage(struct appendstate 
+ 
+     /* ok, we've successfully added a message */
+     as->quota_used += message_index.size;
++
++    syslog(LOG_DEBUG, "append_fromstage: message %d added to %s",
++	   message_index.uid, mailbox->name );
+ 
+     return 0;
+ }
+diff -r e60d8aee10e9 imap/imapd.c
+--- a/imap/imapd.c	Thu Oct 25 08:30:15 2007 +0200
++++ b/imap/imapd.c	Thu Oct 25 08:30:23 2007 +0200
+@@ -3510,17 +3510,19 @@ void cmd_close(char *tag)
+ 	if (!r) sync_log_mailbox(imapd_mailbox->name);
+     }
+ 
++    if (r) {
++	prot_printf(imapd_out, "%s NO %s\r\n", tag, error_message(r));
++    }
++    else {
++	prot_printf(imapd_out, "%s OK %s\r\n", tag,
++		    error_message(IMAP_OK_COMPLETED));
++	syslog(LOG_DEBUG, "cmd_expunge: user %s, mailbox %s, sequence %s",
++	       imapd_userid, imapd_mailbox->name, "''");
++    }
++
+     index_closemailbox(imapd_mailbox);
+     mailbox_close(imapd_mailbox);
+     imapd_mailbox = 0;
+-
+-    if (r) {
+-	prot_printf(imapd_out, "%s NO %s\r\n", tag, error_message(r));
+-    }
+-    else {
+-	prot_printf(imapd_out, "%s OK %s\r\n", tag,
+-		    error_message(IMAP_OK_COMPLETED));
+-    }
+ }    
+ 
+ /*
+diff -r e60d8aee10e9 imap/mailbox.c
+--- a/imap/mailbox.c	Thu Oct 25 08:30:15 2007 +0200
++++ b/imap/mailbox.c	Thu Oct 25 08:30:23 2007 +0200
+@@ -2520,6 +2520,8 @@ int mailbox_expunge(struct mailbox *mail
+ 	*(fname->tail)++ = '/';
+ 	fname->len++;
+ 	for (msgno = 0; msgno < numdeleted; msgno++) {
++	    syslog(LOG_DEBUG, "mailbox_expunge: removing mail %s:%d",
++		   mailbox->name, deleted[msgno]);
+ 	    mailbox_message_get_fname(mailbox, deleted[msgno],
+ 				      fname->tail,
+ 				      sizeof(fname->buf) - fname->len);

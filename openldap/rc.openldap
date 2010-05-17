@@ -1,0 +1,63 @@
+#!@l_prefix@/bin/openpkg rc
+##
+##  rc.openldap -- Run-Commands
+##
+
+%config
+    openldap_enable="$openpkg_rc_def"
+    openldap_flags=""
+    openldap_url="ldap://127.0.0.1:389/"
+    openldap_log_prolog="true"
+    openldap_log_epilog="true"
+    openldap_log_numfiles="10"
+    openldap_log_minsize="1M"
+    openldap_log_complevel="9"
+
+%common
+    openldap_slapd_cfgfile="@l_prefix@/etc/openldap/slapd.conf"
+    openldap_slapd_pidfile="@l_prefix@/var/openldap/run/slapd.pid"
+    openldap_slapd_signal () {
+        [ -f $openldap_slapd_pidfile ] && kill -$1 `cat $openldap_slapd_pidfile`
+    }
+
+%status -u @l_susr@ -o
+    openldap_usable="unknown"
+    openldap_active="no"
+    rcService openldap enable yes && \
+        openldap_slapd_signal 0 && openldap_active="yes"
+    echo "openldap_enable=\"$openldap_enable\""
+    echo "openldap_usable=\"$openldap_usable\""
+    echo "openldap_active=\"$openldap_active\""
+
+%start -p 300 -u @l_susr@
+    rcService openldap enable yes || exit 0
+    openldap_slapd_signal 0
+    if [ $? -ne 0 ]; then
+        flags="$openldap_flags"
+        echo $flags | grep -- -h >/dev/null
+        if [ $? -ne 0 -a ".$openldap_url" != . ]; then
+            flags="$flags -h \"$openldap_url\""
+        fi
+        eval @l_prefix@/libexec/openldap/slapd $flags || exit $?
+    fi
+
+%stop -p 700 -u @l_susr@
+    rcService openldap enable yes || exit 0
+    rcService openldap active no  && exit 0
+    openldap_slapd_signal INT
+    sleep 2
+
+%restart -u @l_susr@
+    rcService openldap enable yes || exit 0
+    rcService openldap active no  && exit 0
+    rc openldap stop start
+
+%daily -u @l_susr@
+    rcService openldap enable yes || exit 0
+    shtool rotate -f \
+        -n ${openldap_log_numfiles} -s ${openldap_log_minsize} -d \
+        -z ${openldap_log_complevel} -m 644 -o @l_susr@ -g @l_mgrp@ \
+        -P "${openldap_log_prolog}" \
+        -E "${openldap_log_epilog}; rc openldap restart" \
+        @l_prefix@/var/openldap/openldap.log
+

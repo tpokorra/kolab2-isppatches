@@ -1,0 +1,229 @@
+<chapter><title> OpenLDAP2 Directory Server </title>
+
+<sect1><title> Configuring SLAPD </title>
+
+<para> The OpenPKG OpenLDAP package does by default include
+SASL support and does not support the fsl library. OpenLDAP with SASL is 
+not needed by the Kolab server setup and creates an unfortunate
+ bi-directional dependency to the SASL package. The SPEC file
+ with some small additions follows.</para>
+<para><programlisting>
+#   package information
+Name:         openldap
+Summary:      Lightweight Directory Access Protocol (LDAP) Toolkit
+URL:          http://www.openldap.org/
+Vendor:       OpenLDAP Project
+Packager:     The OpenPKG Project
+Distribution: OpenPKG [PLUS]
+Group:        Database
+License:      GPL
+Version:      2.1.12
+Release:      1.2.0
+
+%option       with_fsl       no
+%option	      with_sasl	     no
+
+#   list of sources
+%define       url       ftp://ftp.openldap.org/pub/openldap/
+                         openldap-release/openldap-%{version}.tgz
+Source0:      %( [ ! -f %{SOURCE openldap-%{version}.tgz} ] \
+                  && wget -c %url; echo %url )
+Source1:      rc.openldap
+Source2:      Makefile
+
+#   build information
+Prefix:       %{l_prefix}
+BuildRoot:    %{l_buildroot}
+BuildPreReq:  OpenPKG, openpkg &gt;= 1.2.0, openssl, 
+                db &gt;= 4.1.24, make, gcc
+PreReq:       OpenPKG, openpkg &gt;= 1.2.0
+%if "%{with_fsl}" == "yes"
+BuildPreReq:  fsl
+PreReq:       fsl
+%endif
+%if "%{with_sasl}" == "yes"
+BuildPreReq:  sasl
+PreReq:       sasl
+%endif
+AutoReq:      no
+AutoReqProv:  no
+
+%description
+    OpenLDAP is an open source implementation of the Lightweight
+    Directory Access Protocol. The suite includes: slapd: stand-alone
+    LDAP server; slurpd:- stand-alone LDAP replication server; libraries
+    implementing the LDAP protocol, and utilities, tools, and sample
+    clients.
+
+%prep
+    %setup -q
+
+%build
+    ln -sf %{l_prefix}/lib/libdb.a %{l_prefix}/lib/libdb-4.a
+    ln -sf %{l_prefix}/lib/libdb.a %{l_prefix}/lib/libdb4.a
+    CC="%{l_cc}" \
+    CFLAGS="%{l_cflags -O} -static" \
+    CPPFLAGS="%{l_cppflags sasl}" \
+    LDFLAGS="%{l_ldflags}" \
+    ./configure \
+        --prefix=%{l_prefix} \
+        --localstatedir=%{l_prefix}/var/openldap \
+        --enable-ldbm \
+        --with-ldbm-api=berkeley \
+        --with-ldbm-module=static \
+        --with-ldbm-type=btree \
+        --enable-slurpd \
+%if "%{with_sasl}" == "no"
+        --without-cyrus-sasl \
+%endif
+        --disable-shared
+    %{l_make} %{l_mflags}
+
+%install
+    rm -rf $RPM_BUILD_ROOT
+    %{l_shtool} subst -v -s \
+        -e "s;^\\(prefix[^=]*=\\).*;\\1 $RPM_BUILD_ROOT%{l_prefix};g" \
+        -e "s;^\\(exec_prefix[^=]*=\\).*;\\1 \ 
+            $RPM_BUILD_ROOT%{l_prefix};g" \
+        -e "s;^\\(localstatedir[^=]*=\\).*;\\1 \ 
+           $RPM_BUILD_ROOT%{l_prefix}/var/openldap;g" \
+        `find . -name Makefile -print`
+    %{l_make} %{l_mflags} install
+    rm -f $RPM_BUILD_ROOT%{l_prefix}/etc/openldap/*.default
+    rm -f $RPM_BUILD_ROOT%{l_prefix}/etc/openldap/*/*.default
+    %{l_shtool} mkdir -f -p -m 755 \
+                $RPM_BUILD_ROOT%{l_prefix}/var/openldap
+    %{l_shtool} mkdir -f -p -m 755 \
+                $RPM_BUILD_ROOT%{l_prefix}/etc/rc.d
+    %{l_shtool} install -c -m 755 -e 's;@l_prefix@;%{l_prefix};g' \
+        %{SOURCE rc.openldap} $RPM_BUILD_ROOT%{l_prefix}/etc/rc.d/
+    %{l_rpmtool} files -v -ofiles -r$RPM_BUILD_ROOT \
+        %{l_files_std} \
+        '%config %{l_prefix}/etc/openldap/ldap*'
+
+%files -f files
+
+%clean
+    rm -rf $RPM_BUILD_ROOT
+</programlisting></para>
+
+<para> The Slapd LDAP server is parameterized by the
+config file <filename>slapd.conf</filename> and the LDAP schema
+definition which we present later.</para>
+
+<para> We make use of openldap's slurpd daemon and have modified
+the startup script as follows. </para>
+
+<para><programlisting>
+#!@l_prefix@/lib/openpkg/bash @l_prefix@/etc/rc
+##
+##  rc.openldap -- Run-Commands for OpenLDAP Daemon
+##
+
+%config
+    openldap_enable="yes"
+
+%start -p 200 -u root
+    opServiceEnabled openldap || exit 0
+    if [ -f @l_prefix@/var/openldap/slapd.pid ]; then
+       PID=`cat @l_prefix@/var/openldap/slapd.pid | awk '{print $1}'`
+       SLAPDS=`ps -p $PID 2>/dev/null | grep -c slapd | awk '{print $1}'`
+       if [ $SLAPDS -gt 0 ]; then
+          echo "Warning: slapd is already running under pid $PID!"
+       else
+          @l_prefix@/libexec/slapd -f @l_prefix@/etc/openldap/slapd.conf
+       fi
+    else
+       @l_prefix@/libexec/slapd -f @l_prefix@/etc/openldap/slapd.conf
+    fi
+    killall -9 slurpd 2>/dev/null
+    sleep 1
+    @l_prefix@/libexec/slurpd -f @l_prefix@/etc/openldap/slapd.conf
+
+%stop -p 200 -u root
+    opServiceEnabled openldap || exit 0
+    if [ -f @l_prefix@/var/openldap/slapd.pid ]; then
+       kill -INT `cat @l_prefix@/var/openldap/slapd.pid`
+    fi
+    killall -9 slurpd 2>/dev/null
+    exit 0
+
+%restart -u root
+    opServiceEnabled openldap || exit 0
+    if [ -f @l_prefix@/var/openldap/slapd.pid ]; then
+       kill -INT `cat @l_prefix@/var/openldap/slapd.pid`
+    fi
+    killall -9 slurpd 2>/dev/null
+    sleep 2
+    @l_prefix@/libexec/slapd -f @l_prefix@/etc/openldap/slapd.conf
+    @l_prefix@/libexec/slurpd -f @l_prefix@/etc/openldap/slapd.conf
+</programlisting></para>
+
+</sect1>
+
+<sect1><title> LDAP Directory Design </title>
+
+<para> As the community process rised various questions concerning the
+actual LDAP layout, a short overview is given. </para> 
+
+<para>Directories can be layed out quite differently. We only present here three
+approaches commonly used. The exact layout does not have an actual implication on the
+authentication or the address book of the groupware solution. But it determins
+more
+or less the extendibility of the directory in the future.</para>
+<para>The Kolab server's administration tools must conserve the flexibility of
+LDAP which
+is simply needed at this point.
+At this time Kolab sticks to the domain oriented approach.</para>
+
+<sect2><title> Internet Domain Oriented </title>
+<para>The directory is layed out after existing internet domains, e. g. bsi.de 
+and bund.de.
+This approach applies well for example to an Internet Service Provider who
+provides a
+lot of hosted domains or a university with a lot of subdomains down to the level 
+of a specific research institute.
+</para>
+<para><programlisting>
+dn: dc=de					top level domain
+   dn: o=bsi,dc=de				bsi.de
+	dn: cn=Alfred Mueller,o=bsi,dc=de		alfred.mueller@bsi.de
+	dn: cn=Else Stratmann,o=bsi,dc=de		else.stratmann@bsi.de
+   dn: o=bund,dc=de				bund.de
+	dn: cn=Post Master,o=bund,dc=de		post.master@bund.de
+(etc.)
+</programlisting></para>
+</sect2>
+
+<sect2><title> Organisation Oriented </title>
+<para>The directory layout is done after a organisation's internal structure and
+applies well to most business applications.</para>
+<para><programlisting>
+dn: o=bsi
+   dn: ou=administration,o=bsi
+ 	dn: cn=Alfred Mueller,ou=administration,o=bsi
+	dn: cn=Else Stratmann,ou=administration,o=bsi
+   dn: ou=postoffice,o=bsi
+	dn: cn=Post Master,ou=postoffice,o=bsi
+(etc.)
+</programlisting></para>
+</sect2>
+
+<sect2><title> Location Oriented </title>
+<para>A geographical layout may also make sense. A good application scenario 
+may be the administration
+of a county consisting of all local administrations down to the level of a
+city.</para>
+<para><programlisting>
+dn: o=bsi,c=de
+   dn: l=bonn,o=bsi,c=de
+ 	   dn: cn=Alfred Mueller,o=bsi,l=bonn,c=de
+	   dn: cn=Else Stratmann,o=bsi,l=bonn,c=de
+   dn: l=berlin,o=bsi,c=de
+	   dn: cn=Hans Schroeder,o=bsi,l=berlin,c=de
+(etc.)
+</programlisting></para>
+</sect2>
+</sect1>
+
+</chapter>

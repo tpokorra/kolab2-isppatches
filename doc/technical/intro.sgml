@@ -1,0 +1,143 @@
+<chapter><title> Software Selection </title>
+
+<para> The Kolab server is based on widely available and proven to be stable
+software components. All software used falls into the cathegory Open Source
+Software or even Free Software and so is not subject to commercial licensing
+restrictions.</para>
+
+<para> The major task of the herein described activity is the integration
+of the Kolab server's components. The experienced difficulties result from the 
+situation that only the latest software versions were chosen and some of them are not
+very well documented, with regard to interoperation between them.</para>
+
+<para> The Kolab server is build using the following software projects: </para>
+
+<orderedlist>
+<listitem><para> <ulink URL="http://asg.web.cmu.edu/cyrus/imapd/">
+Carnegie Mellon University Cyrus IMAP Daemon </ulink> (with Cyrus Sieve) version
+2.2.6
+</para></listitem>
+<listitem><para> <ulink URL="http://asg.web.cmu.edu/cyrus/sasl/">
+Carnegie Mellon University Cyrus Simple Authentication and Security Layer (SASL)
+</ulink> version 2.1.18 </para></listitem>
+<listitem><para> <ulink URL="http://www.sleepycat.com">
+Berkeley DB </ulink> version 4.2.52.2
+(DB is needed by Cyrus IMAP Daemon and Postfix) </para></listitem>
+<listitem><para> <ulink URL="http://www.openssl.org"> OpenSSL </ulink> version
+0.9.7d </para></listitem>
+<listitem><para> <ulink URL="http://www.openldap.org"> OpenLDAP </ulink>
+version 2.2.14 </para></listitem>
+<listitem><para> <ulink URL="http://www.postfix.org">
+Postfix </ulink> version 2.1.4
+</para></listitem>
+<!-- FIXME: Do we use this at all anymore?
+<listitem><para> <ulink URL="http://www.proftpd.org">
+ProFTP Daemon </ulink> version 1.2.8rc1 </para></listitem>
+-->
+<listitem><para> <ulink URL="http://www.apache.org">
+Apache Webserver </ulink> version 1.3.31 </para></listitem>
+<listitem><para> <ulink URL="http://www.php.net">
+PHP Hypertext Preprocessor</ulink> version 4.3.8 </para></listitem>
+<listitem><para> <ulink URL="http://www.perl.org/">
+Perl Interpreter</ulink> version 5.8.4 </para></listitem>
+<listitem><para> <ulink URL="http://www.ijs.si/software/amavisd/">
+Amavisd-new</ulink> version 20030616p10 </para></listitem>
+<listitem><para> <ulink URL="http://www.clamav.net/">
+Clam Antivirus</ulink> version 0.74 </para></listitem>
+</orderedlist>
+
+<para> Key features that lead to the Cyrus IMAP daemon for Kolab: </para>
+<itemizedlist>
+<listitem><para> the scalability of this IMAP server implementation
+was shown in numerous earlier applications </para></listitem>
+<listitem><para> support for access control lists </para></listitem>
+<listitem><para> support for shared IMAP folders </para></listitem>
+<listitem><para> decoupling of mail users from system accounts 
+</para></listitem>
+<listitem><para> maildir formatted mailboxes </para></listitem>
+<listitem><para> use of the filesystem as a hierarchical database to store 
+variable
+length emails with an efficient Berkeley DB driven indexing mechanism 
+</para></listitem>
+<listitem><para> support of IMAP and POP3 over SSL/TLS </para></listitem>
+<listitem><para> user authentication against LDAP via the SASL2 library 
+</para></listitem>
+<listitem><para> support of the flexible server scripting language Sieve 
+</para></listitem>
+<listitem><para> support of email delivery using the LMTP mechanism 
+</para></listitem>
+</itemizedlist>
+
+<para> The Postfix Mail Server was chosen with the following features in mind: 
+</para>
+<itemizedlist>
+<listitem><para> easy configurability </para></listitem>
+<listitem><para> support of smtp over SSL/TLS </para></listitem>
+<listitem><para> allows SMTP authentication against LDAP via the SASL library
+</para></listitem>
+<listitem><para> good security record </para></listitem>
+<listitem><para> support of email delivery using the LMTP mechanism
+</para></listitem>
+</itemizedlist>
+
+<para> Features that lead to the selection of Apache were : </para>
+<itemizedlist>
+<listitem><para> authentication against LDAP </para></listitem>
+<listitem><para> HTTP over SSL/TLS </para></listitem>
+<listitem><para> Webdav support </para></listitem>
+<listitem><para> server side scripting support via PHP </para></listitem>
+</itemizedlist>
+
+<para> The Cyrus SASL library is merely a requirement from the IMAP daemon and
+Postfix.
+Nevertheless it provides an excellent flexible authentication layer supporting
+authentication against passwd, shadow, PAM, Kerberos, LDAP, and others </para>
+
+<para> The community process inspired further thoughts which we want to list
+here. </para>
+<orderedlist>
+<listitem><para> The Courier IMAP daemon seems to be a valid alternative to the
+Cyrus IMAP daemon.
+In future research has to be done whether it makes sense to have it in Kolab
+alternatively.</para></listitem>
+<listitem><para> Security aware people tend to avoid PAM for various reasons.
+Mostly architectural
+weaknesses were pointed out. We addressed this by using the experimental direct
+LDAP binding of
+the SASL authentication daemon. Note that we found this feature to be quite
+stable and usable and
+that the variety of the SASL supported mechanisms is still open to the Kolab
+users.</para></listitem>
+<listitem><para> Exim is equally powerful to postfix. It also has an excellent
+security record.
+It will surely be desirable to develop a way to have it in Kolab, in future. At
+this point
+it was decided to stick with postfix simply for the personal affection of the
+authors.</para></listitem>
+</orderedlist>
+
+<para> Note that replacing parts of the server software will under all
+circumstances require to modify the administration tools, provided by a later
+activity and a different paper. </para>
+</chapter>
+
+<chapter><title> Reference Platform </title>
+<para> The server development is done using an x86 PC with the following
+specification. Note that the relevant Kolab server software is
+provided by the OpenPKG system which will be described in the next chapter.
+</para>
+<para>Kolab1</para>
+<itemizedlist>
+<listitem><para> Hardware: Dual Pentium II, 256 MB
+</para></listitem>
+<listitem><para> Software: Debian Sid/Sarge Testing/Unstable </para></listitem>
+<listitem><para> Kernel: 2.4.18 SMP </para></listitem>
+</itemizedlist>
+<para>Kolab2</para>
+<itemizedlist>
+<listitem><para> Hardware: VIA Nehemia C3 1GHz CPU, 512 MB
+</para></listitem>
+<listitem><para> Software: Various, including Debian and SuSE 9.0 </para></listitem>
+<listitem><para> Kernel: 2.4.21 </para></listitem>
+</itemizedlist>
+</chapter>

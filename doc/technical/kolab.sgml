@@ -1,0 +1,1037 @@
+<chapter><title> Getting Things Together </title>
+
+<para> We describe here how all services are configured in order
+to get a working Kolab server. The major effords in creating the
+Kolab server were integrating the various open source projects and
+programming of the PHP4 administrative web interface. </para>
+
+<sect1><title> Kolab Runtime Configuration </title>
+<para> All configuration data is stored inside LDAP. The connection between
+LDAP and the various configuration files of the Kolab services
+is done via the Kolab configuration backend. An overview follows.</para>
+
+<para>
+<inlinegraphic entityref="kolab" fileref="kolab" scale="70"></inlinegraphic>
+</para>
+
+<para> The slapd serves LDAP requests and is tightly coupled with
+the slurpd daemon. Slurpd is meant to keep a slave LDAP server 
+consistent with the master LDAP server. The Kolab configuration 
+backend acts as slave LDAP server in that regard. </para>
+
+<para> When the Kolab configuration backend receives LDAP updates,
+it creates configuration files for all services. Therfor template
+files get filled up with the LDAP data and are placed int the
+according servers config file location. For the Cyrus imapd
+further actions need to be taken (adding/removing/modifying users,
+shared folders, or acl's). </para>
+
+<para> The exact files that the Kolab backend creates are:</para>
+
+<para><orderedlist>
+<listitem><para> /kolab/var/kolab/www/admin/include/session_vars.php </para></listitem>
+<listitem><para> /kolab/etc/postfix/main.cf </para></listitem>
+<listitem><para> /kolab/etc/postfix/master.cf </para></listitem>
+<listitem><para> /kolab/etc/postfix/transport </para></listitem>
+<listitem><para> /kolab/etc/postfix/canonical </para></listitem>
+<listitem><para> /kolab/etc/saslauthd.conf </para></listitem>
+<listitem><para> /kolab/etc/imapd/imapd.conf </para></listitem>
+<listitem><para> /kolab/etc/imapd/cyrus.conf </para></listitem>
+<listitem><para> /kolab/etc/imapd/imapd.group </para></listitem>
+<listitem><para> /kolab/etc/apache/apache.conf </para></listitem>
+<listitem><para> /kolab/etc/apache/legacy.conf </para></listitem>
+<listitem><para> /kolab/etc/apache/php.ini </para></listitem>
+<listitem><para> /kolab/etc/proftpd/proftpd.conf </para></listitem>
+<listitem><para> /kolab/etc/openldap/slapd.conf </para></listitem>
+<listitem><para> /kolab/etc/monit/monit.conf </para></listitem>
+</orderedlist></para>
+
+<para> The following logic is applied here </para>
+<para><itemizedlist>
+<listitem><para> configuration setting can be found beneath the LDAP
+root DN in the k=kolab subtree </para></listitem>
+<listitem><para> parameters have speaking names with underscores </para></listitem>
+<listitem><para> configuration template files have placeholders named after the
+scheme "@@@&lt parameter name &gt @@@" </para></listitem>
+<listitem><para> the kolab backend reads all kolab parameters and applies
+a search/replace operation while copying the modified templates over
+the existing configuration files of the various services</para></listitem>
+</itemizedlist></para>
+
+<para> In result, adding a parameter to the kolab configuration system consists of
+the following steps:</para>
+
+<para><itemizedlist>
+<listitem><para> Add support for the parameter to the web administration interface </para></listitem>
+<listitem><para> Add a placeholder to the according configuration template </para></listitem>
+</itemizedlist></para>
+
+<para> It is assured that the respective daemons learn about
+their new configuration and reload it with minimal service interruption.
+</para>
+
+<para> The FTP daemon plays a special role here. It is only activated
+as required, to support FTP freebusy uploads for legacy clients.</para>
+
+<para> The apache servers configuration gets the legacy.conf included
+as required, to support the HTTP freebusy download function for legacy
+clients.</para>
+
+<para> Technically, the Kolab configuration backend is a perl script which listens
+in an endless loop for LDAP updates and keeps the LDAP directory in sync with the
+rest of the Kolab configuration. The script is called "kolab". A startup script
+is provided. The usal precautions (pid file) have been taken to ensure a daemon-like
+operation. This script is the reason for the dependency to various perl CPAN
+modules, which we have mentioned earlier.</para>
+
+</sect1>
+
+<sect1><title> Kolab Administrative Web Interface </title>
+<para> The Web interface is entirely written in PHP4. The Apache webserver
+with mod_php is used to serve request to the web interface. </para>
+
+<para> The web interface supports SSL encryption and authentication
+against LDAP. It is important to understand that all critical operations on LDAP
+are done only with the credentials the user has supplied. The web interface
+does not act with administrative permissions on the LDAP server unless
+the user has provided the according credentials. All access permission control
+is done entirely by the LDAP server. </para>
+
+<para>The web interface
+does not work on local files on the Kolab server. It only communicates with
+the LDAP server. The Kolab configuration backend learns asynchronously about
+LDAP changes and takes appropriate actions independently.</para>  
+
+<para> The actual user interface is described in a separate document.</para>
+
+</sect1>
+
+<sect1><title> Kolab Installation Process </title>
+
+<sect2><title> Services installation </title>
+
+<para> The dependency list of kolab looks like this: </para>
+<para><orderedlist>
+<listitem><para> openldap</para></listitem>
+<listitem><para> sasl </para></listitem>
+<listitem><para> imapd </para></listitem>
+<listitem><para> apache</para></listitem>
+<listitem><para> proftpd</para></listitem>
+<listitem><para> monit</para></listitem>
+<listitem><para> and finally: kolab</para></listitem>
+</orderedlist></para>
+
+</sect2>
+
+<sect2><title> Kolab Bootstrapping </title>
+
+<para> If the Kolab RPM is installed the bootstrapping procedure will be started right away. The user does not need
+to invoke the bootstrapping script manually. We present the script here just for documentation purposes.
+</para>
+
+<para><programlisting>
+#!/kolab/bin/perl
+
+# (c) 2002 Tassilo Erlewein &lt;tassilo.erlewein@erfrakon.de&gt;
+# (c) 2002 Martin Konold &lt;martin.konold@erfrakon.de&gt;
+# (c) 2002 Achim Frank &lt;achim.frank@erfrakon.de&gt;
+
+# kolab_bootstrap Version 0.91
+# create unix configuration files from data source (files or LDAP)
+# and templates
+
+use strict;
+use vars qw($opt_b);
+
+use URI;
+use IO::File;
+use IO::Select;
+use Net::LDAP;
+use Net::LDAP::Entry;
+use File::Copy;
+use Getopt::Std;
+use Sys::Hostname;
+
+my $kolab_prefix = "/kolab";
+my $kolab_config = $kolab_prefix."/etc/kolab/kolab.conf";
+
+print "\nKOLAB BOOTSTRAP\n\n";
+
+my $fd = IO::File-&gt;new($kolab_config, "r")
+   || die "could not open $kolab_config";
+my %kolab_config;
+foreach (&lt;$fd&gt;) {
+   if (/(.*) : (.*)/) {
+      $kolab_config{$1} = $2;
+   }
+}
+undef $fd;
+my $bind_dn = $kolab_config{'bind_dn'} || die \
+	"could not read bind_dn from $kolab_config";
+my $bind_pw = $kolab_config{'bind_pw'} || die \
+	"could not read bind_pw from $kolab_config";
+my $ldap_uri = $kolab_config{'ldap_uri'} || die \
+	"could not read ldap_uri from $kolab_config";
+my $base_dn = $kolab_config{'base_dn'} || \
+	die "could not read base_dn from $kolab_config";
+my $php_dn = $kolab_config{'php_dn'} || \
+	die "could not read php_dn from $kolab_config";
+my $php_pw = $kolab_config{'php_pw'} || \
+	die "could not read php_pw from $kolab_config";
+
+if (!$bind_dn || !$bind_pw || !$ldap_uri || !$base_dn) {
+   print "Please check $kolab_config/kolab.conf \
+	 (seems to be incomplete)\n";
+   die "and run kolab_bootstrap afterwards, manually";
+}
+my $fqdn = `hostname -f`;
+chomp($fqdn);
+(my $dummy, my $domain) = split(/\./, $fqdn, 2);
+if (!$domain) { $domain = $fqdn; }
+
+if ($base_dn =~ /\@\@\@/ || $bind_dn =~ /\@\@\@/ || \
+	$bind_pw =~ /\@\@\@/) {
+   print "Generating default configuration:\n";
+   if ($base_dn =~ /\@\@\@/) {
+      $base_dn = "";
+      foreach my $dc ((split(/\./,$fqdn))) { $base_dn .= "dc=$dc,"; }
+      chop $base_dn;
+      print " base_dn : $base_dn\n";
+   }
+   if ($bind_dn =~ /\@\@\@/) {
+      $bind_dn =~ s/\@\@\@kolab_basedn\@\@\@/$base_dn/g;
+      print " bind_dn : $bind_dn\n";
+   }
+   if ($bind_pw =~ /\@\@\@/) {
+      $bind_pw = `/kolab/bin/openssl passwd kolab`;
+      chomp $bind_pw;
+      print " bind_pw : $bind_pw\n";
+   }
+   if ($php_dn =~ /\@\@\@/) {
+      $php_dn =~ s/\@\@\@kolab_basedn\@\@\@/$base_dn/g;
+   }
+   if ($php_pw =~ /\@\@\@/) {
+      $php_pw = `/kolab/bin/openssl passwd nobody`;
+      chomp $php_pw;
+   }
+
+   $fd = IO::File-&gt;new($kolab_config, "w+") || die \
+	"could not open $kolab_config";
+   print $fd "base_dn : $base_dn\n";
+   print $fd "bind_dn : $bind_dn\n";
+   print $fd "bind_pw : $bind_pw\n";
+   print $fd "ldap_uri : $ldap_uri\n";
+   print $fd "php_dn : $php_dn\n";
+   print $fd "php_pw : $php_pw\n";
+   undef $fd;
+   print "done modifying $kolab_config\n\n";
+   print "IMPORTANT NOTE:\n";
+   print "use login=manager and passwd=$bind_pw when you 
+		log into the webinterface!\n\n";
+}
+
+# remove all application specific fsl config files as these are yet to be done
+# having invalid files there hinders applications from starting up properly
+# we delay this until there's a better understanding of the fsl stuff
+
+unlink("$kolab_prefix/etc/fsl/fsl.postfix");
+unlink("$kolab_prefix/kolab/etc/fsl/fsl.sasl");
+unlink("$kolab_prefix/etc/fsl/fsl.apache");
+unlink("$kolab_prefix/etc/fsl/fsl.slapd");
+unlink("$kolab_prefix/kolab/etc/fsl/fsl.imapd");
+
+my $confname = "$kolab_prefix/lib/sasl/smtpd.conf";
+copy("$kolab_prefix/etc/kolab/smtpd.conf.template", $confname) || die \
+	"could not write to $confname";
+
+getopts('b');
+
+if ($opt_b) {
+   print "prepare LDAP database...\n";
+   if ($ldap_uri =~ /127\.0\.0\.1/ || $ldap_uri =~ /localhost/) {
+      print "kill running slapd (if any)\n";
+      system("killall -INT slapd &gt;/dev/null 2&gt;&1");
+      sleep 1;
+      system("killall -INT slapd &gt;/dev/null 2&gt;&1");
+      sleep 1;
+      system("killall -9 slapd &gt;/dev/null 2&gt;&1");
+      sleep 1;
+      system("killall -9 slapd &gt;/dev/null 2&gt;&1");
+      sleep 1;
+      my $tmpl = IO::File-&gt;
+	new("$kolab_prefix/etc/kolab/slapd.conf.template", "r")
+        || die \
+	"could not read $kolab_prefix/etc/kolab/slapd.conf.template";
+      my $slpd = IO::File-&gt;
+	new("$kolab_prefix/etc/openldap/slapd.conf","w+")
+        || die "could not write to $kolab_prefix/etc/openldap/slapd.conf";
+      foreach (&lt;$tmpl&gt;) {
+         s/\@\@\@base_dn\@\@\@/$base_dn/g;
+         s/\@\@\@bind_dn\@\@\@/$bind_dn/g;
+         s/\@\@\@bind_pw\@\@\@/$bind_pw/g;
+         print $slpd $_;
+      }
+      undef $slpd;
+      undef $tmpl;
+      # now we must startup slapd
+      print "temporarily start slapd under local port 7777\n";
+      system("$kolab_prefix/libexec/slapd -u kolab 
+-h ldap://127.0.0.1:7777/ -f $kolab_prefix/etc/openldap/slapd.conf");
+      $ldap_uri = "ldap://127.0.0.1:7777/";
+      sleep 3;
+   }
+
+   my $ldapuri = URI-&gt;new($ldap_uri) || warn \
+	"error: could not parse given uri";
+   my $ldap = Net::LDAP-&gt;new($ldapuri-&gt;host, port=&gt; \
+	$ldapuri-&gt;port) || warn "could not connect ldap server";
+   if ($ldap) {
+      $ldap-&gt;bind($bind_dn, password=&gt; $bind_pw) || \
+	warn "could not bind to ldap";
+      my $mesg = $ldap-&gt;search(base=&gt; "$base_dn", scope=&gt; \
+	'exact', filter=&gt; "(objectclass=*)");
+      if ($mesg && $mesg-&gt;count != 1) {
+         print "no $base_dn object found, creating one\n";
+         $mesg = $ldap-&gt;add ($base_dn, attr=&gt; ['dc'=&gt; \
+		$domain, 'objectclass'=&gt; ['top', 'domain'] ]);
+      } 
+      $mesg && $mesg-&gt;code && warn "failed to write basedn entry : ",\
+	 $mesg-&gt;error;
+      $mesg = $ldap-&gt;search(base=&gt; "k=kolab,$base_dn", \
+	 scope=&gt; 'exact', filter=&gt; "(objectclass=*)");
+      if ($mesg && $mesg-&gt;count != 1) {
+         print "no kolab config object in ldap, generating 
+		a reasonable default\n";
+      } else {
+         print "modifying existing kolab config object\n";
+      }
+
+      # create kolab config object
+      my $ldapobject = Net::LDAP::Entry-&gt;new;
+      my $mynetworkinterfaces = "127.0.0.1/8";
+      my @net=`ifconfig|grep -v 127.0.0|grep \"inet addr\"| \
+	sed 's/:/ /g'|awk \'{print \$3 \"/\" 24}\'`;
+      chomp @net;
+      foreach my $nets (@net){
+         $mynetworkinterfaces .= ", ".$nets;
+      }
+      print "mynetworkinterfaces: ".$mynetworkinterfaces."\n";
+
+      $ldapobject-&gt;replace(
+        'fqhostname' =&gt; $fqdn,
+        'postfix-mydomain' =&gt; $domain,
+        #'postfix-relaydomains' =&gt; "",
+        'postfix-mydestination' =&gt; "\$mydomain",
+        'postfix-mynetworks' =&gt; $mynetworkinterfaces,
+        #'postfix-relayhost' =&gt; "",
+        #'postfix-transport' =&gt; "",
+        'cyrus-autocreatequota' =&gt; 100000,
+        'cyrus-admins' =&gt; "manager",
+        'cyrus-imap' =&gt; "TRUE",
+        'cyrus-pop3' =&gt; "TRUE",
+        'cyrus-imaps' =&gt; "TRUE",
+        'cyrus-pop3s' =&gt; "TRUE",
+        'cyrus-sieve' =&gt; "TRUE",
+        'apache-http' =&gt; "FALSE",
+        'proftpd-ftp' =&gt; "FALSE",
+        #'proftpd-defaultquota' =&gt; 100000,
+        #'proftpd-userPassword' =&gt; "freebusy",
+	'uid' =&gt; "freebusy",
+        'userPassword' =&gt; "freebusy",
+        'objectclass' =&gt; ['top', 'kolab' ] );
+      $ldapobject-&gt;dn("k=kolab,$base_dn");
+      $mesg = $ldapobject-&gt;update($ldap);
+      $mesg && $mesg-&gt;code && warn "failed to write entry: ", \
+	$mesg-&gt;error;
+      undef $ldapobject;
+
+      # create internal user topnode
+      $ldapobject = Net::LDAP::Entry-&gt;new;
+      $ldapobject-&gt;replace('cn' =&gt; 'internal', \
+	'objectclass' =&gt; ['top','namedObject']);
+      $ldapobject-&gt;dn("cn=internal,$base_dn");
+      $mesg = $ldapobject-&gt;update($ldap);
+      $mesg && $mesg-&gt;code && warn "failed to write entry: ", \
+	$mesg-&gt;error;
+      undef $ldapobject;
+
+      # create external user topnode
+      $ldapobject = Net::LDAP::Entry-&gt;new;
+      $ldapobject-&gt;replace('cn' =&gt; 'external', \
+	'objectclass' =&gt; ['top','namedObject']);
+      $ldapobject-&gt;dn("cn=external,$base_dn");
+      $mesg = $ldapobject-&gt;update($ldap);
+      $mesg && $mesg-&gt;code && warn "failed to write entry: ", \
+	$mesg-&gt;error;
+      undef $ldapobject;
+
+      # create admin group
+      $ldapobject = Net::LDAP::Entry-&gt;new;
+      $ldapobject-&gt;replace('cn' =&gt; 'admin', 
+	'objectclass' =&gt; ['top','groupOfNames'],
+        'member' =&gt; "cn=manager,$base_dn");
+      $ldapobject-&gt;dn("cn=admin,$base_dn");
+      $mesg = $ldapobject-&gt;update($ldap);
+      $mesg && $mesg-&gt;code && warn "failed to write entry: ", 
+	$mesg-&gt;error;
+      undef $ldapobject;
+
+      # create manager user
+      $ldapobject = Net::LDAP::Entry-&gt;new;
+      $ldapobject-&gt;replace('cn' =&gt; 'manager', 'sn' =&gt; 'n/a', 
+		'uid' =&gt; 'manager', 'userPassword' =&gt; $bind_pw, 
+		'objectclass' =&gt; ['top','inetOrgPerson']);
+      $ldapobject-&gt;dn($bind_dn);
+      $mesg = $ldapobject-&gt;update($ldap);
+      $mesg && $mesg-&gt;code && warn "failed to write entry: ",
+	 $mesg-&gt;error;
+      undef $ldapobject;
+
+      # create php read-only user
+      $ldapobject = Net::LDAP::Entry-&gt;new;
+      $ldapobject-&gt;replace('cn' =&gt; 'nobody', 'sn' =&gt; 'n/a n/a',
+	 'uid' =&gt; 'nobody', 'userPassword' =&gt; $php_pw, 
+	 'objectclass' =&gt; ['top','inetOrgPerson']);
+      $ldapobject-&gt;dn("cn=nobody,$base_dn");
+      $mesg = $ldapobject-&gt;update($ldap);
+      $mesg && $mesg-&gt;code && warn "failed to write entry: ", 
+	$mesg-&gt;error;
+      undef $ldapobject;
+
+      # create mainainter group
+      $ldapobject = Net::LDAP::Entry-&gt;new;
+      $ldapobject-&gt;replace('cn' =&gt; 'maintainer', 
+	'objectclass' =&gt; ['top','groupOfNames']);
+      $ldapobject-&gt;dn("cn=maintainer,$base_dn");
+      $mesg = $ldapobject-&gt;update($ldap);
+      $mesg && $mesg-&gt;code && warn "failed to write entry: ", 
+	$mesg-&gt;error;
+      undef $ldapobject;
+
+      $ldap-&gt;unbind;
+   }
+   print "LDAP setup finished\n\n";
+ 
+   print "Create initial config files for postfix, apache,
+		 proftpd, cyrus imap, saslauthd\n"; 
+   print " running $kolab_prefix/etc/kolab/kolab -v -o -l$ldap_uri\n"; 
+   system("$kolab_prefix/etc/kolab/kolab -v -o -l$ldap_uri");
+
+   if ($ldap_uri =~ /127\.0\.0\.1/ || $ldap_uri =~ /localhost/) {
+      print "\nkill temporary slapd\n\n";
+      system("killall -INT slapd &gt;/dev/null 2&gt;&1");
+      system("killall -INT slapd &gt;/dev/null 2&gt;&1");
+      system("killall -9 slapd &gt;/dev/null 2&gt;&1");
+      system("killall -9 slapd &gt;/dev/null 2&gt;&1");
+   }
+   exit;
+}
+</programlisting></para>
+
+</sect2>
+
+<sect2><title> Kolab configuration </title>
+
+<para> Here we provide the appropriate RPM spec for Kolab file. The source RPM of kolab also holds all the necessary files needed
+to operate to services provided by the server. This includes the HTML pages of the web frontend. For space reasons we can not
+contain all the files within this document but all the files are publicly available via anonymous CVS as described earlier. 
+</para>
+
+<para> By installing the Kolab RPM all the necessary configurations of the services provided by the kolab server will be made
+automatically by bootstrapping scripts. This includes the creation of OpenSSL certificates used by the services apache, postfix
+and openldap/sasl. Certificate creation is done using an extra script. This is documented in the openssl section of this document.
+</para>
+
+<para><programlisting>
+##
+##  kolab.spec -- OpenPKG RPM Specification
+##  Copyright (c) 2002 Erfrakon
+##  Copyright (c) 2002 Martin Konold &lt;martin.konold@erfrakon.de&gt;
+##  Copyright (c) 2002 Tassilo Erlewein &lt;tassilo.erlewein@erfrakon.de&gt;
+
+%define       V_kolab   1.0beta2
+
+#   package information
+Name:         kolab
+Summary:      Kolab Groupware Server
+URL:          http://ftp.kde.org/pub/kde/unstable/server/
+			kolab/kolab-current
+Vendor:       Erfrakon http://www.erfrakon.de
+Packager:     The Kroupware Project
+Distribution: Kolab
+Group:        core
+License:      GPL
+Version:      %{V_kolab}
+Release:      20030209
+
+#   list of sources
+Source0:      ftp://ftp.kde.org/pub/kde/unstable/server/kolab/
+		    kolab-current/kolab-%{version}.tar.gz
+Source1:      Makefile
+Source2:      rc.kolab
+
+#   build information
+Prefix:       %{l_prefix}
+BuildRoot:    %{l_buildroot}
+BuildPreReq:  OpenPKG, openpkg &gt;= 1.1.0
+PreReq:       OpenPKG, openpkg &gt;= 1.1.0, openldap, postfix, imapd, 
+		sasl, apache, proftpd, perl-ldap, monit
+AutoReq:      no
+AutoReqProv:  no
+
+%description
+    Kolab is the KDE Groupware Server that provides full groupware features
+    to either KDE kolab clients or Microsoft Outlook[tm] clients with the 
+    Bynari Insight Connector http://www.bynari.net. In addition it is
+    a robust and fleixle general imap mail server with LDAP addressbook 
+    and nice web gui.
+
+%prep
+    %setup -q -c
+
+%build
+    #echo "Finished"
+
+%install
+    rm -rf $RPM_BUILD_ROOT
+
+    %{l_shtool} mkdir -p -m 755 $RPM_BUILD_ROOT%{l_prefix}/etc/kolab
+    %{l_shtool} mkdir -p -m 755 $RPM_BUILD_ROOT%{l_prefix}/etc/rc.d
+    %{l_shtool} mkdir -p -m 755 $RPM_BUILD_ROOT%{l_prefix}/var/kolab/log
+    %{l_shtool} mkdir -p -m 755 $RPM_BUILD_ROOT%{l_prefix}/var/kolab/
+						www/cgi-bin
+    %{l_shtool} mkdir -p -m 777 $RPM_BUILD_ROOT%{l_prefix}/var/kolab/
+						www/freebusy
+    %{l_shtool} mkdir -p -m 755 $RPM_BUILD_ROOT%{l_prefix}/var/kolab/
+						www/icons
+    %{l_shtool} mkdir -p -m 777 $RPM_BUILD_ROOT%{l_prefix}/var/kolab/
+						www/locks
+
+    %{l_shtool} install -c -m 755 -e "s;@l_prefix@;%{l_prefix};g" \
+		 %{SOURCE rc.kolab} \
+	$RPM_BUILD_ROOT%{l_prefix}/etc/rc.d/
+    # gets overwritten later
+    %{l_shtool} install -c -m 600 CAcert.pem \
+	$RPM_BUILD_ROOT%{l_prefix}/etc/kolab/
+    %{l_shtool} install -c -m 600 cert.pem \
+	$RPM_BUILD_ROOT%{l_prefix}/etc/kolab/
+    %{l_shtool} install -c -m 600 key.pem \
+	$RPM_BUILD_ROOT%{l_prefix}/etc/kolab/
+    %{l_shtool} install -c -m 744 -e \
+	's;@@@kolab_prefix@@@;%{l_prefix};g' \
+	kolab_sslcert.sh $RPM_BUILD_ROOT%{l_prefix}/etc/kolab/
+    %{l_shtool} install -c -m 644 smtpd.conf.template \
+	canonical.template transport.template \
+        $RPM_BUILD_ROOT%{l_prefix}/etc/kolab/
+    %{l_shtool} install -c -m 644 -e \
+	's;@@@kolab_prefix@@@;%{l_prefix};g' cyrus.conf.template \
+        $RPM_BUILD_ROOT%{l_prefix}/etc/kolab/    
+    %{l_shtool} install -c -m 644 \
+    	-e 's;@@@kolab_prefix@@@;%{l_prefix};g' \
+	-e 's;@l_nusr@;%{l_nusr};g' \
+	-e 's;@l_ngrp@;%{l_ngrp};g' httpd.conf.template \
+        $RPM_BUILD_ROOT%{l_prefix}/etc/kolab/
+    %{l_shtool} install -c -m 644 -e \
+	's;@@@kolab_prefix@@@;%{l_prefix};g' legacy.conf.template \
+        $RPM_BUILD_ROOT%{l_prefix}/etc/kolab/
+    %{l_shtool} install -c -m 644 -e \
+	's;@@@kolab_prefix@@@;%{l_prefix};g' imapd.conf.template \
+        $RPM_BUILD_ROOT%{l_prefix}/etc/kolab/
+    %{l_shtool} install -c -m 644 imapd.group.template \
+	$RPM_BUILD_ROOT%{l_prefix}/etc/kolab/
+    %{l_shtool} install -c -m 744 -e \
+	's;@@@kolab_prefix@@@;%{l_prefix};g' kolab \
+	$RPM_BUILD_ROOT%{l_prefix}/etc/kolab/
+    %{l_shtool} install -c -m 644 kolab.conf \
+	$RPM_BUILD_ROOT%{l_prefix}/etc/kolab/
+    %{l_shtool} install -c -m 644 kolab.schema \
+	$RPM_BUILD_ROOT%{l_prefix}/etc/kolab/
+    %{l_shtool} install -c -m 744 -e \
+	's;@@@kolab_prefix@@@;%{l_prefix};g' \
+	-e "s;@@@l_musr@@@;%{l_musr};g" \
+        -e "s;@@@l_rgrp@@@;%{l_rgrp};g" kolab_bootstrap \
+	$RPM_BUILD_ROOT%{l_prefix}/etc/kolab/
+    %{l_shtool} install -c -m 644 \
+        -e 's;@@@kolab_prefix@@@;%{l_prefix};g' \
+        -e "s;@@@l_musr@@@;%{l_musr};g" \
+        -e "s;@@@l_rgrp@@@;%{l_rgrp};g" \
+        -e "s;@@@l_nusr@@@;%{l_nusr};g" main.cf.template \
+ 	$RPM_BUILD_ROOT%{l_prefix}/etc/kolab/
+    %{l_shtool} install -c -m 644 master.cf.template \
+	$RPM_BUILD_ROOT%{l_prefix}/etc/kolab/
+    %{l_shtool} install -c -m 644 -e \
+	's;@@@kolab_prefix@@@;%{l_prefix};g' monit.conf.template \
+	$RPM_BUILD_ROOT%{l_prefix}/etc/kolab/
+    %{l_shtool} install -c -m 644 php.ini.template \
+	$RPM_BUILD_ROOT%{l_prefix}/etc/kolab/
+    %{l_shtool} install -c -m 644 \
+    	-e 's;@@@kolab_prefix@@@;%{l_prefix};g' \
+	-e 's;@@@l_nusr@@@;%{l_nusr};g' -e \
+	's;@@@l_nuid@@@;%{l_nuid};g' \
+	-e 's;@@@l_ngrp@@@;%{l_ngrp};g' -e \
+	's;@@@l_ngid@@@;%{l_ngid};g' proftpd.conf.template \
+        $RPM_BUILD_ROOT%{l_prefix}/etc/kolab/
+    %{l_shtool} install -c -m 644 saslauthd.conf.template \
+	$RPM_BUILD_ROOT%{l_prefix}/etc/kolab/
+    %{l_shtool} install -c -m 644 session_vars.php.template \
+	$RPM_BUILD_ROOT%{l_prefix}/etc/kolab/
+    %{l_shtool} install -c -m 644 -e \
+	's;@@@kolab_prefix@@@;%{l_prefix};g' slapd.conf.template \
+        $RPM_BUILD_ROOT%{l_prefix}/etc/kolab/
+    %{l_shtool} install -c -m 744 -e \
+	's;@@@kolab_prefix@@@;%{l_prefix};g' workaround.sh \
+	$RPM_BUILD_ROOT%{l_prefix}/etc/kolab/
+    cp -r admin/ $RPM_BUILD_ROOT%{l_prefix}/var/kolab/www/
+    
+    %{l_rpmtool} files -v -ofiles -r$RPM_BUILD_ROOT %{l_files_std} \
+    '%config %{l_prefix}/etc/kolab/*.pem' \
+    '%config %{l_prefix}/etc/kolab/*.schema' \
+    '%config %{l_prefix}/etc/kolab/kolab.conf'
+
+%post
+    %{l_prefix}/etc/kolab/kolab_bootstrap -b
+    %{l_prefix}/etc/kolab/kolab_sslcert.sh 2&gt;/dev/null
+    echo 
+    echo "Kolab should now be setup - you should be able to start"
+    echo "the server with '%{l_prefix}/etc/rc.d/rc.monit start'"
+    echo "- please read the documentation!"
+
+%files -f files
+
+%clean
+    rm -rf $RPM_BUILD_ROOT
+</programlisting></para>
+</sect2>
+
+</sect1>
+
+<sect1><title> LDAP Directory Schema </title>
+
+<para>We found it necessary to slightly modify the pre-defined OpenLDAP schemes.
+Fields were added to some object types, conserving the already existing fields.</para>
+<para> The resulting kolab scheme is part of the kolab RPM file, which
+is way too long to present it here. Most parts of it come with openldap and
+simply contain standardized object types.</para>
+
+<sect2><title> Person </title>
+<para><programlisting>
+objectclass ( 2.5.6.6 NAME 'person' SUP top STRUCTURAL
+  MUST ( sn $ cn )
+  MAY ( userPassword $ telephoneNumber $ seeAlso $ description $ mail
+$displayName $ uid $givenname ) )
+</programlisting></para>
+</sect2>
+
+<sect2><title> OrganisationalPerson </title>
+<para><programlisting>
+objectclass ( 2.5.6.7 NAME 'organizationalPerson' SUP person STRUCTURAL
+  MAY ( title $ x121Address $ registeredAddress $ destinationIndicator $
+        preferredDeliveryMethod $ telexNumber $
+teletexTerminalIdentifier $
+        telephoneNumber $ internationaliSDNNumber $
+        facsimileTelephoneNumber $ street $ postOfficeBox $ postalCode $
+        postalAddress $ physicalDeliveryOfficeName $ ou $ st $ l $ c ) )
+</programlisting></para>
+</sect2>
+</sect1>
+
+<sect1><title> LDAP Server Configuration </title>
+
+<para>The configuration template used by the Kolab bootstrapping procedure is given here. The file is expected to live in
+<filename>/kolab/etc/kolab/slapd.conf.template</filename>.
+</para>
+
+<para><programlisting>
+include         /kolab/etc/kolab/kolab.schema
+pidfile         /kolab/var/openldap/slapd.pid
+argsfile        /kolab/var/openldap/slapd.args
+replogfile      /kolab/var/openldap/replog
+schemacheck     on
+lastmod         on
+TLSCertificateFile     /kolab/etc/kolab/cert.pem
+TLSCertificateKeyFile  /kolab/etc/kolab/key.pem
+require         none
+allow           bind_v2
+loglevel        0
+database        ldbm
+suffix          "@@@base_dn@@@"
+directory       /kolab/var/openldap/openldap-data
+rootdn          "@@@bind_dn@@@"
+rootpw          "@@@bind_pw@@@"
+replica host=127.0.0.1:9999
+        binddn="cn=replicator"
+        bindmethod=simple credentials=secret
+index   objectClass     eq
+index   uid             eq
+index   mail            eq
+index   alias           eq
+
+access to attr=userPassword
+        by group="cn=admin,@@@base_dn@@@" write
+        by group="cn=maintainer,@@@base_dn@@@" write
+        by self write
+        by anonymous auth
+        by * none
+        stop
+
+access to dn="(.*,)?cn=internal,@@@base_dn@@@"
+        by group="cn=admin,@@@base_dn@@@" write
+        by group="cn=maintainer,@@@base_dn@@@" write
+        by self write
+        by dn="cn=nobody,@@@base_dn@@@" read
+        by anonymous auth stop
+
+access to dn="k=kolab,@@@base_dn@@@"
+        by group="cn=admin,@@@base_dn@@@" write
+        by * read stop
+
+access to *
+        by self write
+        by group="cn=admin,@@@base_dn@@@" write
+        by group="cn=maintainer,@@@base_dn@@@" write
+        by * read stop
+</programlisting></para>
+</sect1>
+
+<sect1><title> SASL </title>
+<para>The ldap-enhanced saslauthd daemon is configured by the file
+<filename>/kolab/etc/kolab/saslauthd.conf.template</filename>.</para>
+
+<para><programlisting>
+ldap_servers: @@@ldap_uri@@@
+ldap_version: 3
+ldap_search_base: @@@base_dn@@@
+ldap_filter: (|(uid=%u)(mail=%u)(alias=%u))
+</programlisting></para>
+
+<para> Note that in the configuration file the LDAP search filter is determined
+by the behaviour of the authenticating daemons. Postfix authenticates using the
+fully qualified E-Mail address. The Cyrus IMAP daemon and the Apache webserver
+authenticate forwarding the uid taken from the user's application.</para>
+</sect1>
+
+<sect1><title> Postfix Configuration </title>
+<para>The configuration template used by the Kolab bootstrapping procedure is given here. The file is expected to live in
+<filename>/kolab/etc/kolab/main.cf.template</filename>.
+</para>
+
+<para><programlisting>
+command_directory = /kolab/sbin
+daemon_directory = /kolab/libexec/postfix
+queue_directory = /kolab/var/postfix
+mail_owner= kolab
+setgid_group= kolab-r
+default_privs= kolab-n
+myhostname = @@@fqhostname@@@
+mydomain = @@@postfix-mydomain@@@
+myorigin = $myhostname
+masquerade_domains = $mydomain
+masquerade_exceptions = root
+mynetworks = @@@postfix-mynetworks@@@
+mydestination = @@@postfix-mydestination@@@
+relay_domains =
+canonical_maps = hash:/kolab/etc/postfix/canonical
+virtual_maps = hash:/kolab/etc/postfix/virtual
+relocated_maps = hash:/kolab/etc/postfix/relocated
+transport_maps = hash:/kolab/etc/postfix/transport
+alias_maps = hash:/kolab/etc/postfix/aliases
+alias_database = hash:/kolab/etc/postfix/aliases
+local_recipient_maps = $alias_maps
+recipient_delimiter = +
+mailbox_transport = lmtp:unix:/kolab/var/kolab/lmtp
+smtpd_use_tls = yes
+smtpd_tls_auth_only = no
+smtpd_starttls_timeout = 300s
+smtpd_timeout = 300s
+smtpd_tls_CAfile = /kolab/etc/kolab/CAcert.pem
+smtpd_tls_cert_file = /kolab/etc/kolab/cert.pem
+smtpd_tls_key_file = /kolab/etc/kolab/key.pem
+smtpd_tls_received_header = no
+smtpd_tls_session_cache_timeout = 3600s
+tls_random_source = dev:/dev/urandom
+smtpd_recipient_restrictions = permit_mynetworks,
+	permit_sasl_authenticated,check_relay_domains
+smtpd_sasl_auth_enable = yes
+smtpd_sasl_local_domain = $myhostname
+smtpd_sasl_security_options = noanonymous
+</programlisting></para>
+
+<para>Within master.cf one has to create sockets for connection types of
+SMTP-TLS (Port 465/tcp)
+and to be compatible on Port 587/tcp for type connection. So the postfix master process
+listens on the tcp ports 25, 465 and 587 for incomming connections.
+Note: although with the use of ESMTP commands the allocation of other ports than 
+25/tcp can be omitted some cleints (especially MS Outlook) need port 465/tcp in order
+to setup a TLS connection. Standard ESMTP uses port 25/tcp also for TLS. On connection
+after an EHLO the server states STARTTLS. The client can now switch to encryption on also
+issuing STARTTLS.</para>
+
+<para><filename>/kolab/etc/kolab/master.cf.template</filename> reads:
+</para>
+
+<para><programlisting>
+25      inet  n       -       n       -       -       smtpd
+pickup    fifo  n       -       n       60      1       pickup
+cleanup   unix  n       -       n       -       0       cleanup
+qmgr      fifo  n       -       n       300     1       qmgr
+rewrite   unix  -       -       n       -       -       trivial-rewrite
+bounce    unix  -       -       n       -       0       bounce
+defer     unix  -       -       n       -       0       bounce
+flush     unix  n       -       n       1000?   0       flush
+smtp      unix  -       -       n       -       -       smtp
+showq     unix  n       -       n       -       -       showq
+error     unix  -       -       n       -       -       error
+local     unix  -       n       n       -       -       local
+virtual   unix  -       n       n       -       -       virtual
+lmtp      unix  -       -       n       -       -       lmtp
+</programlisting></para>
+</sect1>
+
+<sect1><title> Cyrus IMAP Daemon </title>
+<para>The configuration template used by the Kolab bootstrapping procedure is given here. The file is expected to live in
+<filename>/kolab/etc/kolab/imapd.conf.template</filename>. There also exists an empty groups file into which the bootstrapping
+procedure inserts groups used by the web administrative interface. At this development stage of Kolab there will be inserted the groups
+admin and maintainer.
+</para>
+
+<para><programlisting>
+configdirectory:        /kolab/var/imapd
+partition-default:      /kolab/var/spool/imap
+admins:                 @@@cyrus-admins@@@
+sasl_pwcheck_method:    saslauthd
+sasl_mech_list:         plain
+sendmail:               /kolab/sbin/sendmail
+allowanonymouslogin:    no
+allowplaintext:         yes
+servername:             @@@fqhostname@@@
+autocreatequota:        @@@cyrus-autocreatequota@@@
+reject8bit:             no
+munge8bit:              no
+quotawarn:              90
+timeout:                30
+sievedir:               /kolab/var/spool/imap/sieve
+lmtpsocket:             /kolab/var/kolab/lmtp
+tls_cert_file:          /kolab/etc/kolab/cert.pem
+tls_key_file:           /kolab/etc/kolab/key.pem
+</programlisting></para>
+</sect1>
+
+<sect1><title> Apache Webserver </title>
+
+<para>As the configuration file of the apache webserver is quite big and we only change a few lines we only present the relevant
+changes needed for Kolab setup. The file is expected to live in <filename>/kolab/etc/kolab/httpd.conf.template</filename>.
+</para>
+
+<sect2><title>Global configuration </title>
+<para><programlisting>
+ServerRoot "/kolab"
+
+User kolab-n
+Group kolab-n
+
+Listen 80
+Listen 443
+
+SSLVerifyClient         none
+SSLCACertificateFile    /kolab/etc/kolab/CAcert.pem
+SSLSessionCache         dbm:/kolab/var/apache/log/ssl_scache
+SSLSessionCacheTimeout  300
+SSLMutex                file:/kolab/var/apache/log/ssl_mutex
+SSLRandomSeed           startup builtin
+SSLRandomSeed           connect builtin
+
+&lt;VirtualHost _default_:443&gt;
+SSLEngine               on
+SSLCipherSuite          ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:
+			+MEDIUM:+LOW:+SSLv2:+EXP:+eNULL
+SSLCertificateFile      /kolab/etc/kolab/cert.pem
+SSLCertificateKeyFile   /kolab/etc/kolab/key.pem
+
+&lt;Files ~ "\.(cgi|shtml|phtml|php4|php3?)$"&gt;
+   SSLOptions +StdEnvVars
+&lt;/Files&gt;
+
+&lt;Directory /kolab/var/kolab/www/cgi-bin&gt;
+   SSLOptions +StdEnvVars
+&lt;/Directory&gt;
+
+&lt;/VirtualHost&gt;
+
+UseCanonicalName Off
+DocumentRoot "/kolab/var/kolab/www"
+
+&lt;Directory /&gt;
+    Options FollowSymLinks
+    AllowOverride None
+&lt;/Directory&gt;
+
+&lt;Location /&gt;
+  ErrorDocument 403 https://@@@fqdn@@@/admin/index.php
+&lt;/Location&gt;
+
+HostnameLookups On
+ErrorLog /kolab/var/apache/log/apache-error.log
+LogLevel warn
+LogFormat "%h %l %u %t \"%r\" %&gt;s %b \"%{Referer}i\" 
+		\"%{User-Agent}i\"" combined
+LogFormat "%h %l %u %t \"%r\" %&gt;s %b" common
+LogFormat "%{Referer}i -> %U" referer
+LogFormat "%{User-agent}i" agent
+CustomLog /kolab/var/apache/log/apache-access.log common
+
+ServerTokens Full
+ServerSignature On
+
+Alias /icons/ "/kolab/var/kolab/www/icons/"
+
+&lt;Directory "/kolab/var/kolab/www/icons"&gt;
+    Options Indexes MultiViews
+    AllowOverride None
+    Order allow,deny
+    Allow from all
+&lt;/Directory&gt;
+
+ScriptAlias /cgi-bin/ "/kolab/var/kolab/www/cgi-bin/"
+
+&lt;Directory "/kolab/var/kolab/www/cgi-bin"&gt;
+    AllowOverride None
+    Options None
+    Order allow,deny
+    Allow from all
+&lt;/Directory&gt;
+</programlisting></para>
+</sect2>
+
+<sect2><title>Providing free/busy </title>
+
+<para> To access the free/busy list of all participating users in legacy mode it
+is necessary to configure the webserver so that it provides the free/busy lists 
+via http(s). The default mode to upload and 
+retrieve free/busy lists is via webdav over https.
+</para>
+
+<para>
+The webdav protocol is supported by Microsoft since Windows 98 provided at least 
+Internet Explorer 5.x and Outlook 2000 are installed.
+We verified correct operation on Windows 98, IE 6.0 and Outlook 2002.
+</para>
+
+<para>
+Authentification for both uploads and downloads is done via Authtype Basic and 
+the LDAP database. In order to protect the credentials form abuse it is a 
+requirement to use TLS.
+</para>
+
+<para><programlisting>
+DavLockDB /kolab/var/kolab/www/locks/DAVlock
+@@@legacy-mode@@@
+&lt;Directory "/kolab/var/kolab/www/freebusy"&gt;
+   Dav On
+   AllowOverride None
+   Options None
+   Order allow,deny
+   &lt;Limit GET PUT LOCK UNLOCK PROPFIND HEAD OPTIONS&gt;
+       Allow from all
+       Require valid-user
+   &lt;Limit&gt;
+   AuthType Basic
+   AuthName "Kolab Freebusy (webdav)"
+
+   LDAP_Server @@@ldap_ip@@@
+   LDAP_Port @@@ldap_port@@@
+   Base_DN "@@@base_dn@@@"
+   Bind_DN "@@@bind_dn@@@"
+   Bind_Pass "@@@bind_pw@@@"
+   UID_Attr uid
+   DavMinTimeout 600
+&lt;Directory&gt;
+</programlisting></para>
+</sect2>
+
+<sect2><title>Web administration </title>
+
+<para> The configuration interface of the Kolab server is provided by HTML pages which are accessible via HTTPS.
+At the first login you need to supply the username manager and the password which is created by the Kolab bootstrapping
+procedure. You can lookup the password which is written into the file <filename>/kolab/etc/openldap/slapd.conf</filename>.
+The password you need for the user manager provided within the line at rootpw.</para>
+
+<para><programlisting>
+&lt;Directory "/kolab/var/kolab/www/admin"&gt;
+   AllowOverride None
+   Options None
+   Order allow,deny
+   Allow from all
+   AuthName "Kolab Admin Area"
+   AuthType Basic
+   LDAP_Server @@@ldap_ip@@@
+   LDAP_Port @@@ldap_port@@@
+   Bind_DN "@@@bind_dn@@@"
+   Bind_Pass "@@@bind_pw@@@"
+   Base_DN "@@@base_dn@@@"
+   UID_Attr uid
+   require valid-user
+   SSLRequireSSL
+&lt;Directory&gt;
+</programlisting></para>
+</sect2>
+</sect1>
+
+<sect1><title> ProFTPd (Legacy Support) </title>
+<para>As the configuration file of the apache webserver is quite big and we only change a few lines we only present the relevant
+changes needed for Kolab setup. The file is expected to live in <filename>/kolab/etc/kolab/proftpd.conf.template</filename>.
+</para>
+
+<para><programlisting>
+ServerType            standalone
+DefaultServer         on
+Port                  21
+PersistentPasswd      off
+LDAPServer            @@@ldap_ip@@@
+LDAPDNinfo            "" ""
+LDAPDoAuth            on "@@@base_dn@@@" "(uid=freebusy)"
+ScoreBoardFile	      /kolab/var/proftpd/score
+LDAPDefaultUID        1002
+LDAPForceDefaultUID   on
+LDAPDefaultGID        1002
+LDAPForceDefaultGID   on
+LDAPHomedirOnDemand             on
+LDAPHomedirOnDemandPrefix       /tmp
+MaxInstances          40
+User                  kolab-n
+Group                 kolab-n
+Umask                 022
+UseReverseDNS         off
+MultilineRFC2228      on
+ShowSymlinks          on
+AllowOverwrite        on
+RequireValidShell     no
+LsDefaultOptions      "-l"
+TimeoutLogin          60
+TimeoutNoTransfer     60
+TimeoutStalled        60
+TimeoutIdle           60
+LogFormat             default "%h %l %u %t \"%r\" %s %b"
+LogFormat             auth    "%v [%P] %h %t \"%r\" %s"
+LogFormat             write   "%h %l %u %t \"%r\" %s %b"
+SystemLog             /kolab/var/proftpd/proftpd.log
+DefaultRoot	      /kolab/var/kolab/www/freebusy
+
+&lt;Global&gt;
+    IdentLookups      off
+    DeferWelcome      off
+    WTmpLog           off
+&lt;/Global&gt;
+&lt;Directory /*&gt;
+    AllowOverwrite    on
+    &lt;Limit STOR&gt;
+        AllowAll
+    &lt;/Limit&gt;
+    &lt;Limit WRITE READ DIRS&gt;
+        IgnoreHidden  on
+        DenyAll
+    &lt;/Limit&gt;
+&lt;/Directory&gt;
+</programlisting></para>
+</sect1>
+
+</chapter>

@@ -1,0 +1,18 @@
+DESCRIPTION:
+
+A commit shortly before the release of RC1 did break the share editing 
+in kronolith and nag in case no Webdav PEAR package is available.
+
+IMPACT:
+
+You won't be able to edit calendars or tasklists.
+
+REFERENCES:
+
+Mercurial patch repository:
+
+http://hg.pardus.de/cgi-bin/hg.cgi/horde/HORDE_3_2_RC1/summary
+
+HISTORY
+
+Fix generated from an upstream commit after RC1.

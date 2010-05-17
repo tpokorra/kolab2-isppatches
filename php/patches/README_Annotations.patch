@@ -1,0 +1,30 @@
+DESCRIPTION:
+
+This provides the imap_getannotation and imap_setannotation functions
+within PHP. This is needed for imap caching in the free/busy system of
+Kolab-2.1. In addition this patch is required to accelerate Horde.
+
+IMPACT:
+
+The free/busy system won't work without this patch. Horde will run
+slower if not using this patch.
+
+REFERENCES:
+
+Kolab bug tracker merge: 
+
+https://intevation.de/roundup/kolab/merge16
+
+Wiki page:
+
+http://wiki.kolab.org/index.php/Template:Patches_php
+
+Mercurial patch repository:
+
+http://hg.pardus.de/cgi-bin/hg.cgi/kolab/patches/php/summary
+
+HISTORY
+
+This patch depends on the imap c-client patch since PHP uses the
+c-client library. This can only move forward once the c-client patch
+has been integrated.

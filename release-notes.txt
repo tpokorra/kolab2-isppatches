@@ -1,0 +1,3541 @@
+Kolab Server 2.2 Release Notes
+==============================
+(Version 2009????, Kolab Server 2.???)
+
+For upgrading and installation instructions, please refer to
+the 1st.README file in the package directory.
+
+
+Changes between 2.2.3 and 2.???:
+
+    - apache-php-5.2.8-20081209_kolab3
+
+	Activated the HASH and JSON modules.
+
+    - Horde_Group-0.1.0dev20091215-2010????
+
+	kolab/issue3983 (Phpunit testsuite fails on OpenPKG Kolab 2.2.2) 
+
+    - Horde_Prefs-0.0.3dev20090501-2010????
+
+	kolab/issue3555 (unable to save filter settings more than once)
+
+    - dimp-1.1.4-2010????
+
+	kolab/issue4080 (DIMP: Mails can not be copied to other folders) 
+
+    - imp-4.3.6-2010????
+
+	Hid IMP and made the dynamic version (dimp) the default view.
+
+	kolab/issue3543 (Display of pure HTML email very clunky, claimed to be
+	                 no displayable part) 
+	kolab/issue4174 (Patch for imp/dimp login by uid)
+
+    - kolab-webadmin-2.2.3-2009????
+
+	kolab/issue1446 (Webinterface for setting vacation, email-delivery and
+	                 forwarding (rt#5033))
+	kolab/issue3401 (Change font color of the kolab-webadmin)
+	kolab/issue3428 (Present the checkbox in the "accept internet email"
+	                 nicer)
+
+    - Kolab_Filter-0.1.9-2010????
+
+	Added french translation. Submitted by Mathieu Parent
+	(mathieuparent@users.sourceforge.net).
+
+	kolab/issue1336 (Resource booking fails, if TRANSP:TRANSPARENT in the
+	                 invitation)
+	kolab/issue1382 (resmgr accepts concurrent overlapping invitations)
+	kolab/issue3289 (resmgr dies when it should accept, but has not Calender
+	                 folder access)
+	kolab/issue3364 (manpages for kolabfilter and kolabmailboxfilter)
+	kolab/issue3560 (php error when inviting outside of free/busy interval)
+	kolab/issue3616 (automatic replies to invitations contain 127.0.0.1 in
+	                 Message-ID)
+	kolab/issue3962 (Names of config variables for "untrusted" text missleading)
+	kolab/issue3967 (UNTRUSTED vs. UNAUTHENTICATED, distinction considered harmful)
+	kolab/issue3983 (Phpunit testsuite fails on OpenPKG Kolab 2.2.2)
+	kolab/issue4257 ("Always accept" policy doesn't set atendee status
+	                 to "accepted")
+
+    - Kolab_Format-1.0.1-2009????
+
+	kolab/issue3520 (calendar with certain entries does not display in web
+	                 client)
+	kolab/issue3525 (free/busy regeneration aborts for unparsable events)
+	kolab/issue3528 (Events with broken encoding should work)
+
+    - Kolab_FreeBusy-0.1.5-2009????
+
+	Improved handling of dba access.
+	Extended support for more complex scenario testing.
+
+	kolab/issue3415 (freebusy cache regeneration on the command line looks
+	                 confusing)
+	kolab/issue3446 (SERVER_NAME undefined in freebusy/regenerate.php)
+	kolab/issue3450 (freebusy/user@example.com.ifb returns extended
+	                 free/busy information)
+	kolab/issue3527 (no immediately printing of folders during
+	                 freebusy cache regeneration)
+	kolab/issue3537 (Allowing xfb access to groups does not work)
+	kolab/issue3983 (Phpunit testsuite fails on OpenPKG Kolab 2.2.2) 
+
+    - Kolab_Server-0.5.0-2010????
+
+	Support configurable attribute mapping.
+
+	kolab/issue3537 (Allowing xfb access to groups does not work)
+	kolab/issue3983 (Phpunit testsuite fails on OpenPKG Kolab 2.2.2) 
+
+    - Kolab_Storage-0.4.0-2010????
+
+	kolab/issue3416 (webclient hangs if freebusy triggering/retrieving hangs)
+	kolab/issue3983 (Phpunit testsuite fails on OpenPKG Kolab 2.2.2)
+	kolab/issue4165 (kolab-webclient does not show shared/
+	                 calendar and contact folders)
+
+    - kolabd-2.?.?-2009????
+
+	Require the tokenizer module in php and apache-php.
+
+	Corrected a syntax error in dist_conf/debian
+
+	Allow commas in dist_conf
+
+	Select random imap partition when creating new user mailboxes.
+
+	Use RUNONCHANGE mechanism to restart or reload sasl, apache, amavisd,
+	clamav, postfix and imapd.
+	
+	dist_conf'iguration of php.ini.template.in for safe_mode_include_dir.
+	End with slash as recommended in http://php.net/ini.sect.safe-mode
+
+	Support configurable attribute mapping.
+
+	kolab/issue1382 (resmgr accepts concurrent overlapping invitations)
+	kolab/issue1671 (Improving the warning about kolab templates within
+	                 configuration files)
+	kolab/issue1740 (fully generate slapd.access, slapd.replicas,
+	                 transport, virtual and imapd.groups by templates)
+	                 using the new @@@print@@@ macro (perl-kolab) and
+	                 RUNONCHANGE.
+	kolab/issue1755 (syncrepl support (for OpenLDAP >=2.4.6))
+	kolab/issue2499 (Notification messages by the resource manager sould be
+	                 localized)
+	kolab/issue3490 (Please include dist_conf/kolabsrv.in in source
+	                 packages)
+	kolab/issue3584 (rfc2739 is not copyrightable nor licensable)
+	kolab/issue3765 (dist_conf'iguration for openldap module loading)
+	kolab/issue3953 (use spamassassin_confdir in local.cf.template comment)
+	kolab/issue3962 (Names of config variables for "untrusted" text missleading)
+	kolab/issue3979 (improve kolab_ca.sh usability)
+	kolab/issue4311 (Activate port 587 for email submission)
+
+    - kolab-fbview-1.2.0-2009????
+
+	kolab/issue3293 (Big code duplication and code version messup: Horde
+	                 libs in 2.2.1)
+	kolab/issue3439 (FreeBusy display in web client and fbview depends on
+	                 kolabHomeServer in LDAP)
+
+    - kolab-webadmin-2.?.?-2009????
+
+	kolab/issue991  (Better error message when connecting to sieve fails)
+	kolab/issue3401 (Change font color of the kolab-webadmin)
+
+    - kolab-webclient-1.2.0-2009????
+
+	kolab/issue1623 ([horde/horde-kronolith] Add support for Date_Holidays)
+	kolab/issue3293 (Big code duplication and code version messup: Horde
+	                 libs in 2.2.1)
+	kolab/issue3509 (calender not displaying in horde if german holidays
+	                 are selected)
+
+    - kronolith-2.2.3-2010????
+
+	kolab/issue3848 (display "Basic Search" and "Advanced Search"
+	                 as tabs in place of a small table header.)
+	kolab/issue3885 (Modifying start date of recurring events does not
+	                 update recurrance dates)
+	kolab/issue4048 (Some German translations missing in kronolith)
+
+    - nag-2.3.4-2010????
+
+	kolab/issue3888 (Organizer field not saved in Tasks written by
+	                 kolab-webclient)
+
+    - PEAR-Date_Holidays-0.21.2-1
+
+	kolab/issue1623 ([horde/horde-kronolith] Add support for Date_Holidays)
+	kolab/issue3509 (calender not displaying in horde if german holidays
+	                 are selected)
+
+    - PEAR-Mail-1.1.14-2
+
+	kolab/issue3983 (Phpunit testsuite fails on OpenPKG Kolab 2.2.2)
+
+    - PEAR-Mail_mimeDecode-1.5.0-2
+
+	kolab/issue3983 (Phpunit testsuite fails on OpenPKG Kolab 2.2.2) 
+
+    - perl-kolab-2.?.?-2009????
+
+	Select random imap partition when creating new user mailboxes.
+
+	Removed special handling of saslauthd, apache, amavisd and clamav.
+	Do not handle postfix reload and postmap calls.
+
+	Execute duplicate RUNONCHANGE commands only once.
+
+	new @@@print@@@ macro available for: getLDAPReplicas(),
+	getLDAPAccess(), getCyrusGroups(), getPostfixMap(map).  This removed
+	the use of %special_templates, %haschanged, Kolab::Conf::reload().
+
+	Touch configuration only when there is a change. This avoid postfix
+	complaining about "database X.db is older than source file X".
+
+	Added arguments to rebuildTemplates(): dorunonchange and templates.
+	Use those in kolab_bootstrap (in replacement of bootstrapConfig()).
+
+	kolab/issue919  (kolab server has problems with some characters in
+	                 passwords (rt#5558)) 
+	kolab/issue1679 (Update template META mechanism to support service
+	                 restarts)
+	kolab/issue3604 (Change LDAPD in kolab_bootstrap to just openldap)
+	kolab/issue3951 (kolabconf -n (noreload) restarts services if
+	                 RUNONCHANGE is used)
+	kolab/issue4024 (Lots of tmp files in kolab's configuration directory) 
+	kolab/issue4237 (additional event.default folder created by
+	                 kolabd (rt#6038))
+	kolab/issue4275 (LDAP.pm quota error)
+	kolab/issue4311 (Activate port 587 for email submission)
+
+    - php-5.2.8-20081209_kolab3
+
+	Activated the HASH and JSON modules.
+
+	Added support for PDO sqlite3.
+
+    - turba-2.3.3-2010????
+
+	kolab/issue3859 ([turba] optimized formatName function and
+	                 fallback to company attribute)
+
+
+    Packages in the OpenPKG based Kolab server release:
+
+    ???
+
+Changes between 2.2.3 and 2.2.x:
+
+    - kolabd-2.2.?-20??????
+
+	Require the json module in php and apache-php.
+
+	Disable FH_DATE_PAST_20XX spamassassin test, which is broken
+	for 2010 and later...
+
+	kolab/issue2244 (SpamAssassin uses DNS blacklists)
+	kolab/issue4176 (Adding RSS feed to Horde breaks portal screen) 
+
+    - kolab-webadmin-2.2.?-20??????
+
+	kolab/issue3499 (Kolab web admin does not use LDAP escaping)
+	kolab/issue4025 (Users can not change theire password (in 2.2.3))
+
+    - imapd-2.3.13-20081020_kolab?
+
+        kolab/issue1141 (Cannot give users from other domains access to a folder (rt#5747))
+
+
+Changes between 2.2.2 and 2.2.3:
+
+    - clamav-0.95.3-20091030
+
+	kolab/issue3513 (Clamav - new upstream version 0.95.3)
+
+    - db-4.5.20.2-20070628_kolab1
+
+	kolab/issue2982 (OpenLDAP segmentation fault on 64bit)
+
+    - imapd-2.3.13-20081020_kolab4
+
+	Fix buffer size calculations for sieve actions_string (CVE-2009-2632)
+
+	kolab/issue3838 (no logging for pop3)
+
+    - install-kolab.sh
+
+	Fix handling of -B and -E with existing OpenPKG installations.
+
+	kolab/issue2924 (install-kolab.sh: -maxdepth/-mindepth not supported
+	                 by all find implementations)
+
+    - kolabd-2.2.3-20091217
+
+	kolab/issue840  (Annotations needs to be more robust (skiplist
+	                 problems)) as the now integrated imapd-2.3.13
+	                 (see below) has additional skiplist fixes and
+	                 the switch to berkeley-db for mailboxes.db
+	                 and annotations.db introduced new problems we
+	                 switched back to skiplist as default.
+	kolab/issue919  (kolab server has problems with some characters in
+	                 passwords)
+	kolab/issue973  (Rewritten from shown inconveniently in kontact)
+	kolab/issue1880 (Poor handling of apostrophes in ldap and admin
+	                 webpages)
+	kolab/issue2499 (Notification messages by the resource manager
+	                 should be localized)
+	kolab/issue3654 (Special character issue in Kolab web
+	                 interface (e.g. vacation message))
+	kolab/issue3499 (creating/modifying users with special characters
+	                 in name confuses web admin)
+	kolab/issue3594 (Mail containing NUL byte not delivered, Kolab
+	                 Filter does not report lmtp error)
+	kolab/issue3895 (Openldap: loglevel should be set to none in
+	                 slapd.conf)
+
+    - Kolab_Filter-0.1.4-20091203
+
+	kolab/issue973  (Rewritten from shown inconveniently in kontact)
+	kolab/issue2495 (The reply to an invitation with umlauts of a
+	                 group account doesn't display the umlauts.)
+	kolab/issue2499 (Notification messages by the resource manager
+	                 should be localized)
+	kolab/issue2544 (Encoding problem in cancelled appointments)
+	kolab/issue3462 (DIMP does not decode UTF-8 encoded From: headers)
+	kolab/issue3464 (kolab-filter inserts wrong/undecodeable utf-8 code
+	                 into From: header)
+	kolab/issue3594 (Mail containing NUL byte not delivered, Kolab
+	                 Filter does not report lmtp error)
+	kolab/issue3610 (Mail to unknown@something.example.com gets
+	                 accepted and yields kolabmailboxfilter exit 38)
+	kolab/issue3868 (Resmgr eats up all memory and dies on some
+	                 recuring events)
+	kolab/issue3965 (Always accept: invitations get lost when
+	                 Calendar folder ist not writable for the
+	                 calendar user)
+
+    - Kolab_Server-0.4.0-20091013
+
+	Added ability to map arbitrary ldap attributes to those
+	expected by kolab.  This feature is experimental and very
+	little tested.
+
+    - kolab-webadmin-2.2.3-20091217
+
+	kolab/issue1340 (RFC: restrict users to sending mail only to
+	                 internal recipients)
+	kolab/issue3428 (Present the checkbox in the "accept internet email"
+	                 nicer)
+	kolab/issue3499 (Kolab web admin does not use LDAP escaping)
+
+    - kolab-webclient-1.2.0-20091202
+
+	SECURITY: Fixed image upload form issue.
+
+	A proxy user can now be defined in the
+	webclient-kolab-conf.template which allows anonymous read only
+	access to all the users calendars.
+
+	The proxy users calender-events can be integrated into third
+	party sites using the new client/kronolith/imple_kolab.php
+	feature.
+
+	Calendars accessible for the proxy user can be anonymously
+	downloaded as ics files.
+
+	kolab/issue3237 (Double Sync with SyncML when using external
+	                 client)
+	kolab/issue3238 (Double Entries with SyncML when the folder uid
+	                 validity changes)
+	kolab/issue3509 (calender not displaying in horde if german
+	                 holidays are selected)
+	kolab/issue3555 (unable to save filter settings more than once)
+	kolab/issue3567 (Migrate Horde prefs 2.2.0 -> 2.2.1, 2.2.2)
+	kolab/issue3656 (Unable to SyncML Calendar / PHP Fatal error
+	                 compareDateTime())
+	kolab/issue3768 (Kolab server 2.2.2 resmgr doesn't copy attendee
+	                 status (rt#5801))
+	kolab/issue3767 (Kolab server 2.2.0 resmgr creates incorrect event
+	                 attendee status values)
+	kolab/issue3844 (New user preference to specify order of date
+	                 input fields)
+	kolab/issue3846 (fix recurring events that are counted per week
+	                 and not per incident)
+	kolab/issue3856 (IMP/DIMP folder navigator does not allow
+                         creating/deleting/... mail folders)
+	kolab/issue3891 (Undefined variable: suid_ts , Kolab SyncML patch
+	                 update needed)
+	kolab/issue3892 (Patch enabling SyncML support for the SE P1i
+	                 mobile phone)
+	kolab/issue3894 (kronolith writes recurrent event data
+	                 non-conformant to vCal (1.0) standard)
+
+    - openpkg-20071227-20071227_kolab2
+
+	Fixed cflags for amd64 systems.  Related to:
+	kolab/issue2982 (OpenLDAP segmentation fault on 64bit)
+
+    - PEAR-Net_LDAP2-2.0.0RC5-1
+
+	New package, needed for ldap attribute mapping.
+
+    - perl-kolab-2.2.3-20091217
+
+	kolab/issue919  (kolab server has problems with some characters in
+	                 passwords)
+	kolab/issue1340 (RFC: restrict users to sending mail only to
+	                 internal recipients)
+	kolab/issue1448 (Users might add an account on the nonHome Server
+	                 and write emails in there.)
+	kolab/issue3764 (kolab.conf: bind_pw_hash not set on slaves, causes
+	                 OpenLDAP restarts)
+        kolab/issue3940 (Deleting users does not work if master Kolab
+	                 server is not master LDAP (rt5889))
+	kolab/issue3951 (kolabconf -n (noreload) restarts services if
+	                 RUNONCHANGE is used)
+	kolab/issue3952 (Version in kolabconf is not replaced in the build
+	                 process)
+
+    - procmail-3.22-20090727
+
+	kolab/issue3938 (compiling procmail fails on Fedora 11 and Ubuntu karmic)
+
+
+    Packages in the OpenPKG based Kolab server release:
+
+    - Kolab packages:
+
+      Added:
+
+	PEAR-Net_LDAP2-2.0.0RC5-1
+
+      Updated:
+
+	Kolab_Filter-0.1.4-20091203
+	Kolab_Server-0.4.0-20091013
+	clamav-0.95.3-20091030
+	kolab-webadmin-2.2.3-20091217
+	kolab-webclient-1.2.0-20091202
+	kolabd-2.2.3-20091217
+	perl-kolab-2.2.3-20091217
+
+      Unchanged:
+
+	Horde_Argv-0.1.0-20081209
+	Horde_Auth-0.1.1-20081209
+	Horde_Browser-0.0.2-20081209
+	Horde_CLI-0.0.2-20081209
+	Horde_Cache-0.0.2-20081209
+	Horde_Cipher-0.0.2-20081209
+	Horde_DOM-0.1.0-20081209
+	Horde_DataTree-0.0.3-20081209
+	Horde_Date-0.1.0-20081209
+	Horde_Framework-0.0.2-20081209
+	Horde_Group-0.1.0-20081209
+	Horde_History-0.0.2-20081209
+	Horde_LDAP-0.0.2-20081209
+	Horde_MIME-0.0.2-20081209
+	Horde_NLS-0.0.2-20081209
+	Horde_Notification-0.0.2-20090223
+	Horde_Perms-0.1.0-20081209
+	Horde_Prefs-0.0.3-20090223
+	Horde_Secret-0.0.2-20081209
+	Horde_Serialize-0.0.2-20081209
+	Horde_SessionObjects-0.0.2-20081209
+	Horde_Util-0.1.0-20081209
+	Horde_iCalendar-0.1.0-20081209
+	Kolab_Format-1.0.0-20090402
+	Kolab_FreeBusy-0.1.2-20090406
+	Kolab_Storage-0.4.0-20090224
+	PEAR-Auth_SASL-1.0.2-1
+	PEAR-Date-1.4.7-1
+	PEAR-HTTP_Request-1.4.3-1
+	PEAR-Horde-Channel-1.0-20090119
+	PEAR-Log-1.11.2-1
+	PEAR-Mail-1.1.14-1
+	PEAR-Mail_mimeDecode-1.5.0-20081209
+	PEAR-Net_LMTP-1.0.1-1
+	PEAR-Net_SMTP-1.3.1-1
+	PEAR-Net_Socket-1.0.9-1
+	PEAR-Net_URL-1.0.15-1
+	PEAR-PHPUnit-Channel-1.0-20090119
+	PHPUnit-3.3.3-1
+	kolab-fbview-1.2.0-20081227
+	openldap-2.3.43-20081212
+	perl-ldap-5.10.0-20081028_kolab1
+	php-smarty-2.6.20-20081212
+	sqlite-3.6.4-20081212
+
+    - OpenPKG packages:
+
+      Updated:
+
+	db-4.5.20.2-20070628_kolab1
+	imapd-2.3.13-20081020_kolab4
+	openpkg-20071227-20071227_kolab2
+	procmail-3.22-20090727
+
+      Unchanged:
+
+	amavisd-2.5.3-20080101
+	apache-2.2.10-20081111
+	apache-php-5.2.8-20081209_kolab2
+	apr-1.2.12-20080101
+	autoconf-2.61-20080101
+	automake-1.10-20080101
+	bc-1.06-20080101
+	binutils-2.18-20080101
+	bison-2.3-20080101
+	bzip2-1.0.5-20080318
+	config-20060923-20080101
+	curl-7.17.1-20080101
+	diffutils-2.8.7-20080101
+	expat-2.0.1-20080101
+	file-4.23-20080101
+	flex-2.5.34-20080101
+	freetype-2.3.5-20080101
+	fsl-1.7.0-20080101
+	gawk-3.1.6-20080101
+	gcc-4.2.2-20080101
+	gd-2.0.35-20080101
+	gettext-0.17-20080101
+	gmp-4.2.2-20080101_kolab
+	grep-2.5.3-20080101
+	groff-1.19.2-20080101
+	gzip-1.3.12-20080101
+	imap-2006k-20080101
+	jpeg-6b-20080101
+	libiconv-1.12-20080101
+	libmcrypt-2.5.8-20080101
+	libxml-2.6.31-20080111
+	libxslt-1.1.22-20080101
+	lzo-2.02-20080101
+	m4-1.4.9-20080101
+	make-3.81-20080101
+	mhash-0.9.9-20080101
+	mm-1.4.2-20080101
+	ncurses-5.6.20080112-20080113
+	openpkg-tools-1.4.6-20071231
+	openssl-0.9.8g-20080101
+	pcre-7.5-20080110
+	perl-5.10.0-20080103
+	perl-comp-5.10.0-20080110
+	perl-conv-5.10.0-20080101
+	perl-crypto-5.10.0-20080101
+	perl-db-5.10.0-20080118
+	perl-dns-5.10.0-20080101
+	perl-ds-5.10.0-20080104
+	perl-locale-5.10.0-20080112
+	perl-mail-5.10.0-20080117
+	perl-module-5.10.0-20080101
+	perl-net-5.10.0-20080101
+	perl-openpkg-5.10.0-20080109
+	perl-parse-5.10.0-20080117
+	perl-ssl-5.10.0-20080101
+	perl-stats-5.10.0-20080101
+	perl-sys-5.10.0-20080101
+	perl-term-5.10.0-20080116
+	perl-text-5.10.0-20080101
+	perl-time-5.10.0-20080101
+	perl-util-5.10.0-20080116
+	perl-www-5.10.0-20080103
+	perl-xml-5.10.0-20080101
+	php-5.2.8-20081209_kolab2
+	pkgconfig-0.23-20080117
+	png-1.2.24-20080101
+	postfix-2.4.6-20080101_kolab
+	readline-5.2.12-20080101
+	sasl-2.1.22-20080101
+	sed-4.1.5-20080101
+	spamassassin-3.2.4-20080107
+	texinfo-4.11-20080101
+	zlib-1.2.3-20080101
+
+
+Changes between 2.2.1 and 2.2.2:
+
+    - clamav-0.95.1-20090409
+
+	kolab/issue3513 (Clamav - new upstream version 0.95.1)
+
+    - kolabd-2.2.2-20090514
+
+	Make kolabAllowSMTPRecipient readable for the nobody user, needed for
+	kolab/issue1340 (RFC: restrict users to sending mail only to internal
+	recipients)
+
+	kolab/issue3513 (Clamav - new upstream version 0.95.1)
+	kolab/issue3549 (append_dot_mydomain allows circumventing
+	                 kolabfilter-verify-from-header)
+
+    - Kolab_Filter-0.1.4-20090504
+
+	kolab/issue3521 (kolabmailboxfilter does not accept mail for
+	                 user+extension@example.com)
+	kolab/issue3558 (whole-day events broken for resources)
+	kolab/issue3568 (umlauts broken in automatically accepted events)
+
+    - kolab-webadmin-2.2.2-20090514
+
+	kolab/issue2505 (update of the french translation for kolab-server 2.2)
+	kolab/issue3570 (Viewing external addresses fails to display phone
+	                 numbers and some other values)
+
+    - kolab-webclient-1.2.0-20090514
+
+	kolab/issue3329 (Can not accept/deny invitations in Dimp)
+	kolab/issue3420 (web client prefs and hooks should be
+	                 configurable via templates)
+	kolab/issue3455 (There is no convenient/dimp-like way in dimp
+	                 to set folder acls)
+	kolab/issue3456 (There is no view in dimp that allows folder
+	                 subscription)
+
+
+    Packages in the OpenPKG based Kolab server release:
+
+    - Kolab packages:
+
+      Updated:
+
+	Kolab_Filter-0.1.4-20090504
+	kolab-webadmin-2.2.2-20090514
+	kolab-webclient-1.2.0-20090514
+	kolabd-2.2.2-20090514
+
+      Unchanged:
+
+	Horde_Argv-0.1.0-20081209
+	Horde_Auth-0.1.1-20081209
+	Horde_Browser-0.0.2-20081209
+	Horde_CLI-0.0.2-20081209
+	Horde_Cache-0.0.2-20081209
+	Horde_Cipher-0.0.2-20081209
+	Horde_DOM-0.1.0-20081209
+	Horde_DataTree-0.0.3-20081209
+	Horde_Date-0.1.0-20081209
+	Horde_Framework-0.0.2-20081209
+	Horde_Group-0.1.0-20081209
+	Horde_History-0.0.2-20081209
+	Horde_LDAP-0.0.2-20081209
+	Horde_MIME-0.0.2-20081209
+	Horde_NLS-0.0.2-20081209
+	Horde_Notification-0.0.2-20090223
+	Horde_Perms-0.1.0-20081209
+	Horde_Prefs-0.0.3-20090223
+	Horde_Secret-0.0.2-20081209
+	Horde_Serialize-0.0.2-20081209
+	Horde_SessionObjects-0.0.2-20081209
+	Horde_Util-0.1.0-20081209
+	Horde_iCalendar-0.1.0-20081209
+	Kolab_Format-1.0.0-20090402
+	Kolab_FreeBusy-0.1.2-20090406
+	Kolab_Server-0.4.0-20090224
+	Kolab_Storage-0.4.0-20090224
+	PEAR-Auth_SASL-1.0.2-1
+	PEAR-Date-1.4.7-1
+	PEAR-HTTP_Request-1.4.3-1
+	PEAR-Horde-Channel-1.0-20090119
+	PEAR-Log-1.11.2-1
+	PEAR-Mail-1.1.14-1
+	PEAR-Mail_mimeDecode-1.5.0-20081209
+	PEAR-Net_LMTP-1.0.1-1
+	PEAR-Net_SMTP-1.3.1-1
+	PEAR-Net_Socket-1.0.9-1
+	PEAR-Net_URL-1.0.15-1
+	PEAR-PHPUnit-Channel-1.0-20090119
+	PHPUnit-3.3.3-1
+	kolab-fbview-1.2.0-20081227
+	openldap-2.3.43-20081212
+	perl-kolab-2.2.1-20090331
+	perl-ldap-5.10.0-20081028_kolab1
+	php-smarty-2.6.20-20081212
+	sqlite-3.6.4-20081212
+
+    - OpenPKG packages:
+
+      Updated:
+
+	clamav-0.95.1-20090409
+
+      Unchanged:
+
+	amavisd-2.5.3-20080101
+	apache-2.2.10-20081111
+	apache-php-5.2.8-20081209_kolab2
+	apr-1.2.12-20080101
+	autoconf-2.61-20080101
+	automake-1.10-20080101
+	bc-1.06-20080101
+	binutils-2.18-20080101
+	bison-2.3-20080101
+	bzip2-1.0.5-20080318
+	config-20060923-20080101
+	curl-7.17.1-20080101
+	db-4.5.20.2-20070628
+	diffutils-2.8.7-20080101
+	expat-2.0.1-20080101
+	file-4.23-20080101
+	flex-2.5.34-20080101
+	freetype-2.3.5-20080101
+	fsl-1.7.0-20080101
+	gawk-3.1.6-20080101
+	gcc-4.2.2-20080101
+	gd-2.0.35-20080101
+	gettext-0.17-20080101
+	gmp-4.2.2-20080101_kolab
+	grep-2.5.3-20080101
+	groff-1.19.2-20080101
+	gzip-1.3.12-20080101
+	imap-2006k-20080101
+	imapd-2.3.13-20081020_kolab2
+	jpeg-6b-20080101
+	libiconv-1.12-20080101
+	libmcrypt-2.5.8-20080101
+	libxml-2.6.31-20080111
+	libxslt-1.1.22-20080101
+	lzo-2.02-20080101
+	m4-1.4.9-20080101
+	make-3.81-20080101
+	mhash-0.9.9-20080101
+	mm-1.4.2-20080101
+	ncurses-5.6.20080112-20080113
+	openpkg-20071227-20071227_kolab1
+	openpkg-tools-1.4.6-20071231
+	openssl-0.9.8g-20080101
+	pcre-7.5-20080110
+	perl-5.10.0-20080103
+	perl-comp-5.10.0-20080110
+	perl-conv-5.10.0-20080101
+	perl-crypto-5.10.0-20080101
+	perl-db-5.10.0-20080118
+	perl-dns-5.10.0-20080101
+	perl-ds-5.10.0-20080104
+	perl-locale-5.10.0-20080112
+	perl-mail-5.10.0-20080117
+	perl-module-5.10.0-20080101
+	perl-net-5.10.0-20080101
+	perl-openpkg-5.10.0-20080109
+	perl-parse-5.10.0-20080117
+	perl-ssl-5.10.0-20080101
+	perl-stats-5.10.0-20080101
+	perl-sys-5.10.0-20080101
+	perl-term-5.10.0-20080116
+	perl-text-5.10.0-20080101
+	perl-time-5.10.0-20080101
+	perl-util-5.10.0-20080116
+	perl-www-5.10.0-20080103
+	perl-xml-5.10.0-20080101
+	php-5.2.8-20081209_kolab2
+	pkgconfig-0.23-20080117
+	png-1.2.24-20080101
+	postfix-2.4.6-20080101_kolab
+	procmail-3.22-20080101
+	readline-5.2.12-20080101
+	sasl-2.1.22-20080101
+	sed-4.1.5-20080101
+	spamassassin-3.2.4-20080107
+	texinfo-4.11-20080101
+	zlib-1.2.3-20080101
+
+
+Changes between 2.2.1-rc-1 and 2.2.1:
+
+    - clamav-0.95-20090323
+
+	kolab/issue3513 (Clamav - new upstream version 0.95)
+
+    - imapd-2.3.13-20081020_kolab2
+
+	kolab/issue2535 (group:distributionlist@example.com doesn't work
+	                 for Cyrus IMAP ACLs)
+
+    - install-kolab.sh
+
+	kolab/issue3130 (Perl Error on Upgrade)
+
+    - kolabd-2.2.1-20090407
+
+	Disable quarantine of mails with bad headers in amavisd template
+	since they are passed through by default.
+
+	kolab/issue3096 (Address book aliases shouldn't redirect outgoing
+	                 mails)
+	kolab/issue3420 (web client prefs and hooks should be
+	                 configurable via templates)
+	kolab/issue3513 (Clamav - new upstream version 0.95)
+
+    - Kolab_Filter-0.1.4-20090401
+
+	Fixed quoting of arguments to dovecot deliver command in the
+	DovecotLDA transport backend.
+
+	kolab/issue3464 (kolab-filter inserts wrong/undecodeable utf-8 code
+	                 into From: header)
+	kolab/issue3521 (kolabmailboxfilter does not accept mail for
+	                 user+extension@example.com)
+
+    - Kolab_Format-1.0.0-20090402
+
+	kolab/issue3525 (free/busy regeneration aborts for unparsable events)
+
+    - Kolab_FreeBusy-0.1.2-20090406
+
+	kolab/issue3413 (freebusy fails after uprading Kolab_FreeBusy
+	                 until kolabconf is run)
+	kolab/issue3438 (kolabFreeBusyPast is not used)
+	kolab/issue3450 (freebusy/user@example.com.ifb returns extended
+	                 free/busy information)
+	kolab/issue3537 (Allowing xfb access to groups does not work)
+
+    - kolab-webadmin-2.2.1-20090331
+
+	Fix undefined variable $conn in ldap.class.php
+
+    - kolab-webclient-1.2.0-20090327
+
+	kolab/issue3420 (web client prefs and hooks should be
+	                 configurable via templates)
+	kolab/issue3444 (No error message when login fails because
+	                 of wrong credentials)
+	kolab/issue3451 (Folder list does not get updated in dimp after
+	                 creating a new folder)
+	kolab/issue3452 (Allow to configure the default imp view offered
+	                 to the user)
+	kolab/issue3520 (calendar with certain entries does not display in
+	                 web client)
+	kolab/issue3528 (Events with broken encoding should work)
+
+    - openpkg-20071227-20071227_kolab1
+
+	kolab/issue2871 (openpkg-20071227-20071227 does not compile with
+	                 gcc 4.3)
+
+    - perl-kolab-2.2.1-20090331
+
+	Creating the Calendar folder caused an KOLAB_ERROR to be logged,
+	changed to KOLAB_DEBUG.
+
+	kolab/issue3472 (web client user prefs not deleted when user gets
+	                 deleted)
+
+
+    Packages in the OpenPKG based Kolab server release:
+
+    - Kolab packages:
+
+      Updated:
+
+	Kolab_Filter-0.1.4-20090401
+	Kolab_Format-1.0.0-20090402
+	Kolab_FreeBusy-0.1.2-20090406
+	kolab-webadmin-2.2.1-20090331
+	kolab-webclient-1.2.0-20090402
+	kolabd-2.2.1-20090407
+	perl-kolab-2.2.1-20090331
+
+      Unchanged:
+
+	Horde_Argv-0.1.0-20081209
+	Horde_Auth-0.1.1-20081209
+	Horde_Browser-0.0.2-20081209
+	Horde_CLI-0.0.2-20081209
+	Horde_Cache-0.0.2-20081209
+	Horde_Cipher-0.0.2-20081209
+	Horde_DOM-0.1.0-20081209
+	Horde_DataTree-0.0.3-20081209
+	Horde_Date-0.1.0-20081209
+	Horde_Framework-0.0.2-20081209
+	Horde_Group-0.1.0-20081209
+	Horde_History-0.0.2-20081209
+	Horde_LDAP-0.0.2-20081209
+	Horde_MIME-0.0.2-20081209
+	Horde_NLS-0.0.2-20081209
+	Horde_Notification-0.0.2-20090223
+	Horde_Perms-0.1.0-20081209
+	Horde_Prefs-0.0.3-20090223
+	Horde_Secret-0.0.2-20081209
+	Horde_Serialize-0.0.2-20081209
+	Horde_SessionObjects-0.0.2-20081209
+	Horde_Util-0.1.0-20081209
+	Horde_iCalendar-0.1.0-20081209
+	Kolab_Server-0.4.0-20090224
+	Kolab_Storage-0.4.0-20090224
+	PEAR-Auth_SASL-1.0.2-1
+	PEAR-Date-1.4.7-1
+	PEAR-HTTP_Request-1.4.3-1
+	PEAR-Horde-Channel-1.0-20090119
+	PEAR-Log-1.11.2-1
+	PEAR-Mail-1.1.14-1
+	PEAR-Mail_mimeDecode-1.5.0-20081209
+	PEAR-Net_LMTP-1.0.1-1
+	PEAR-Net_SMTP-1.3.1-1
+	PEAR-Net_Socket-1.0.9-1
+	PEAR-Net_URL-1.0.15-1
+	PEAR-PHPUnit-Channel-1.0-20090119
+	PHPUnit-3.3.3-1
+	kolab-fbview-1.2.0-20081227
+	openldap-2.3.43-20081212
+	perl-ldap-5.10.0-20081028_kolab1
+	php-smarty-2.6.20-20081212
+	sqlite-3.6.4-20081212
+
+    - OpenPKG packages:
+
+      Updated:
+
+	clamav-0.95-20090323
+	imapd-2.3.13-20081020_kolab2
+	openpkg-20071227-20071227_kolab1
+
+      Unchanged:
+
+	amavisd-2.5.3-20080101
+	apache-2.2.10-20081111
+	apache-php-5.2.8-20081209_kolab2
+	apr-1.2.12-20080101
+	autoconf-2.61-20080101
+	automake-1.10-20080101
+	bc-1.06-20080101
+	binutils-2.18-20080101
+	bison-2.3-20080101
+	bzip2-1.0.5-20080318
+	config-20060923-20080101
+	curl-7.17.1-20080101
+	db-4.5.20.2-20070628
+	diffutils-2.8.7-20080101
+	expat-2.0.1-20080101
+	file-4.23-20080101
+	flex-2.5.34-20080101
+	freetype-2.3.5-20080101
+	fsl-1.7.0-20080101
+	gawk-3.1.6-20080101
+	gcc-4.2.2-20080101
+	gd-2.0.35-20080101
+	gettext-0.17-20080101
+	gmp-4.2.2-20080101_kolab
+	grep-2.5.3-20080101
+	groff-1.19.2-20080101
+	gzip-1.3.12-20080101
+	imap-2006k-20080101
+	jpeg-6b-20080101
+	libiconv-1.12-20080101
+	libmcrypt-2.5.8-20080101
+	libxml-2.6.31-20080111
+	libxslt-1.1.22-20080101
+	lzo-2.02-20080101
+	m4-1.4.9-20080101
+	make-3.81-20080101
+	mhash-0.9.9-20080101
+	mm-1.4.2-20080101
+	ncurses-5.6.20080112-20080113
+	openpkg-tools-1.4.6-20071231
+	openssl-0.9.8g-20080101
+	pcre-7.5-20080110
+	perl-5.10.0-20080103
+	perl-comp-5.10.0-20080110
+	perl-conv-5.10.0-20080101
+	perl-crypto-5.10.0-20080101
+	perl-db-5.10.0-20080118
+	perl-dns-5.10.0-20080101
+	perl-ds-5.10.0-20080104
+	perl-locale-5.10.0-20080112
+	perl-mail-5.10.0-20080117
+	perl-module-5.10.0-20080101
+	perl-net-5.10.0-20080101
+	perl-openpkg-5.10.0-20080109
+	perl-parse-5.10.0-20080117
+	perl-ssl-5.10.0-20080101
+	perl-stats-5.10.0-20080101
+	perl-sys-5.10.0-20080101
+	perl-term-5.10.0-20080116
+	perl-text-5.10.0-20080101
+	perl-time-5.10.0-20080101
+	perl-util-5.10.0-20080116
+	perl-www-5.10.0-20080103
+	perl-xml-5.10.0-20080101
+	php-5.2.8-20081209_kolab2
+	pkgconfig-0.23-20080117
+	png-1.2.24-20080101
+	postfix-2.4.6-20080101_kolab
+	procmail-3.22-20080101
+	readline-5.2.12-20080101
+	sasl-2.1.22-20080101
+	sed-4.1.5-20080101
+	spamassassin-3.2.4-20080107
+	texinfo-4.11-20080101
+	zlib-1.2.3-20080101
+
+
+Changes between 2.2.1-beta-1 and 2.2.1-rc-1:
+
+    - apache-php-5.2.8-20081209_kolab2
+
+	Updated Kolab server patches.
+
+    - imapd-2.3.13-20081020_kolab1
+
+	kolab/issue3175 (Cyrus IMAPd 2.3.13 Released)
+
+    - install-kolab.sh
+
+	Fixed two problems reported by martin.schulte@guug.de:
+	  Repair option -E to not require an argument.
+	  Abort cleanly on -c or -X if no OpenPKG environment is found.
+
+	Cache source RPM information in $PREFIX/RPM/DB/00INDEX-cache.db
+	when generating 00INDEX.rdf
+
+    - Horde_Notification-0.0.2-20090223
+
+	New package needed for running unit tests of Kolab PHP packages.
+
+    - Horde_Prefs-0.0.3-20090223
+
+	New package needed for running unit tests of Kolab PHP packages.
+
+    - Kolab_Filter-0.1.4-20090303
+
+	kolab/issue3192 (Forwarding an invitation with Outlook failed)
+	kolab/issue3299 (Kolab_Filter: big.eml is too big)
+	kolab/issue3364 (manpages for kolabfilter and kolabmailboxfilter)
+	kolab/issue3426 (php error when sending mail with enabled mail filter
+	                 checking)
+	kolab/issue3441 (Resources with policy "always accept" do not work if
+	                 domain != kolabhost)
+	kolab/issue3435 (Delivery of invitations fails with no
+	                 "kolabInvitationPolicy" in ldap)
+
+    - Kolab_FreeBusy-0.1.2-20090226
+
+	kolab/issue3313 (free/busy regeneration as manager broken in
+	                 2.2.1-beta1)
+
+    - Kolab_Server-0.4.0-20090224
+
+	New upstream release.
+
+	Fixed objectClass evaluation to respect case-insensitivity
+	(Horde bug: #7694)
+
+	Fixed initialization of parameters retrieved from LDAP.
+
+	Fixed addrsForIdOrMail to return only lowercased mail addresses
+	(as mentioned in kolab/issue3426)
+
+	Fixed notices when retrieving LDAP attributes.
+
+	kolab/issue2207 (Make it possible to enable and disable users to be
+	                 able to use the webclient)
+	kolab/issue2546 (Horde should use name and email from ldap as defaults)
+
+    - Kolab_Storage-0.4.0-20090224
+
+	New upstream release.
+
+	Fixed list driver to prevent overwriting folder data when
+	authenticating twice (relevant for testing).
+
+	Allow to supress triggering (relevant for testing).
+
+    - kolabd-2.2.1-20090304
+
+	Add a redirection for the newer horde install location.
+
+	Add LDAP attribute postfix-message-size-limit and adjust
+	main.cf.template to allow central configuration of the postfix
+	parameter "message_size_limit".
+
+	Add user attribute kolabHomeServerOnly to create user mailbox on the
+	kolabHomeServer only.
+
+	Add ldapserver_statedir to kolab.globals to fix kolab_bootstrap
+	on slave servers.
+
+	Add kolab_cafile to kolab.globals to specify filename for
+	kolab_bootstrap to copy the generated CA certificate.
+
+	Allow to configure resmgr and freebusy logging via dist_conf
+
+	Updated doc/README.outlook for Kolab Server 2.2.1.
+
+	kolab/issue1001 (/kolab/etc/kolab/workaround.sh expects manager
+	                 password on command line)
+	kolab/issue3331 (kolabfilter uses incorrect delivery backend)
+	kolab/issue3322 (freebusy.conf.template: ldap server can be on another
+	                 machine)
+	kolab/issue3387 (dist_conf configuration in kolab webclient templates)
+	kolab/issue3408 (Template for inclusion in shell scripts)
+	kolab/issue3447 (Heavy information leak from webclient directories)
+
+    - kolab-fbview-1.2.0-20081227
+
+	kolab/issue3318 (kolab-fbview-1.2.0-20081212 fails to compile on
+	                 solaris 10)
+
+    - kolab-webadmin-2.2.1-20090304
+
+	Improved Dutch translation.
+
+	kolab/issue3404 (Present the options in "Action to take for messages
+	                 that fail the check" nicer)
+
+    - kolab-webclient-1.2.0-20090226
+
+	Fixed a potential IE XSS issue.
+
+	Fixed handling of folder "owner" for shared user folders with Dovecot.
+
+	Correct iTip option handling for dimp.
+
+	kolab/issue2207 (Make it possible to enable and disable users
+	                 to be able to use the webclient)
+	kolab/issue2546 (Horde should use name and email from ldap as
+	                 defaults)
+	kolab/issue2738 (horde should allow a setting to suppress
+	                 groupware folders)
+	kolab/issue3309 (Can not login directly in to dimp)
+	kolab/issue3318 (kolab-fbview-1.2.0-20081212 fails to compile on
+	                 solaris 10)
+	kolab/issue3328 ([Webclient] DIMP groupware folder names display bug)
+	kolab/issue3329 ([WebClient] Can not accept/deny invitations in Dimp)
+	kolab/issue3387 (dist_conf configuration in kolab webclient templates)
+	kolab/issue3439 (FreeBusy display in web client and fbview depends on
+	                 kolabHomeServer in LDAP)
+
+    - PEAR-Horde-Channel-1.0-20090119
+
+	kolab/issue2441 (/kolab/RPM/TMP/pear/temp created owned by root)
+	kolab/issue3315 (PEAR-Horde-Channel-1.0 fails to compile on solaris 10)
+
+    - PEAR-PHPUnit-Channel-1.0-20090119
+
+	kolab/issue2441 (/kolab/RPM/TMP/pear/temp created owned by root)
+	kolab/issue3315 (PEAR-Horde-Channel-1.0 fails to compile on solaris 10)
+
+    - perl-kolab-2.2.1-20090304
+
+	Create user mailbox on the kolabHomeServer only, if attribute
+	kolabHomeServerOnly is true.
+
+	Continue sync if connecting the IMAP server fails, just skip actions
+	that would need it.
+
+	Improved the ssh handling for slave setups in kolab_bootstrap.
+
+	Add retry (every minute for 10 times, then every five minutes until
+	successful) to syncrepl configuration.
+
+	kolab/issue3225 (Remove unused kolab_upgrade script)
+	kolab/issue3321 (slapd.replicas.template and slapd.access.template can
+	                 be absent)
+	kolab/issue3355 (POD manpages for perl-kolab)
+	kolab/issue3407 (kolab_bootstrap: improve message about importing the
+	                 CA certificate)
+
+    - perl-ldap-5.10.0-20081028_kolab1
+
+	New upstream version (perl-ldap 0.39) and two patches for syncrepl
+	support, see kolab/issue1755 (syncrepl support (for OpenLDAP >=2.4.6))
+
+    - php-5.2.8-20081209_kolab2
+
+	Updated Kolab server patches.
+
+
+    Packages in the OpenPKG based Kolab server release:
+
+    - Kolab packages:
+
+      Added:
+
+	Horde_Notification-0.0.2-20090223
+	Horde_Prefs-0.0.3-20090223
+
+      Updated:
+
+	Kolab_Filter-0.1.4-20090303
+	Kolab_FreeBusy-0.1.2-20090226
+	Kolab_Server-0.4.0-20090224
+	Kolab_Storage-0.4.0-20090224
+	PEAR-Horde-Channel-1.0-20090119
+	PEAR-PHPUnit-Channel-1.0-20090119
+	kolab-fbview-1.2.0-20081227
+	kolab-webadmin-2.2.1-20090304
+	kolab-webclient-1.2.0-20090226
+	kolabd-2.2.1-20090304
+	perl-kolab-2.2.1-20090304
+	perl-ldap-5.10.0-20081028_kolab1
+
+      Unchanged:
+
+	Horde_Argv-0.1.0-20081209
+	Horde_Auth-0.1.1-20081209
+	Horde_Browser-0.0.2-20081209
+	Horde_CLI-0.0.2-20081209
+	Horde_Cache-0.0.2-20081209
+	Horde_Cipher-0.0.2-20081209
+	Horde_DOM-0.1.0-20081209
+	Horde_DataTree-0.0.3-20081209
+	Horde_Date-0.1.0-20081209
+	Horde_Framework-0.0.2-20081209
+	Horde_Group-0.1.0-20081209
+	Horde_History-0.0.2-20081209
+	Horde_LDAP-0.0.2-20081209
+	Horde_MIME-0.0.2-20081209
+	Horde_NLS-0.0.2-20081209
+	Horde_Perms-0.1.0-20081209
+	Horde_Secret-0.0.2-20081209
+	Horde_Serialize-0.0.2-20081209
+	Horde_SessionObjects-0.0.2-20081209
+	Horde_Util-0.1.0-20081209
+	Horde_iCalendar-0.1.0-20081209
+	Kolab_Format-1.0.0-20081212
+	PEAR-Auth_SASL-1.0.2-1
+	PEAR-Date-1.4.7-1
+	PEAR-HTTP_Request-1.4.3-1
+	PEAR-Log-1.11.2-1
+	PEAR-Mail-1.1.14-1
+	PEAR-Mail_mimeDecode-1.5.0-20081209
+	PEAR-Net_LMTP-1.0.1-1
+	PEAR-Net_SMTP-1.3.1-1
+	PEAR-Net_Socket-1.0.9-1
+	PEAR-Net_URL-1.0.15-1
+	PHPUnit-3.3.3-1
+	clamav-0.94.2-20081212
+	openldap-2.3.43-20081212
+	php-smarty-2.6.20-20081212
+	sqlite-3.6.4-20081212
+
+    - OpenPKG packages:
+
+      Updated:
+
+	apache-php-5.2.8-20081209_kolab2
+	imapd-2.3.13-20081020_kolab1
+	php-5.2.8-20081209_kolab2
+
+      Unchanged:
+
+	amavisd-2.5.3-20080101
+	apache-2.2.10-20081111
+	apr-1.2.12-20080101
+	autoconf-2.61-20080101
+	automake-1.10-20080101
+	bc-1.06-20080101
+	binutils-2.18-20080101
+	bison-2.3-20080101
+	bzip2-1.0.5-20080318
+	config-20060923-20080101
+	curl-7.17.1-20080101
+	db-4.5.20.2-20070628
+	diffutils-2.8.7-20080101
+	expat-2.0.1-20080101
+	file-4.23-20080101
+	flex-2.5.34-20080101
+	freetype-2.3.5-20080101
+	fsl-1.7.0-20080101
+	gawk-3.1.6-20080101
+	gcc-4.2.2-20080101
+	gd-2.0.35-20080101
+	gettext-0.17-20080101
+	gmp-4.2.2-20080101_kolab
+	grep-2.5.3-20080101
+	groff-1.19.2-20080101
+	gzip-1.3.12-20080101
+	imap-2006k-20080101
+	jpeg-6b-20080101
+	libiconv-1.12-20080101
+	libmcrypt-2.5.8-20080101
+	libxml-2.6.31-20080111
+	libxslt-1.1.22-20080101
+	lzo-2.02-20080101
+	m4-1.4.9-20080101
+	make-3.81-20080101
+	mhash-0.9.9-20080101
+	mm-1.4.2-20080101
+	ncurses-5.6.20080112-20080113
+	openpkg-20071227-20071227
+	openpkg-tools-1.4.6-20071231
+	openssl-0.9.8g-20080101
+	pcre-7.5-20080110
+	perl-5.10.0-20080103
+	perl-comp-5.10.0-20080110
+	perl-conv-5.10.0-20080101
+	perl-crypto-5.10.0-20080101
+	perl-db-5.10.0-20080118
+	perl-dns-5.10.0-20080101
+	perl-ds-5.10.0-20080104
+	perl-locale-5.10.0-20080112
+	perl-mail-5.10.0-20080117
+	perl-module-5.10.0-20080101
+	perl-net-5.10.0-20080101
+	perl-openpkg-5.10.0-20080109
+	perl-parse-5.10.0-20080117
+	perl-ssl-5.10.0-20080101
+	perl-stats-5.10.0-20080101
+	perl-sys-5.10.0-20080101
+	perl-term-5.10.0-20080116
+	perl-text-5.10.0-20080101
+	perl-time-5.10.0-20080101
+	perl-util-5.10.0-20080116
+	perl-www-5.10.0-20080103
+	perl-xml-5.10.0-20080101
+	pkgconfig-0.23-20080117
+	png-1.2.24-20080101
+	postfix-2.4.6-20080101_kolab
+	procmail-3.22-20080101
+	readline-5.2.12-20080101
+	sasl-2.1.22-20080101
+	sed-4.1.5-20080101
+	spamassassin-3.2.4-20080107
+	texinfo-4.11-20080101
+	zlib-1.2.3-20080101
+
+
+Changes between 2.2.0 and 2.2.1-beta-1:
+
+    - apache-2.2.10-20081111
+
+	New upstream version, fixes various security issues.
+
+    - apache-php-5.2.8-20081209_kolab
+
+	New upstream version, fixes various security issues.
+
+	Added sqlite2 support for SyncML support in kolab-webclient.
+
+    - bzip2-1.0.5-20080318
+
+	New upstream version, fixes CVE-2008-1372 (denial of service)
+
+    - clamav-0.94.2-20081212
+
+	New upstream version, fixes various security issues.
+
+	kolab/issue765  (openpkg "junk" warnings)
+
+    - gawk-3.1.6-20080101
+
+	New package, build (not runtime) dependency of sqlite.
+
+    - gmp-4.2.2-20080101_kolab
+
+	kolab/issue2928 (gmp-4.2.2-20080101 does not compile on Debian
+	                 lenny/amd64)
+
+    - Horde_iCalendar-0.1.0-20081209
+
+	kolab/issue3284 (Webclient or resmgr might send invitations that Outlook
+	                 2003 does not understand (unquoted CN with Umlauts))
+
+    - Kolab_Filter-0.1.3-20081212
+
+	A new package replacing kolab-filter
+	(from http://pear.horde.org/index.php?package=Kolab_Filter)
+
+	Added LDA (dovecot) backend.
+
+	kolab/issue839  (problem when kolabHomeServer is missing)
+	kolab/issue3074 (Freebusy trigger fails for other users's calenders.)
+	kolab/issue3208 (Free/Busy list is always empty)
+	kolab/issue3256 (resmgr responses should reflect server revision in
+	                 PRODID)
+	kolab/issue3260 (kolabfilter does not allow empty sender (and
+	                 therefore MAILER-DAEMON))
+	kolab/issue3289 (resmgr dies when it should accept, but has
+	                 not Calender folder access) - only partial fix
+
+    - Kolab_Format-1.0.0-20081212
+
+	New package
+	(from http://pear.horde.org/index.php?package=Kolab_Format)
+
+    - Kolab_FreeBusy-0.1.2-20081212
+
+	A new package replacing kolab-freebusy
+	(from http://pear.horde.org/index.php?package=Kolab_FreeBusy)
+
+	Fixed handling of extended free/busy information.
+
+	Fixed identification of the corresponding free/busy server.
+
+	kolab/issue3208 (Free/Busy list is always empty)
+	kolab/issue3256 (resmgr responses should reflect server revision in
+	                 PRODID)
+
+    - Kolab_Server-0.2.0.20081114-20081114
+
+	New package
+	(from http://pear.horde.org/index.php?package=Kolab_Server)
+
+    - Kolab_Storage-0.3.0-20081205
+
+	New package
+	(from http://pear.horde.org/index.php?package=Kolab_Storage)
+
+    - kolabd-2.2.1-20081212
+
+	Added configuration option in resmgr.conf for local delivery
+	backend.  (Makes it possible to activate the new LDA backend)
+
+	Activated sqlite support in PHP.
+
+	Updated the configuration for the newer Kolab_Filter package.
+
+	kolab/issue765  (openpkg "junk" warnings)
+	kolab/issue936  (kolabquotawarn: system cron used, and firing when
+	                 server stopped)
+	kolab/issue1310 (kolabquotawarn runs via cron before server was
+	                 bootstrapped)
+	kolab/issue1755 (syncrepl support (for OpenLDAP >=2.4.6))
+	kolab/issue2351 (horde doesn't present attachment stuff while compose
+	                 a message)
+	kolab/issue2440 (Installing binary packages of 2.2 fails without Horde)
+	kolab/issue2446 (Make the used syslog facility configureable (kolabd,
+	                 kolabconf))
+	kolab/issue2550 (kolabconf should make some others postfix maps)
+	kolab/issue2910 (obsolete definition of schemacheck in slapd.conf)
+	kolab/issue2911 (Change comments around the idletimeout definiton
+	                 in the file templates/slapd.conf.template.in)
+	kolab/issue2961 (added smtpd_sasl_authenticated_header = yes for
+	                 simpler authorization)
+	kolab/issue2994 (Duplicated kolab.conf files in cvs, one should
+	                 be removed)
+	kolab/issue3005 (Remove specific TLSCertificate code by using new
+	                 bootstrap_config conditional in slapd.conf.template)
+	kolab/issue3006 (Surround the horde schema include in
+	                 slapd.conf.template with @@@ conditionals)
+	                 Remark: this actually added only the code that allows
+	                 to use @@@if exists(<file)@@@ inside a config file
+	kolab/issue3031 (Make kolab.globals readonly)
+	kolab/issue3224 (perl-kolab has been restructured)
+	kolab/issue3262 (web admin: versions page needs to be updated for CVS
+	                 HEAD)
+	kolab/issue3298 (kolab2.schema uses wrong enterprise number in some
+	                 attributes)
+
+    - kolab-fbview-1.2.0-20081212
+
+	A new package replacing the older horde-* packages.
+
+	kolab/issue765  (openpkg "junk" warnings)
+
+    - kolab-webadmin-2.2.1-20081212
+
+	Added acknowledgments for OpenSSL and PHP.
+
+	kolab/issue765  (openpkg "junk" warnings)
+	kolab/issue2596 (Kolab's login page title is not bookmark friendly)
+	kolab/issue3230 (opportunity to delete freebusy value)
+	kolab/issue3262 (web admin: versions page needs to be updated for CVS
+	                 HEAD)
+
+    - kolab-webclient-1.2.0-20081212
+
+	A new package replacing the older horde-* packages.
+
+	kolab/issue765  (openpkg "junk" warnings)
+	kolab/issue614  (Events from deleted/renamed calendar folder
+	                 still show up in free/busy list)
+	kolab/issue2249 ([horde/kronolith] Kronolith is unable to
+	                 trigger a free/busy update on a folder rename)
+	kolab/issue3037 (Free/Busy List interaction for Horde broken)
+	kolab/issue3205 (FB in horde while creating events)
+	kolab/issue3241 (Horde: Can't accept invitation)
+	kolab/issue3243 (Store web client user preferences in files, not in
+	                 LDAP)
+	kolab/issue3284 (Webclient or resmgr might send invitations that Outlook
+	                 2003 does not understand (unquoted CN with Umlauts))
+	kolab/issue3292 (Sharing Default Groupware Resources does not work in
+	                 Webclient)
+
+    - openldap-2.3.43-20081212
+
+	kolab/issue765  (openpkg "junk" warnings)
+	kolab/issue2902 (OpenLDAP/slapd: CVE-2008-2952 remote denial of
+	                 service)
+	kolab/issue3302 (Kolab fails to build on Ubuntu 8.10 (Intrepid Ibex))
+
+    - perl-kolab-2.2.1-20081212
+
+	kolab_bootstrap: Quote s[l]urpd to prevent shell expansion.
+
+	template META: RUNONCHANGE is now triggered when creating a file
+	and is now also catching special config files (postfix, slapd, ...)
+
+	template META: warning for incorrect keys
+
+	template META: support to define the comment character
+
+	kolab/issue765  (openpkg "junk" warnings)
+	kolab/issue1671 (Improving the warning about kolab templates within
+	                 configuration files)
+	kolab/issue1755 (syncrepl support (for OpenLDAP >=2.4.6))
+	kolab/issue2981 (kolab_bootstrap: re-use kolabconf code to read the
+	                 config file)
+	kolab/issue3006 (Surround the horde schema include in
+	                 slapd.conf.template with @@@ conditionals)
+	                 Remark: this actually added only the code that allows
+	                 to use @@@if exists(<file)@@@ inside a config file
+	kolab/issue3152 (keep syncrepl cookie on disk between sessions)
+	kolab/issue3224 (perl-kolab has been restructured)
+
+    - php-5.2.8-20081209_kolab
+
+	New upstream version, fixes various security issues.
+
+	Added full sqlite support.
+
+    - php-smarty-2.6.20-20081212
+
+	New upstream version.
+
+	kolab/issue765  (openpkg "junk" warnings)
+	kolab/issue2559 (CVE-2008-1066: php-smarty needs to be upgraded)
+
+    - sqlite-3.6.4-20081212
+
+	New package, required by the kolab-webclient.
+	(includes sqlite 3.6.4 and sqlite 2.8.17)
+
+	kolab/issue765  (openpkg "junk" warnings)
+
+
+    Packages in the OpenPKG based Kolab server release:
+
+    - Kolab packages:
+
+      Removed:
+
+	PEAR-Mail_Mime-1.3.1-1
+	PEAR-Net_IMAP-1.1.0beta1-1
+	PEAR-Net_Sieve-1.1.5-1
+	fbview-horde-3.2_rc3-20080605
+	fbview-kronolith-2.2_rc2-20080710
+	horde-framework-kolab-3.2_rc3-20080405
+	horde-imp-kolab-4.2_rc3-20080710
+	horde-ingo-kolab-1.2_rc2-20080710
+	horde-kolab-3.2_rc3-20080707
+	horde-kolab-client-0.99-20080405
+	horde-kronolith-kolab-2.2_rc2-20080710
+	horde-mnemo-kolab-2.2_rc2-20080710
+	horde-nag-kolab-2.2_rc2-20080710
+	horde-passwd-kolab-3.0.1-20080710
+	horde-turba-kolab-2.2_rc3-20080710
+	kolab-filter-2.2.0-20080709
+	kolab-freebusy-2.2.0-20080709
+	kolabconf-2.2.0-20080709
+	php-channel-horde-1.0-1
+	php-kolab-2.2.0-20080711
+
+      Added:
+
+	Horde_Argv-0.1.0-20081209
+	Horde_Auth-0.1.1-20081209
+	Horde_Browser-0.0.2-20081209
+	Horde_CLI-0.0.2-20081209
+	Horde_Cache-0.0.2-20081209
+	Horde_Cipher-0.0.2-20081209
+	Horde_DOM-0.1.0-20081209
+	Horde_DataTree-0.0.3-20081209
+	Horde_Date-0.1.0-20081209
+	Horde_Framework-0.0.2-20081209
+	Horde_Group-0.1.0-20081209
+	Horde_History-0.0.2-20081209
+	Horde_LDAP-0.0.2-20081209
+	Horde_MIME-0.0.2-20081209
+	Horde_NLS-0.0.2-20081209
+	Horde_Perms-0.1.0-20081209
+	Horde_Secret-0.0.2-20081209
+	Horde_Serialize-0.0.2-20081209
+	Horde_SessionObjects-0.0.2-20081209
+	Horde_Util-0.1.0-20081209
+	Horde_iCalendar-0.1.0-20081209
+	Kolab_Filter-0.1.3-20081212
+	Kolab_Format-1.0.0-20081212
+	Kolab_FreeBusy-0.1.2-20081212
+	Kolab_Server-0.2.0.20081114-20081114
+	Kolab_Storage-0.3.0-20081205
+	PEAR-Horde-Channel-1.0-20081210
+	PEAR-Mail_mimeDecode-1.5.0-20081209
+	PEAR-PHPUnit-Channel-1.0-20081012
+	PHPUnit-3.3.3-1
+	kolab-fbview-1.2.0-20081212
+	kolab-webclient-1.2.0-20081212
+	sqlite-3.6.4-20081212
+
+      Updated:
+
+	PEAR-HTTP_Request-1.4.3-1
+	PEAR-Log-1.11.2-1
+	PEAR-Net_SMTP-1.3.1-1
+	PEAR-Net_Socket-1.0.9-1
+	clamav-0.94.2-20081212
+	kolab-webadmin-2.2.1-20081212
+	kolabd-2.2.1-20081212
+	openldap-2.3.43-20081212
+	perl-kolab-2.2.1-20081212
+	php-smarty-2.6.20-20081212
+
+      Unchanged:
+
+	PEAR-Auth_SASL-1.0.2-1
+	PEAR-Date-1.4.7-1
+	PEAR-Mail-1.1.14-1
+	PEAR-Net_LMTP-1.0.1-1
+	PEAR-Net_URL-1.0.15-1
+
+    - OpenPKG packages:
+
+      Added:
+
+	gawk-3.1.6-20080101
+
+      Updated:
+
+	apache-2.2.10-20081111
+	apache-php-5.2.8-20081209_kolab
+	bzip2-1.0.5-20080318
+	gmp-4.2.2-20080101_kolab
+	php-5.2.8-20081209_kolab
+
+      Unchanged:
+
+	amavisd-2.5.3-20080101
+	apr-1.2.12-20080101
+	autoconf-2.61-20080101
+	automake-1.10-20080101
+	bc-1.06-20080101
+	binutils-2.18-20080101
+	bison-2.3-20080101
+	config-20060923-20080101
+	curl-7.17.1-20080101
+	db-4.5.20.2-20070628
+	diffutils-2.8.7-20080101
+	expat-2.0.1-20080101
+	file-4.23-20080101
+	flex-2.5.34-20080101
+	freetype-2.3.5-20080101
+	fsl-1.7.0-20080101
+	gcc-4.2.2-20080101
+	gd-2.0.35-20080101
+	gettext-0.17-20080101
+	grep-2.5.3-20080101
+	groff-1.19.2-20080101
+	gzip-1.3.12-20080101
+	imap-2006k-20080101
+	imapd-2.3.11-20080101_kolab4
+	jpeg-6b-20080101
+	libiconv-1.12-20080101
+	libmcrypt-2.5.8-20080101
+	libxml-2.6.31-20080111
+	libxslt-1.1.22-20080101
+	lzo-2.02-20080101
+	m4-1.4.9-20080101
+	make-3.81-20080101
+	mhash-0.9.9-20080101
+	mm-1.4.2-20080101
+	ncurses-5.6.20080112-20080113
+	openpkg-20071227-20071227
+	openpkg-tools-1.4.6-20071231
+	openssl-0.9.8g-20080101
+	pcre-7.5-20080110
+	perl-5.10.0-20080103
+	perl-comp-5.10.0-20080110
+	perl-conv-5.10.0-20080101
+	perl-crypto-5.10.0-20080101
+	perl-db-5.10.0-20080118
+	perl-dns-5.10.0-20080101
+	perl-ds-5.10.0-20080104
+	perl-ldap-5.10.0-20080101
+	perl-locale-5.10.0-20080112
+	perl-mail-5.10.0-20080117
+	perl-module-5.10.0-20080101
+	perl-net-5.10.0-20080101
+	perl-openpkg-5.10.0-20080109
+	perl-parse-5.10.0-20080117
+	perl-ssl-5.10.0-20080101
+	perl-stats-5.10.0-20080101
+	perl-sys-5.10.0-20080101
+	perl-term-5.10.0-20080116
+	perl-text-5.10.0-20080101
+	perl-time-5.10.0-20080101
+	perl-util-5.10.0-20080116
+	perl-www-5.10.0-20080103
+	perl-xml-5.10.0-20080101
+	pkgconfig-0.23-20080117
+	png-1.2.24-20080101
+	postfix-2.4.6-20080101_kolab
+	procmail-3.22-20080101
+	readline-5.2.12-20080101
+	sasl-2.1.22-20080101
+	sed-4.1.5-20080101
+	spamassassin-3.2.4-20080107
+	texinfo-4.11-20080101
+	zlib-1.2.3-20080101
+
+
+Changes between 2.2-rc-3 and 2.2.0:
+
+    - clamav-0.93.3-20080708
+
+	New upstream version, fixes denial of service.
+
+    - fbview-horde-3.2_rc3-20080605
+
+	Allow login if public imap service is disabled.
+
+    - fbview-kronolith-2.2_rc2-20080710
+
+	kolab/issue2872 (Building horde packages fails if different version
+	                 already installed)
+
+    - horde-imp-kolab-4.2_rc3-20080710
+
+	kolab/issue2872 (Building horde packages fails if different version
+	                 already installed)
+
+    - horde-ingo-kolab-1.2_rc2-20080710
+
+	kolab/issue2872 (Building horde packages fails if different version
+	                 already installed)
+
+    - horde-kolab-3.2_rc3-20080707
+
+	Allow login if public imap service is disabled.
+
+	kolab/issue2831 (SECURITY: <horde-3.2.1 affected by XSS issue)
+
+    - horde-kronolith-kolab-2.2_rc2-20080710
+
+	kolab/issue2872 (Building horde packages fails if different version
+	                 already installed)
+
+    - horde-mnemo-kolab-2.2_rc2-20080710
+
+	kolab/issue2872 (Building horde packages fails if different version
+	                 already installed)
+
+    - horde-nag-kolab-2.2_rc2-20080710
+
+	kolab/issue2872 (Building horde packages fails if different version
+	                 already installed)
+
+    - horde-passwd-kolab-3.0.1-20080710
+
+	kolab/issue2872 (Building horde packages fails if different version
+	                 already installed)
+
+    - horde-turba-kolab-2.2_rc3-20080710
+
+	kolab/issue2832 (SECURITY: <turba-2.2.1 affected by XSS issue)
+	kolab/issue2872 (Building horde packages fails if different version
+	                 already installed)
+
+    - install-kolab.sh
+
+	Adjusted version number.
+
+	Install fbview-kronolith and horde-kolab-client by default, unless
+	excluded with "-x fbview-kronolith" or "-x horde-kolab-client".
+
+	Removed obsolete options -F/-H/-i.
+
+	kolab/issue2727 (install-kolab.sh: tar uses -O which is not
+	                 implemented in Solaris' tar)
+	kolab/issue2747 (Installation of ix86 binaries fails on amd64 system)
+
+    - kolabconf-2.2.0-20080709
+
+	Adjusted version number.
+
+    - kolabd-2.2.0-20080709
+
+	Adjusted version number (and fixed typo).
+
+	Removed unused fbview.conf.template file.
+
+	kolab_bootstrap: Use Net::Domain to determine fqdn more reliably
+	and make sure suggested domain name contains a dot.
+
+	kolab.conf, quotawarning and templates are owned by kolab instead of
+	kolab-n to improve security, and kolab.conf is marked as (noreplace)
+	so it does not overwrite the existing config file during upgrades.
+
+	Updated check of free ports during kolab_bootstrap.
+
+	kolab/issue1895 (switch from virtual_maps to virtual_alias_maps)
+	kolab/issue2855 (Can create folder while logging in as user without
+	                 domain name)
+
+    - kolab-filter-2.2.0-20080709
+
+	Adjusted version number.
+
+    - kolab-freebusy-2.2.0-20080709
+
+	Adjusted version number.
+
+    - kolab-webadmin-2.2.0-20080709
+
+	Adjusted version number.
+
+	Fix deleting of domains and kolab hosts.
+
+	kolab/issue2739 (Some characters are not allowed in users
+	                 fax-/phonenumbers despite the description
+	                 in the error)
+
+    - perl-kolab-2.2.0-20080709
+
+	Adjusted version number.
+
+	kolab/issue2517 (group accounts lead to more rights than necessary for
+	                 the "calendar" user)
+	kolab/issue2760 (Deleting shared folders does not work)
+	kolab/issue2827 (Deleting users does not work reliably)
+
+    - php-kolab-2.2.0-20080711
+
+	Adjusted version number.
+
+	kolab/issue2660 (Invitation for event series not accept automatically)
+	kolab/issue2734 (Automatic ressources decline changed overlapping event
+	                 time)
+
+
+    Packages in the OpenPKG based Kolab server release:
+
+    - Kolab packages:
+
+      Updated:
+
+	fbview-horde-3.2_rc3-20080605
+	fbview-kronolith-2.2_rc2-20080710
+	horde-imp-kolab-4.2_rc3-20080710
+	horde-ingo-kolab-1.2_rc2-20080710
+	horde-kolab-3.2_rc3-20080707
+	horde-kronolith-kolab-2.2_rc2-20080710
+	horde-mnemo-kolab-2.2_rc2-20080710
+	horde-nag-kolab-2.2_rc2-20080710
+	horde-passwd-kolab-3.0.1-20080710
+	horde-turba-kolab-2.2_rc3-20080710
+	kolab-filter-2.2.0-20080709
+	kolab-freebusy-2.2.0-20080709
+	kolab-webadmin-2.2.0-20080709
+	kolabconf-2.2.0-20080709
+	kolabd-2.2.0-20080709
+	perl-kolab-2.2.0-20080709
+	php-kolab-2.2.0-20080711
+
+      Unchanged:
+
+	PEAR-Auth_SASL-1.0.2-1
+	PEAR-Date-1.4.7-1
+	PEAR-HTTP_Request-1.4.1-1
+	PEAR-Log-1.9.9-1
+	PEAR-Mail-1.1.14-1
+	PEAR-Mail_Mime-1.3.1-1
+	PEAR-Net_IMAP-1.1.0beta1-1
+	PEAR-Net_LMTP-1.0.1-1
+	PEAR-Net_SMTP-1.2.10-1
+	PEAR-Net_Sieve-1.1.5-1
+	PEAR-Net_Socket-1.0.6-1
+	PEAR-Net_URL-1.0.15-1
+	horde-framework-kolab-3.2_rc3-20080405
+	horde-kolab-client-0.99-20080405
+	openldap-2.3.41-20080424
+	php-channel-horde-1.0-1
+	php-smarty-2.6.18-20070607
+
+    - OpenPKG packages:
+
+      Updated:
+
+	clamav-0.93.3-20080708
+
+      Unchanged:
+
+	amavisd-2.5.3-20080101
+	apache-2.2.8-20080118
+	apache-php-5.2.6-20080514_kolab
+	apr-1.2.12-20080101
+	autoconf-2.61-20080101
+	automake-1.10-20080101
+	bc-1.06-20080101
+	binutils-2.18-20080101
+	bison-2.3-20080101
+	bzip2-1.0.4-20080101
+	config-20060923-20080101
+	curl-7.17.1-20080101
+	db-4.5.20.2-20070628
+	diffutils-2.8.7-20080101
+	expat-2.0.1-20080101
+	file-4.23-20080101
+	flex-2.5.34-20080101
+	freetype-2.3.5-20080101
+	fsl-1.7.0-20080101
+	gcc-4.2.2-20080101
+	gd-2.0.35-20080101
+	gettext-0.17-20080101
+	gmp-4.2.2-20080101
+	grep-2.5.3-20080101
+	groff-1.19.2-20080101
+	gzip-1.3.12-20080101
+	imap-2006k-20080101
+	imapd-2.3.11-20080101_kolab4
+	jpeg-6b-20080101
+	libiconv-1.12-20080101
+	libmcrypt-2.5.8-20080101
+	libxml-2.6.31-20080111
+	libxslt-1.1.22-20080101
+	lzo-2.02-20080101
+	m4-1.4.9-20080101
+	make-3.81-20080101
+	mhash-0.9.9-20080101
+	mm-1.4.2-20080101
+	ncurses-5.6.20080112-20080113
+	openpkg-20071227-20071227
+	openpkg-tools-1.4.6-20071231
+	openssl-0.9.8g-20080101
+	pcre-7.5-20080110
+	perl-5.10.0-20080103
+	perl-comp-5.10.0-20080110
+	perl-conv-5.10.0-20080101
+	perl-crypto-5.10.0-20080101
+	perl-db-5.10.0-20080118
+	perl-dns-5.10.0-20080101
+	perl-ds-5.10.0-20080104
+	perl-ldap-5.10.0-20080101
+	perl-locale-5.10.0-20080112
+	perl-mail-5.10.0-20080117
+	perl-module-5.10.0-20080101
+	perl-net-5.10.0-20080101
+	perl-openpkg-5.10.0-20080109
+	perl-parse-5.10.0-20080117
+	perl-ssl-5.10.0-20080101
+	perl-stats-5.10.0-20080101
+	perl-sys-5.10.0-20080101
+	perl-term-5.10.0-20080116
+	perl-text-5.10.0-20080101
+	perl-time-5.10.0-20080101
+	perl-util-5.10.0-20080116
+	perl-www-5.10.0-20080103
+	perl-xml-5.10.0-20080101
+	php-5.2.6-20080514_kolab
+	pkgconfig-0.23-20080117
+	png-1.2.24-20080101
+	postfix-2.4.6-20080101_kolab
+	procmail-3.22-20080101
+	readline-5.2.12-20080101
+	sasl-2.1.22-20080101
+	sed-4.1.5-20080101
+	spamassassin-3.2.4-20080107
+	texinfo-4.11-20080101
+	zlib-1.2.3-20080101
+
+
+Changes between 2.2-rc-2 and 2.2-rc-3:
+
+    - apache-php-5.2.6-20080514_kolab
+
+	New upstream version, fixes various security issues.
+
+	kolab/issue2519 (Add functionality PHP : GetMYRIGHT)
+
+    - clamav-0.93-20080414
+
+	New upstream version, fixes various security issues.
+
+    - fbview-horde-3.2_rc3-20080523
+
+	Removed manager password from fbview config file.
+
+	kolab/issue2134 ([Horde]Unable to send message with attachments)
+
+    - fbview-kronolith-2.2_rc2-20080523
+
+	New upstream package with adjusted patches.
+
+    - install-kolab.sh
+
+	kolab/issue2371 (install-kolab.sh script incompatible with /bin/sh of
+	                 e.g. Solaris 10)
+	kolab/issue2591 (NTLM support in Cyrus SASL)
+	kolab/issue2686 (unquoted wildcards in install-kolab.sh)
+
+    - horde-framework-kolab-3.2_rc3-20080405
+
+	Rename .xpfb to .pxfb.
+
+	kolab/issue2587 (ifb retrieval does not work for aliases anymore)
+	kolab/issue2588 (whole day event with show-time-as free gets into the
+	                 pfb)
+
+    - horde-kolab-3.2_rc3-20080405
+
+	kolab/issue2134 ([Horde]Unable to send message with attachments)
+
+    - imapd-2.3.11-20080101_kolab4
+
+	kolab/issue1824 (cyrus-imapd segfaults on x86_64)
+	kolab/issue2443 (kontact aborts sieve when imapd sends capabilities
+	                 after starttls)
+
+    - kolabd-2.1.99-20080521
+
+	Rename .xpfb to .pxfb and xfb-readable to pxfb-readable-for
+
+	kolab/issue2244 (SpamAssassin uses DNS blacklists)
+	kolab/issue2436 (delprune setting in cyrus.conf)
+	kolab/issue2586 (SPAM filtering: HELO_LOCALHOST score default too high)
+
+    - kolab-filter-2.2.rc3-20080521
+
+	Rename .xpfb to .pxfb.
+
+    - kolab-freebusy-2.2.rc3-20080521
+
+	kolab/issue2536 (generatefb.php doesn't work with folders containing
+	                 umlauts)
+
+    - kolab-webadmin-2.1.99-20080521
+
+	Fixes for XHTML strict
+
+	kolab/issue2505 (update of the french translation for kolab-server)
+	kolab/issue2538 (Make the location of the Smarty compile directory
+	                 configurable)
+	kolab/issue2569 (rename of services to settings makes welcome screen
+	                 fail)
+	kolab/issue2575 (Make background of favicon transparent)
+
+    - openldap-2.3.41-20080424
+
+	New upstream version, fixes various security issues.
+
+    - perl-kolab-2.2.rc3-20080521
+
+	Added Fedora-DS backend (inactive by default)
+
+	kolab/issue2466 (How should Kolab Filter handle mails from privileged
+	                 networks?)
+
+    - php-5.2.6-20080514_kolab
+
+	New upstream version, fixes various security issues.
+
+	kolab/issue2519 (Add functionality PHP : GetMYRIGHT)
+
+    - php-kolab-2.2.rc3-20080521
+
+	Rename .xpfb to .pxfb.
+
+	kolab/issue2549 (Resource manager creates events in wrong account)
+
+    - postfix-2.4.6-20080101_kolab
+
+	kolab/issue2346 (Compilation of postfix fails on CentOS 5.1 64Bit)
+
+
+    Packages in the OpenPKG based Kolab server release:
+
+    - Kolab packages:
+
+      Updated:
+
+	fbview-horde-3.2_rc3-20080523
+	fbview-kronolith-2.2_rc2-20080523
+	horde-framework-kolab-3.2_rc3-20080405
+	horde-imp-kolab-4.2_rc3-20080405
+	horde-ingo-kolab-1.2_rc2-20080405
+	horde-kolab-3.2_rc3-20080405
+	horde-kolab-client-0.99-20080405
+	horde-kronolith-kolab-2.2_rc2-20080405
+	horde-mnemo-kolab-2.2_rc2-20080405
+	horde-nag-kolab-2.2_rc2-20080405
+	horde-passwd-kolab-3.0.1-20080405
+	horde-turba-kolab-2.2_rc3-20080405
+	kolab-filter-2.2.rc3-20080521
+	kolab-freebusy-2.2.rc3-20080521
+	kolab-webadmin-2.1.99-20080521
+	kolabconf-2.2.rc3-20080521
+	kolabd-2.1.99-20080521
+	openldap-2.3.41-20080424
+	perl-kolab-2.2.rc3-20080521
+	php-kolab-2.2.rc3-20080521
+
+      Unchanged:
+
+	PEAR-Auth_SASL-1.0.2-1
+	PEAR-Date-1.4.7-1
+	PEAR-HTTP_Request-1.4.1-1
+	PEAR-Log-1.9.9-1
+	PEAR-Mail-1.1.14-1
+	PEAR-Mail_Mime-1.3.1-1
+	PEAR-Net_IMAP-1.1.0beta1-1
+	PEAR-Net_LMTP-1.0.1-1
+	PEAR-Net_SMTP-1.2.10-1
+	PEAR-Net_Sieve-1.1.5-1
+	PEAR-Net_Socket-1.0.6-1
+	PEAR-Net_URL-1.0.15-1
+	php-channel-horde-1.0-1
+	php-smarty-2.6.18-20070607
+
+    - OpenPKG packages:
+
+      Updated:
+
+	apache-php-5.2.6-20080514_kolab
+	clamav-0.93-20080414
+	imapd-2.3.11-20080101_kolab4
+	php-5.2.6-20080514_kolab
+	postfix-2.4.6-20080101_kolab
+
+      Unchanged:
+
+	amavisd-2.5.3-20080101
+	apache-2.2.8-20080118
+	apr-1.2.12-20080101
+	autoconf-2.61-20080101
+	automake-1.10-20080101
+	bc-1.06-20080101
+	binutils-2.18-20080101
+	bison-2.3-20080101
+	bzip2-1.0.4-20080101
+	config-20060923-20080101
+	curl-7.17.1-20080101
+	db-4.5.20.2-20070628
+	diffutils-2.8.7-20080101
+	expat-2.0.1-20080101
+	file-4.23-20080101
+	flex-2.5.34-20080101
+	freetype-2.3.5-20080101
+	fsl-1.7.0-20080101
+	gcc-4.2.2-20080101
+	gd-2.0.35-20080101
+	gettext-0.17-20080101
+	gmp-4.2.2-20080101
+	grep-2.5.3-20080101
+	groff-1.19.2-20080101
+	gzip-1.3.12-20080101
+	imap-2006k-20080101
+	jpeg-6b-20080101
+	libiconv-1.12-20080101
+	libmcrypt-2.5.8-20080101
+	libxml-2.6.31-20080111
+	libxslt-1.1.22-20080101
+	lzo-2.02-20080101
+	m4-1.4.9-20080101
+	make-3.81-20080101
+	mhash-0.9.9-20080101
+	mm-1.4.2-20080101
+	ncurses-5.6.20080112-20080113
+	openpkg-20071227-20071227
+	openpkg-tools-1.4.6-20071231
+	openssl-0.9.8g-20080101
+	pcre-7.5-20080110
+	perl-5.10.0-20080103
+	perl-comp-5.10.0-20080110
+	perl-conv-5.10.0-20080101
+	perl-crypto-5.10.0-20080101
+	perl-db-5.10.0-20080118
+	perl-dns-5.10.0-20080101
+	perl-ds-5.10.0-20080104
+	perl-ldap-5.10.0-20080101
+	perl-locale-5.10.0-20080112
+	perl-mail-5.10.0-20080117
+	perl-module-5.10.0-20080101
+	perl-net-5.10.0-20080101
+	perl-openpkg-5.10.0-20080109
+	perl-parse-5.10.0-20080117
+	perl-ssl-5.10.0-20080101
+	perl-stats-5.10.0-20080101
+	perl-sys-5.10.0-20080101
+	perl-term-5.10.0-20080116
+	perl-text-5.10.0-20080101
+	perl-time-5.10.0-20080101
+	perl-util-5.10.0-20080116
+	perl-www-5.10.0-20080103
+	perl-xml-5.10.0-20080101
+	pkgconfig-0.23-20080117
+	png-1.2.24-20080101
+	procmail-3.22-20080101
+	readline-5.2.12-20080101
+	sasl-2.1.22-20080101
+	sed-4.1.5-20080101
+	spamassassin-3.2.4-20080107
+	texinfo-4.11-20080101
+	zlib-1.2.3-20080101
+
+
+Changes between 2.2-rc-1 and 2.2-rc-2:
+
+    - clamav-0.92.1-20080213
+
+	New upstream version, fixes various security issues.
+
+    - horde-framework-kolab-3.2_rc1-20080311
+
+	kolab/issue2521 (an event breaking lib/Horde/Kolab/Freebusy.php)
+
+    - imapd-2.3.11-20080101_kolab2
+
+	kolab/issue2535 (group:distributionlist@example.com doesn't work for
+	                 Cyrus IMAP ACLs)
+	kolab/issue2541 (openpkg rpm -e imapd removes annotations.db and
+	                 mailboxes.db)
+
+    - kolabconf-2.2.rc2-20080314
+
+	kolab/issue1550 (Masquerade problem)
+	kolab/issue2446 (Make the used syslog facility configureable)
+
+    - kolabd-2.1.99-20080314
+
+	kolabdcachetool: Fix location of graveyard caches.
+
+	Enforce SSL for horde and fbview and corrected Location entries.
+
+	Use https for freebusy look-ups by the resmgr (resmgr didn't work
+	when "FreeBusy Service via HTTP" was disabled).
+
+	kolab/issue1693 (Automatically trigger f/b cache regeneration)
+	kolab/issue2350 (Email from buggy Lotus notes client not accepted by
+	                 Cyrus)
+	kolab/issue2358 (mismatch between cyrus-admins and cyrus-admin)
+	kolab/issue2446 (Make the used syslog facility configureable)
+	kolab/issue2466 (How should Kolab Filter handle mails from privileged
+	                 networks?)
+	kolab/issue2507 (move session_vars.php to sysconfig directory)
+
+    - kolab-freebusy-2.2.rc2-20080314
+
+	kolab/issue1693 (Automatically trigger f/b cache regeneration)
+
+    - kolab-webadmin-2.1.99-20080314
+
+	Corrections in the Dutch translation.
+
+	Better LDAP filter when listing admins and maintainers.
+
+	kolab/issue2203 (About Kolab does not list new server components)
+	kolab/issue2329 (Domain Maintainer cannot create users)
+	kolab/issue2437 (Change name of service tab to settings)
+	kolab/issue2505 (update of the french translation for kolab-server)
+	kolab/issue2507 (move session_vars.php to sysconfig directory)
+
+    - perl-kolab-2.2.rc2-20080314
+
+	kolab/issue2358 (mismatch between cyrus-admins and cyrus-admin)
+	kolab/issue2478 (kolabd memory leak)
+
+    - php-kolab-2.2.rc2-20080314
+
+	Fixed determination of calendar folder owner.  Resmgr wasn't
+	able to trigger freebusy list generation.
+
+	kolab/issue1272 (From: header in vacation messages is marked as
+	                 "Untrusted")
+	kolab/issue1693 (Automatically trigger f/b cache regeneration)
+	kolab/issue2466 (How should Kolab Filter handle mails from privileged
+	                 networks?)
+	kolab/issue2467 (Kolab Filter ignores configuration in 2.2 RC1)
+	kolab/issue2487 (Incorrect variable name $fbfilename within
+	                 Freebusy/Cache.php)
+	kolab/issue2495 (The reply to an invitation with umlauts of a group
+	                 account doesn't display the umlauts.)
+
+
+    Packages in the OpenPKG based Kolab server release:
+
+    - Kolab packages:
+
+      Updated:
+
+	horde-framework-kolab-3.2_rc1-20080311
+	kolab-filter-2.2.rc2-20080314
+	kolab-freebusy-2.2.rc2-20080314
+	kolab-webadmin-2.1.99-20080314
+	kolabconf-2.2.rc2-20080314
+	kolabd-2.1.99-20080314
+	perl-kolab-2.2.rc2-20080314
+	php-kolab-2.2.rc2-20080314
+
+      Unchanged:
+
+	PEAR-Auth_SASL-1.0.2-1
+	PEAR-Date-1.4.7-1
+	PEAR-HTTP_Request-1.4.1-1
+	PEAR-Log-1.9.9-1
+	PEAR-Mail-1.1.14-1
+	PEAR-Mail_Mime-1.3.1-1
+	PEAR-Net_IMAP-1.1.0beta1-1
+	PEAR-Net_LMTP-1.0.1-1
+	PEAR-Net_SMTP-1.2.10-1
+	PEAR-Net_Sieve-1.1.5-1
+	PEAR-Net_Socket-1.0.6-1
+	PEAR-Net_URL-1.0.15-1
+	fbview-horde-3.2_rc1-20071201
+	fbview-kronolith-2.2_rc1-20071129
+	horde-imp-kolab-4.2_rc1-20071128
+	horde-ingo-kolab-1.2_rc1-20071128
+	horde-kolab-3.2_rc1-20071201
+	horde-kolab-client-0.99-20071002
+	horde-kronolith-kolab-2.2_rc1-20071129
+	horde-mnemo-kolab-2.2_rc1-20071128
+	horde-nag-kolab-2.2_rc1-20071128
+	horde-passwd-kolab-3.0.1-20071001
+	horde-turba-kolab-2.2_rc1-20071128
+	php-channel-horde-1.0-1
+	php-smarty-2.6.18-20070607
+
+    - OpenPKG packages:
+
+      Updated:
+
+	clamav-0.92.1-20080213
+	imapd-2.3.11-20080101_kolab2
+
+      Unchanged:
+
+	amavisd-2.5.3-20080101
+	apache-2.2.8-20080118
+	apache-php-5.2.5-20080114
+	apr-1.2.12-20080101
+	autoconf-2.61-20080101
+	automake-1.10-20080101
+	bc-1.06-20080101
+	binutils-2.18-20080101
+	bison-2.3-20080101
+	bzip2-1.0.4-20080101
+	config-20060923-20080101
+	curl-7.17.1-20080101
+	db-4.5.20.2-20070628
+	diffutils-2.8.7-20080101
+	expat-2.0.1-20080101
+	file-4.23-20080101
+	flex-2.5.34-20080101
+	freetype-2.3.5-20080101
+	fsl-1.7.0-20080101
+	gcc-4.2.2-20080101
+	gd-2.0.35-20080101
+	gettext-0.17-20080101
+	gmp-4.2.2-20080101
+	grep-2.5.3-20080101
+	groff-1.19.2-20080101
+	gzip-1.3.12-20080101
+	imap-2006k-20080101
+	jpeg-6b-20080101
+	libiconv-1.12-20080101
+	libmcrypt-2.5.8-20080101
+	libxml-2.6.31-20080111
+	libxslt-1.1.22-20080101
+	lzo-2.02-20080101
+	m4-1.4.9-20080101
+	make-3.81-20080101
+	mhash-0.9.9-20080101
+	mm-1.4.2-20080101
+	ncurses-5.6.20080112-20080113
+	openldap-2.3.39-20071130
+	openpkg-20071227-20071227
+	openpkg-tools-1.4.6-20071231
+	openssl-0.9.8g-20080101
+	pcre-7.5-20080110
+	perl-5.10.0-20080103
+	perl-comp-5.10.0-20080110
+	perl-conv-5.10.0-20080101
+	perl-crypto-5.10.0-20080101
+	perl-db-5.10.0-20080118
+	perl-dns-5.10.0-20080101
+	perl-ds-5.10.0-20080104
+	perl-ldap-5.10.0-20080101
+	perl-locale-5.10.0-20080112
+	perl-mail-5.10.0-20080117
+	perl-module-5.10.0-20080101
+	perl-net-5.10.0-20080101
+	perl-openpkg-5.10.0-20080109
+	perl-parse-5.10.0-20080117
+	perl-ssl-5.10.0-20080101
+	perl-stats-5.10.0-20080101
+	perl-sys-5.10.0-20080101
+	perl-term-5.10.0-20080116
+	perl-text-5.10.0-20080101
+	perl-time-5.10.0-20080101
+	perl-util-5.10.0-20080116
+	perl-www-5.10.0-20080103
+	perl-xml-5.10.0-20080101
+	php-5.2.5-20080114
+	pkgconfig-0.23-20080117
+	png-1.2.24-20080101
+	postfix-2.4.6-20080101
+	procmail-3.22-20080101
+	readline-5.2.12-20080101
+	sasl-2.1.22-20080101
+	sed-4.1.5-20080101
+	spamassassin-3.2.4-20080107
+	texinfo-4.11-20080101
+	zlib-1.2.3-20080101
+
+
+Changes between 2.2-beta-3 and 2.2-rc-1:
+
+    All packages except for openldap and db were upgraded to OpenPKG-CURRENT
+    (as of 20080118). The new imapd package was modified to behave like in
+    previous server releases, i.e. to not send capabilities after STARTTLS,
+    see kolab/issue2443 for details.
+
+    - kolabconf-2.2.rc1-20080204
+
+	Added missing newlines in kolabconf -h
+
+    - kolabd-2.1.99-20080204
+
+	deluser: add missing @ to bindir variable
+
+	Updates for SUSE (support for <= 10.1 is completely dropped)
+
+	kolab/issue26   (Allow to bind to specific IPs)
+
+    - kolab-filter-2.2.rc1-20080204
+
+	kolab/issue2425 (Undefined variable: reject_forged_from_header
+	                 reported in fatal.log)
+
+    - kolab-webadmin-2.1.99-20080204
+
+	Fixed some variable initialisations.
+
+	Correction in the Dutch translation.
+
+	Link to favicon.ico so it is still used when running the web interface
+	with a different path prefix.
+
+	kolab/issue2439 (Explanation in the section Mail Filter Settings on
+	                 the services tab not clear)
+
+    - perl-kolab-2.2.rc1-20080204
+
+	kolab/issue2411 (perl error in LDAP.pm)
+
+
+    Packages in the OpenPKG based Kolab server release:
+
+    - Kolab packages:
+
+      Updated:
+
+	imapd-2.3.11-20080101_kolab
+	kolab-filter-2.2.rc1-20080204
+	kolab-freebusy-2.2.rc1-20080204
+	kolab-webadmin-2.1.99-20080204
+	kolabconf-2.2.rc1-20080204
+	kolabd-2.1.99-20080204
+	openldap-2.3.39-20071130
+	perl-kolab-2.2.rc1-20080204
+	php-kolab-2.2.rc1-20080204
+
+      Unchanged:
+
+	PEAR-Auth_SASL-1.0.2-1
+	PEAR-Date-1.4.7-1
+	PEAR-HTTP_Request-1.4.1-1
+	PEAR-Log-1.9.9-1
+	PEAR-Mail-1.1.14-1
+	PEAR-Mail_Mime-1.3.1-1
+	PEAR-Net_IMAP-1.1.0beta1-1
+	PEAR-Net_LMTP-1.0.1-1
+	PEAR-Net_SMTP-1.2.10-1
+	PEAR-Net_Sieve-1.1.5-1
+	PEAR-Net_Socket-1.0.6-1
+	PEAR-Net_URL-1.0.15-1
+	fbview-horde-3.2_rc1-20071201
+	fbview-kronolith-2.2_rc1-20071129
+	horde-framework-kolab-3.2_rc1-20071129
+	horde-imp-kolab-4.2_rc1-20071128
+	horde-ingo-kolab-1.2_rc1-20071128
+	horde-kolab-3.2_rc1-20071201
+	horde-kolab-client-0.99-20071002
+	horde-kronolith-kolab-2.2_rc1-20071129
+	horde-mnemo-kolab-2.2_rc1-20071128
+	horde-nag-kolab-2.2_rc1-20071128
+	horde-passwd-kolab-3.0.1-20071001
+	horde-turba-kolab-2.2_rc1-20071128
+	php-channel-horde-1.0-1
+	php-smarty-2.6.18-20070607
+
+    - OpenPKG packages:
+
+      Added:
+
+	perl-locale-5.10.0-20080112
+	perl-text-5.10.0-20080101
+
+      Updated:
+
+	amavisd-2.5.3-20080101
+	apache-2.2.8-20080118
+	apache-php-5.2.5-20080114
+	apr-1.2.12-20080101
+	autoconf-2.61-20080101
+	automake-1.10-20080101
+	bc-1.06-20080101
+	binutils-2.18-20080101
+	bison-2.3-20080101
+	bzip2-1.0.4-20080101
+	clamav-0.92-20080101
+	config-20060923-20080101
+	curl-7.17.1-20080101
+	diffutils-2.8.7-20080101
+	expat-2.0.1-20080101
+	file-4.23-20080101
+	flex-2.5.34-20080101
+	freetype-2.3.5-20080101
+	fsl-1.7.0-20080101
+	gcc-4.2.2-20080101
+	gd-2.0.35-20080101
+	gettext-0.17-20080101
+	gmp-4.2.2-20080101
+	grep-2.5.3-20080101
+	groff-1.19.2-20080101
+	gzip-1.3.12-20080101
+	imap-2006k-20080101
+	jpeg-6b-20080101
+	libiconv-1.12-20080101
+	libmcrypt-2.5.8-20080101
+	libxml-2.6.31-20080111
+	libxslt-1.1.22-20080101
+	lzo-2.02-20080101
+	m4-1.4.9-20080101
+	make-3.81-20080101
+	mhash-0.9.9-20080101
+	mm-1.4.2-20080101
+	ncurses-5.6.20080112-20080113
+	openpkg-20071227-20071227
+	openpkg-tools-1.4.6-20071231
+	openssl-0.9.8g-20080101
+	pcre-7.5-20080110
+	perl-5.10.0-20080103
+	perl-comp-5.10.0-20080110
+	perl-conv-5.10.0-20080101
+	perl-crypto-5.10.0-20080101
+	perl-db-5.10.0-20080118
+	perl-dns-5.10.0-20080101
+	perl-ds-5.10.0-20080104
+	perl-ldap-5.10.0-20080101
+	perl-mail-5.10.0-20080117
+	perl-module-5.10.0-20080101
+	perl-net-5.10.0-20080101
+	perl-openpkg-5.10.0-20080109
+	perl-parse-5.10.0-20080117
+	perl-ssl-5.10.0-20080101
+	perl-stats-5.10.0-20080101
+	perl-sys-5.10.0-20080101
+	perl-term-5.10.0-20080116
+	perl-time-5.10.0-20080101
+	perl-util-5.10.0-20080116
+	perl-www-5.10.0-20080103
+	perl-xml-5.10.0-20080101
+	php-5.2.5-20080114
+	pkgconfig-0.23-20080117
+	png-1.2.24-20080101
+	postfix-2.4.6-20080101
+	procmail-3.22-20080101
+	readline-5.2.12-20080101
+	sasl-2.1.22-20080101
+	sed-4.1.5-20080101
+	spamassassin-3.2.4-20080107
+	texinfo-4.11-20080101
+	zlib-1.2.3-20080101
+
+      Unchanged:
+
+	db-4.5.20.2-20070628
+
+
+Changes between 2.2-beta-2 and 2.2-beta-3:
+
+    All packages except for openldap and db were upgraded to OpenPKG-CURRENT
+    (as of 20071206). The package openldap-2.3.39-20071130 was created to
+    fix security issues (CVE-2007-5707 and CVE-2007-5708) without upgrading
+    to OpenLDAP 2.4.
+
+    - kolabconf-2.2.beta3-20071207
+
+	Fix the install location for kolabconf for the newest MakeMaker.
+
+    - kolabd-2.1.99-20071203
+
+	freebusy_logfile is now freebusy_logdir.
+
+	Updated the template for the restructured kolab-freebusy package.
+
+	Allow postfix smtp and smtps to bind to a specific IP, too.
+
+	Support for the extended free/busy concept.
+
+	Removed resource password handling which is unused since server 2.1.
+
+	kolab/issue2134 ([Horde] Unable to send message with attachments)
+	kolab/issue2206 (Multiple deliveries to distribution lists)
+	kolab/issue2225 (notifyd logging going into fsl.log)
+	kolab/issue2236 (Apache UID access broken)
+
+    - kolab-filter-2.2.beta3-20071203
+
+	Adapted to the restructured php-kolab/Kolab_Filter package.
+
+	Removed resource password handling which is unused since server 2.1.
+
+	kolab/issue2174 (Automatic Invitation Policy not working with invites
+	                 as attachment)
+	kolab/issue2177 (Better logging in kolabfilter and kolabmailboxfilter)
+
+    - kolab-freebusy-2.2.beta3-20071130
+
+	A fully restructured free/busy with the most recent free/busy
+	concept implemented.
+
+	kolab/issue799 (pfb php script cannot handle umlaut and dots in
+	                foldernames correctly)
+	kolab/issue898 (pfbs from several servers, are not combined into .ifb)
+
+    - kolab-webadmin-2.1.99-20071203
+
+	Improved some message strings.
+
+	Updated German translations.
+
+	Removed resource password handling which is unused since server 2.1.
+
+	Removed obsolete explanation about enabling legacy services.
+
+	kolab/issue1711 (extra space after first name when editing users or
+	                 admins)
+	kolab/issue1912 (some field descriptions missing in web admin
+	                 interface)
+
+    - perl-kolab-2.2.beta3-20071130
+
+	Show component and log level when sending debug log to stdout.
+
+	kolab/issue1313 (resmngr cannot create calendar folder in multidomain
+	                 setup)
+
+    - php-kolab-2.2.beta3-20071207
+
+	A fully restructured free/busy with the most recent free/busy
+	concept implemented.
+
+	Restructured Kolab_Filter package with the focus on error
+	handling and unit testing.
+
+	Fix removal of the empty line between header and body. Added a
+	unit test for that.
+
+	kolab/issue1313 (resmngr cannot create calendar folder in multidomain
+	                 setup)
+
+    - horde-framework-kolab-3.2_rc1-20071129
+
+	New functionality required for kolab-freebusy.
+
+	Support for the extended free/busy concept.
+
+	kolab/issue2128 (Building horde-framework-kolab without http access
+	                 fails)
+	kolab/issue2134 ([Horde] Unable to send message with attachments)
+	kolab/issue2135 ([horde/turba] Turba should support some more contact
+	                 attributes)
+	kolab/issue2138 (Horde creates events in main inbox)
+	kolab/issue2144 (Calendar items of shared calendar not appearing)
+
+    - horde-kolab-3.2_rc1-20071201
+
+	kolab/issue2101 ([horde] can't delete categories)
+
+    - horde-kronolith-kolab-2.2_rc1-20071129
+
+	kolab/issue2138 (Horde creates events in main inbox)
+
+    - horde-turba-kolab-2.2_rc1-20071128
+
+	kolab/issue2040 (Horde: resouces are not displayed in address book)
+	kolab/issue2135 ([horde/turba] Turba should support some more contact
+	                 attributes)
+
+    - fbview-kronolith-2.2_rc1-20071129
+
+	Support for the extended free/busy concept.
+
+
+    Packages in the OpenPKG based Kolab server release:
+
+    - Kolab packages:
+
+      Removed:
+
+	kolab-horde-framework (now horde-framework-kolab)
+
+      Added:
+
+	php-channel-horde-1.0-1
+
+      Updated:
+
+	fbview-horde-3.2_rc1-20071201
+	fbview-kronolith-2.2_rc1-20071129
+	horde-framework-kolab-3.2_rc1-20071129
+	horde-imp-kolab-4.2_rc1-20071128
+	horde-ingo-kolab-1.2_rc1-20071128
+	horde-kolab-3.2_rc1-20071201
+	horde-kronolith-kolab-2.2_rc1-20071129
+	horde-mnemo-kolab-2.2_rc1-20071128
+	horde-nag-kolab-2.2_rc1-20071128
+	horde-turba-kolab-2.2_rc1-20071128
+	kolab-filter-2.2.beta3-20071203
+	kolab-freebusy-2.2.beta3-20071130
+	kolab-webadmin-2.1.99-20071203
+	kolabconf-2.2.beta3-20071207
+	kolabd-2.1.99-20071203
+	openldap-2.3.39-20071130
+	perl-kolab-2.2.beta3-20071130
+	php-kolab-2.2.beta3-20071207
+
+      Unchanged:
+
+	PEAR-Auth_SASL-1.0.2-1
+	PEAR-Date-1.4.7-1
+	PEAR-HTTP_Request-1.4.1-1
+	PEAR-Log-1.9.9-1
+	PEAR-Mail-1.1.14-1
+	PEAR-Mail_Mime-1.3.1-1
+	PEAR-Net_IMAP-1.1.0beta1-1
+	PEAR-Net_LMTP-1.0.1-1
+	PEAR-Net_SMTP-1.2.10-1
+	PEAR-Net_Sieve-1.1.5-1
+	PEAR-Net_Socket-1.0.6-1
+	PEAR-Net_URL-1.0.15-1
+	horde-kolab-client-0.99-20071002
+	horde-passwd-kolab-3.0.1-20071001
+	php-smarty-2.6.18-20070607
+
+    - OpenPKG packages:
+
+      Updated:
+
+	apache-2.2.6-20071121
+	apache-php-5.2.5-20071206
+	apr-1.2.12-20071126
+	binutils-2.18-20071111
+	curl-7.17.1-20071030
+	flex-2.5.33-20071104
+	fsl-1.7.0-20071027
+	gcc-4.2.2-20071031
+	gettext-0.17-20071107
+	gmp-4.2.2-20071107
+	imap-2006j2-20071028
+	imapd-2.3.10-20071206
+	libiconv-1.12-20071112
+	libxml-2.6.30-20071205
+	ncurses-5.6.20071201-20071202
+	openpkg-20071030-20071030
+	openssl-0.9.8g-20071104
+	pcre-7.4-20071101
+	perl-5.8.8-20071108
+	perl-comp-5.8.8-20071201
+	perl-crypto-5.8.8-20071110
+	perl-db-5.8.8-20071029
+	perl-ds-5.8.8-20071114
+	perl-mail-5.8.8-20071206
+	perl-module-5.8.8-20071206
+	perl-net-5.8.8-20071203
+	perl-parse-5.8.8-20071129
+	perl-ssl-5.8.8-20071026
+	perl-stats-5.8.8-20071204
+	perl-sys-5.8.8-20071124
+	perl-time-5.8.8-20071204
+	perl-util-5.8.8-20071203
+	perl-www-5.8.8-20071201
+	perl-xml-5.8.8-20071121
+	php-5.2.5-20071206
+	png-1.2.23-20071109
+	postfix-2.4.6-20071027
+	procmail-3.22-20071027
+	sasl-2.1.22-20071206
+	spamassassin-3.2.3-20071027
+
+      Unchanged:
+
+	amavisd-2.5.2-20070907
+	autoconf-2.61-20070711
+	automake-1.10-20061111
+	bc-1.06-20061013
+	bison-2.3-20070312
+	bzip2-1.0.4-20070507
+	clamav-0.91.2-20070907
+	config-20060923-20061013
+	db-4.5.20.2-20070628
+	diffutils-2.8.7-20071005
+	expat-2.0.1-20070629
+	file-4.21-20070829
+	freetype-2.3.5-20070720
+	gd-2.0.35-20071011
+	grep-2.5.3-20070829
+	groff-1.19.2-20070113
+	gzip-1.3.12-20070623
+	jpeg-6b-20070507
+	libmcrypt-2.5.8-20070720
+	libxslt-1.1.22-20070824
+	lzo-2.02-20061013
+	m4-1.4.9-20070818
+	make-3.81-20061013
+	mhash-0.9.9-20070807
+	mm-1.4.2-20061013
+	openpkg-tools-1.4.5-20070624
+	perl-conv-5.8.8-20070526
+	perl-dns-5.8.8-20070920
+	perl-ldap-5.8.8-20070916
+	perl-openpkg-5.8.8-20061013
+	perl-term-5.8.8-20070924
+	pkgconfig-0.22-20070720
+	readline-5.2.7-20070927
+	sed-4.1.5-20061013
+	texinfo-4.11-20070911
+	zlib-1.2.3-20070507
+
+
+Changes between 2.2-beta-1 and 2.2-beta-2:
+
+    - perl-kolab-2.2.beta2-20071018
+
+	Removed the Kolab-Mailer module.
+
+	Removed "dirserv"-support.
+
+	Replaced path reference to the kolabconf script by a
+	configuration variable.
+
+	Replaced statedir path with function argument.
+
+	Replaced several variables originally rewritten during the
+	make cycle with values in a central configuration file.
+
+	Converted the package into a standard perl library package.
+
+	kolab/issue26   (Allow to bind to specific IPs)
+	kolab/issue934  (Remove FTP FreeBusy Service (proftpd))
+	kolab/issue1862 (dist_conf/kolab: Use settings from OpenPKG
+	                 installation)
+
+    - php-kolab-2.2.beta2-20071018
+
+	kolab/issue26   (Allow to bind to specific IPs)
+	kolab/issue1637 (Recurrency issues)
+	kolab/issue1862 (dist_conf/kolab: Use settings from OpenPKG
+	                 installation)
+
+    - kolabconf-2.2.beta2-20071018
+
+	New package that holds the kolabconf script.
+
+	Added mechanism to allow config variable replacement in the META
+	section.
+
+	kolab/issue26   (Allow to bind to specific IPs)
+	kolab/issue934  (Remove FTP FreeBusy Service (proftpd))
+	kolab/issue1879 (kolabconf poor error message in buildCyrusConfig)
+	kolab/issue1862 (dist_conf/kolab: Use settings from OpenPKG
+	                 installation)
+
+    - kolabd-2.1.99-20071018
+
+	Added "discard" service to the postfix master.cf configuration.
+
+	Removed "dirserv"-support.
+
+	Replaced path reference to the kolabconf script by a
+	configuration variable.
+
+	Replaced statedir path with function argument in Kolab::LDAP::startup.
+
+	Replaced several variables originally rewritten during the
+	make cycle with values in a central configuration file.
+
+	Moved kolabconf into its own package.
+
+	Fixed the apache configuration for the new fbview packages
+
+	Switched from displaying php errors to logging them
+	(recommended for production servers).
+
+	Disabled spamd, hourly instead of daily clamav updates.
+
+	Added "with_horde" support.
+
+	Added LDAP attributes 'kolabAllowSMTPRecipient' and
+	'kolabPolicyDaemon' in preparation for kolab/issue1340.
+
+	The emailserver_socket is stored in $(libexecdir) and not in
+	$(libdir). This fixes an x86_64 issue.
+
+	kolab/issue26   (Allow to bind to specific IPs)
+	kolab/issue934  (Remove FTP FreeBusy Service (proftpd))
+	kolab/issue1025 (loading policy bank "MYUSERS": unknown field
+	                 "mynetworks")
+	kolab/issue1686 (Remove WebDAV Support)
+	kolab/issue1796 (httpd.conf : MISSING Include
+	                 "/kolab/etc/apache/apache.d/*.conf")
+	kolab/issue1804 (Several files apparently missing in kolabd package)
+	kolab/issue1805 (Uncleaned files in kolabd source package)
+	kolab/issue1811 (Spurious files in CVS, kolabd directory)
+	kolab/issue1861 (imapd.conf.template: primary domain listed twice in
+	                 loginrealms)
+	kolab/issue1862 (dist_conf/kolab: Use settings from OpenPKG
+	                 installation)
+	kolab/issue1895 (switch from virtual_maps to virtual_alias_maps)
+	kolab/issue2038 (additional sieve extensions)
+
+    - kolab-filter-2.2.beta2-20071018
+
+	kolab/issue26   (Allow to bind to specific IPs)
+	kolab/issue1606 (Allow to run kolab-resource-handlers with PHP cgi)
+	kolab/issue1862 (dist_conf/kolab: Use settings from OpenPKG
+	                 installation)
+
+    - kolab-webadmin-2.1.99-20071018
+
+	Clarify web admin description for HTTP FreeBusy switch
+	(with updated German translation)
+
+	kolab/issue932  (Illegal values in webadmin cause LDAP errors)
+	kolab/issue934  (Remove FTP FreeBusy Service (proftpd))
+	kolab/issue1162 (Misplaced title field in webinterface)
+	kolab/issue1246 (Permission handling in the webadmin frontend)
+	kolab/issue1611 ([webadmin] page.tpl use no valid XHTML)
+	kolab/issue1694 (Unable to modify the folder type of an already
+	                 created shared folder)
+	kolab/issue1781 (Spanish PO File Translation)
+	kolab/issue1797 (kolab-webadmin source package missing PO files)
+	kolab/issue1800 (kolab-webadmin debian dist_conf smarty location)
+	kolab/issue1845 (incorrect check mailForDn for ldap results)
+	kolab/issue1862 (dist_conf/kolab: Use settings from OpenPKG
+	                 installation)
+
+
+    Packages in the OpenPKG based Kolab server release:
+
+    - Kolab packages:
+
+      Removed:
+
+	kolab-horde-fbview (now fbview-horde, fbview-kronolith)
+	kolab-resource-handlers (now kolab-filter, kolab-freebusy, php-kolab)
+
+      Added:
+
+	PEAR-Auth_SASL-1.0.2-1
+	PEAR-Date-1.4.7-1
+	PEAR-HTTP_Request-1.4.1-1
+	PEAR-Log-1.9.9-1
+	PEAR-Mail-1.1.14-1
+	PEAR-Mail_Mime-1.3.1-1
+	PEAR-Mail_Mime-1.3.1-1
+	PEAR-Net_IMAP-1.1.0beta1-1
+	PEAR-Net_LMTP-1.0.1-1
+	PEAR-Net_SMTP-1.2.10-1
+	PEAR-Net_Sieve-1.1.5-1
+	PEAR-Net_Socket-1.0.6-1
+	PEAR-Net_URL-1.0.15-1
+	fbview-horde-3.2_alpha-20071013
+	fbview-kronolith-2.2_alpha-20071001
+	horde-framework-kolab-3.2_ALPHA-20071004
+	horde-imp-kolab-4.2_alpha-20071004
+	horde-ingo-kolab-1.2_alpha-20071004
+	horde-kolab-3.2_alpha-20071013
+	horde-kolab-client-0.99-20071002
+	horde-kolab-client-0.99-20071002
+	horde-kronolith-kolab-2.2_alpha-20071004
+	horde-mnemo-kolab-2.2_alpha-20071001
+	horde-nag-kolab-2.2_alpha-20071004
+	horde-passwd-kolab-3.0.1-20071001
+	horde-turba-kolab-2.2_alpha-20071002
+	kolab-filter-2.2.beta2-20071018
+	kolab-freebusy-2.2.beta2-20071018
+	kolabconf-2.2.beta2-20071018
+	php-kolab-2.2.beta2-20071018
+
+      Updated:
+
+	kolab-webadmin-2.1.99-20071018
+	kolabd-2.1.99-20071018
+	perl-kolab-2.2.beta2-20071018
+
+      Unchanged:
+
+	kolab-horde-framework-2.1.99-20070607
+	php-smarty-2.6.18-20070607
+
+    - OpenPKG packages:
+
+      Removed:
+
+	apache2 (renamed to apache)
+	apache2-php (renamed to apache-php)
+	getopt (was needed by proftpd)
+	proftpd (obsolete)
+	pth (openldap is now built without pth)
+	sharutils (no package requires this)
+
+      Added:
+
+	apache-2.2.6-20070910
+	apache-php-5.2.4-20071015
+	apr-1.2.11-20070907
+	freetype-2.3.5-20070720
+	gd-2.0.35-20071011
+	jpeg-6b-20070507
+	libmcrypt-2.5.8-20070720
+	mhash-0.9.9-20070807
+	png-1.2.22-20071014
+
+      Updated:
+
+	amavisd-2.5.2-20070907
+	autoconf-2.61-20070711
+	binutils-2.18-20070829
+	clamav-0.91.2-20070907
+	curl-7.17.0-20071009
+	db-4.5.20.2-20070628
+	diffutils-2.8.7-20071005
+	expat-2.0.1-20070629
+	file-4.21-20070829
+	gcc-4.2.2-20071016
+	gettext-0.16.1-20070930
+	grep-2.5.3-20070829
+	gzip-1.3.12-20070623
+	imap-2006j2-20071012
+	imapd-2.3.9-20071015
+	libxml-2.6.30-20070824
+	libxslt-1.1.22-20070824
+	m4-1.4.9-20070818
+	ncurses-5.6.20071013-20071014
+	openldap-2.3.38-20071012
+	openpkg-20071018-20071018
+	openpkg-tools-1.4.5-20070624
+	openssl-0.9.8f-20071017
+	pcre-7.4-20070921
+	perl-5.8.8-20071011
+	perl-comp-5.8.8-20071005
+	perl-crypto-5.8.8-20070929
+	perl-db-5.8.8-20070711
+	perl-dns-5.8.8-20070920
+	perl-ds-5.8.8-20071008
+	perl-ldap-5.8.8-20070916
+	perl-mail-5.8.8-20070928
+	perl-module-5.8.8-20070928
+	perl-net-5.8.8-20070829
+	perl-parse-5.8.8-20071018
+	perl-ssl-5.8.8-20071017
+	perl-stats-5.8.8-20070708
+	perl-sys-5.8.8-20071018
+	perl-term-5.8.8-20070924
+	perl-time-5.8.8-20071006
+	perl-util-5.8.8-20071015
+	perl-www-5.8.8-20071010
+	perl-xml-5.8.8-20070929
+	php-5.2.4-20071012
+	pkgconfig-0.22-20070720
+	postfix-2.4.5-20070908
+	procmail-3.22-20070720
+	readline-5.2.7-20070927
+	sasl-2.1.22-20071009
+	spamassassin-3.2.3-20070810
+	texinfo-4.11-20070911
+
+      Unchanged:
+
+	automake-1.10-20061111
+	bc-1.06-20061013
+	bison-2.3-20070312
+	bzip2-1.0.4-20070507
+	config-20060923-20061013
+	flex-2.5.33-20070507
+	fsl-1.7.0-20070316
+	gmp-4.2.1-20061222
+	groff-1.19.2-20070113
+	libiconv-1.11-20061013
+	lzo-2.02-20061013
+	make-3.81-20061013
+	mm-1.4.2-20061013
+	perl-conv-5.8.8-20070526
+	perl-openpkg-5.8.8-20061013
+	sed-4.1.5-20061013
+	zlib-1.2.3-20070507
+
+
+Changes between 2.1.0 and 2.2-beta1:
+
+    All components except for OpenLDAP were upgraded to
+    OpenPKG-CURRENT (as of 20070608), most noteworthy:
+
+	amavisd 2.5.1
+	apache 2.2.4
+	imapd 2.3.8
+	php 5.2.3
+	postfix 2.4.3
+	spamassassin 3.2.0
+
+    - perl-kolab-5.8.8-20070608
+
+	kolab/issue1679 (Update template META mechanism to support service
+	                 restarts)
+
+    - kolabd-2.1.99-20070612
+
+	kolab/issue919  (kolab server has problems with some characters in
+	                 passwords)
+	kolab/issue1126 (ldap_simple_bind() failed and Domain/Realm not
+	                 available) - partial fix
+	kolab/issue1679 (Update template META mechanism to support service
+	                 restarts)
+	kolab/issue1693 (Automatically trigger f/b cache regeneration)
+
+    - kolab-resource-handlers-2.1.99-20070612
+
+	added location to xpfb events
+
+	kolab/issue1693 (Automatically trigger f/b cache regeneration)
+
+    - kolab-webadmin-2.1.99-20070607
+
+	kolab/issue1610 (Use <label> for forms in webadmin)
+	kolab/issue1615 (Use <label> also for login page)
+	kolab/issue1618 (Add missing headings)
+	kolab/issue1619 (Add CSS file for printing)
+	kolab/issue1620 (fix invalid XHTML in form.class.php)
+	kolab/issue1742 (Do not modify the objectclasses of an existing object)
+	kolab/issue1744 (No "User Deleted, awaiting cleanup" for admins and
+	                 domain maintainers)
+
+
+-------------------------------------------------------------------------------
+
+Differences between Kolab 2.0 and 2.1:
+
+    - Simple multi-domain support
+
+	The Kolab server can now accept mail for multiple email domains.
+	There is also a new class of maintainers which are only allowed
+	to manage settings for a subset of the mail domains of the kolab
+	server.
+
+    - Hashed IMAP spool
+
+	The default imapd configuration has been changed to enable the
+	hashimapspool option, which allows the Cyrus IMAP server to run
+	more efficiently especially when you have many mailboxes.
+
+    - Improvements, bugfixes and upgraded software components
+
+	The 2.1 release received many improvements and bugfixes for issues
+	found in the 2.0 versions and during the long beta and rc phase.
+	Additionally many software components have been upgraded to new
+	upstream versions.
+
+
+Changes between 2.1-rc-2 and 2.1.0:
+
+    - Documentation
+
+	Documented workaround for libdb3 conflict in README.1st
+
+	Added instructions for automatically upgrading the free/busy cache.
+
+    - amavisd-2.3.3-2.5.0_kolab
+
+	kolab/issue1447 (Virus Scanning: Inserted note when partially scanned
+	                 ugly)
+
+    - kolabd-2.1.0-20070510
+
+	kolab/issue974  (Localize the text for rewritten From: headers)
+	kolab/issue1560 (postfix modifies message/rfc822 MIME parts)
+	kolab/issue1608 (A patch for kolabd to include the horde LDAP schema)
+
+    - kolab-resource-handlers-2.1.0-20070510
+
+	Generate a single To: header listing all recipients when forwarding
+	encapsulated iCal messages.
+
+	kolab/issue974  (Localize the text for rewritten From: headers)
+	kolab/issue1422 (Dummy freebusy info)
+
+    - kolab-webadmin-2.1.0-20070510
+
+	kolab/issue1616 (Use different cursor for <label> tags)
+	kolab/issue1617 (fix small inconsistency in german translation)
+
+
+Changes between 2.1-rc-1 and 2.1-rc-2:
+
+    - apache-1.3.33-2.5.6_kolab2
+
+	kolab/issue1607 (need to replace gdbm for pfbcache, because of license
+	                 clash gdbm vs php)
+
+    - clamav-0.90.2-20070413_kolab
+
+	New upstream version, fixes various security issues.
+
+    - file-4.15-2.5.0_kolab2
+
+	Fix for security issue described in CVE-2007-1536:
+	buffer overflow, remotely exploitable due to the usage of file in
+	amavisd-new
+
+    - fsl-1.7.0-20070303
+
+	New upstream version.
+
+	kolab/issue1172 (Cyrus Imapd dies when logfile exceeds 2 GiB)
+
+    - php-4.4.0-2.5.2_kolab2
+
+	kolab/issue1607 (need to replace gdbm for pfbcache, because of license
+	                 clash gdbm vs php)
+
+    - spamassassin-3.1.0-2.5.1_kolab
+
+	Fix for security issue described in CVE-2007-0451:
+	possible DoS due to incredibly long URIs found in the message content
+
+	Disabled external DNS and URI blacklists, because some of these
+	services require payment if used for many mailboxes.
+
+	Ignore headers inserted on the receiving side for bayes filtering.
+
+    - perl-kolab-5.8.7-20070420
+
+	Added debug option for verbose logging to stderr.
+
+    - kolabd-2.1.0-20070420
+
+	Fix the path to the freebusy directory for non-OpenPKG installations.
+
+	Fix usage of tar and modification of rc.conf during slave setup for
+	non-OpenPKG installations.
+
+	Don't pass notifications and quarantined mails through amavisd-new.
+
+	Updated configuration templates for ClamAV 0.90
+
+	Updated openldap monitor configuration.
+
+	Updated cyrus imapd configuration to use cyr_expire.
+
+	kolab/issue954  (kolab server rejects mails that should be marked
+	                 untrusted)
+	kolab/issue1538 (outlook invitation forwarding broken in Kolab server
+	                 2.1)
+	kolab/issue1607 (need to replace gdbm for pfbcache, because of license
+	                 clash gdbm vs php)
+	kolab/issue1609 ("kolab --help" tries to execute *all* commands)
+	kolab/issue1638 (kolabconf generates broken resmgr.conf)
+	kolab/issue1680 (/kolab/bin/kolab fix)
+
+    - kolab-horde-fbview-2.1.0-20070420
+
+	Updated version number, no other changes since 2.1rc1
+
+    - kolab-resource-handlers-2.1.0-20070420
+
+	Improved logging for opening pfbcache.db
+
+	kolab/issue954  (kolab server rejects mails that should be marked
+	                 untrusted)
+	kolab/issue1538 (outlook invitation forwarding broken in Kolab server
+	                 2.1)
+	kolab/issue1607 (need to replace gdbm for pfbcache, because of license
+	                 clash gdbm vs php)
+	kolab/issue1659 (Freebusy assumes that all day events last exactly one
+	                 day)
+
+    - kolab-webadmin-2.1.0-20070420
+
+	Updated Dutch and German translations.
+
+	kolab/issue1457 (updated French translation)
+	kolab/issue1612 (modify user ignores account type)
+	kolab/issue1614 (ldap_add() - Constraint violation on change user
+	                 account type)
+	kolab/issue1630 (Domain maintainer can see distribution lists from
+	                 other domains)
+	kolab/issue1652 (Import users from ldif and LDAP Constraint violation)
+	kolab/issue1654 (New LDAP overlay prevents modification of
+	                 distribution lists)
+	kolab/issue1663 (It is possible to create domain maintainers without
+	                 domains)
+	kolab/issue1670 (Renaming a domain maintainer twice within the same
+	                 form fails)
+
+
+Changes between 2.1-beta-4 and 2.1-rc-1:
+
+    - kolabd-2.0.99-20070205
+
+	kolab/issue1335 (pfbcache.db locking problems)
+	kolab/issue1507 (Public viewable phpinfo() and more in Server default
+	                 installation)
+	kolab/issue1550 (Masquerade problem, corrected template)
+	kolab/issue1563 (freebusy.conf template doesn't match freebusy.conf
+	                 from package)
+	kolab/issue1575 (Openldap enhanced data integrity)
+
+    - kolab-webadmin-2.0.99-20070205
+
+	Disabled Spanish language selection from web admin interface, because
+	of missing translation.
+
+	kolab/issue1479 ("Type" of shared folder can only be modified in 2nd
+	                 try)
+	kolab/issue1486 ("About Kolab" in Webinterface needs work over)
+	kolab/issue1539 (extension to the opening text, when the manager logs
+	                 in for the 1st time)
+	kolab/issue1559 (Domain Maintainer cannot delete "his" users)
+	kolab/issue1586 ("Required field" not translated to German in web
+	                 admin)
+	kolab/issue1592 (LANGUAGE variable overrides web admin language
+	                 selection)
+
+
+Changes between 2.1-beta-3 and 2.1-beta-4:
+
+    - clamav-0.88.7-20061211
+
+	bypass virus detection (CVE-2006-6406),
+	denial of service, remotely exploitable (CVE-2006-6481)
+	(http://kolab.org/security/kolab-vendor-notice-14.txt)
+
+    - kolabd-2.0.99-20070117
+
+	Updated proftpd.conf template: LDAPHomedirOnDemand(Prefix) is
+	now named LDAPGenerateHomedir(Prefix).
+
+	Set imapidlepoll to 5 seconds in imapd.conf.template.in.
+
+	kolab/issue1433 (Some files in /kolab/etc/postfix have wrong ownership)
+	kolab/issue1484 (Warnings using openldap = 2.3.27-2.20061018_kolab)
+	kolab/issue1487 (amavisd.conf mynetworks incomplete)
+	kolab/issue1531 (amavisd.conf local_domains only contains primary
+	                 domain)
+	kolab/issue1532 (Set "duplicatesuppression: 0" in imapd.conf.template?)
+
+    - kolab-horde-fbview-2.0.99-20070112
+
+	Improvements to the week view (part of kolab/issue666)
+
+	Removed dangerous php scripts (part of kolab/issue1507)
+
+    - kolab-resource-handlers-2.0.99-20070117
+
+	kolab/issue1490 (freebusy cache written to /kolab/kolab/...)
+	kolab/issue1512 (No FB information for resource accounts)
+	kolab/issue1558 (kolab-webadmin and php 5.2.0)
+
+    - kolab-webadmin-2.0.99-20070117
+
+	kolab/issue1013 (user passwords sha1 encoded without salt)
+	kolab/issue1262 (Setting quota to 4096+ MB breaks message delivery)
+	kolab/issue1418 (fields visible even when attribute_access is "hidden"
+	                 in session_vars.php)
+	kolab/issue1540 (Typo on kolab/admin/service page)
+	kolab/issue1555 (Login screen shows error msg for no good reason)
+
+    - openldap-2.3.29-2.20061110_kolab
+
+	New upstream version, fixes CVE-2006-5779 (Bugtraq ID 20939)
+
+    - perl-kolab-5.8.7-20070117
+
+	Only print warning about missing configuration variable if relevant.
+
+	kolab/issue1550 (Masquerade problem)
+
+
+Changes between 2.1-beta-2 and 2.1-beta-3:
+
+    - openpkg-2.5.4-2.5.4
+
+	New upstream version.
+
+    - apache-1.3.33-2.5.6
+
+	denial of service and possibly arbitrary code execution via crafted
+	URLs that are not properly handled using certain rewrite rules.
+	http://www.openpkg.org/security/advisories/OpenPKG-SA-2006.015-apache.html
+
+    - gzip-1.3.5-2.5.1
+
+	denial of service, arbitrary code execution
+	http://www.openpkg.org/security/advisories/OpenPKG-SA-2006.020-gzip.html
+
+    - curl-7.15.0-2.5.2
+
+	buffer overflow
+	http://www.openpkg.org/security/advisories/OpenPKG-SA-2006.012-curl.html
+
+    - openssl-0.9.8a-2.5.4
+
+	denial of service, may allow execution of arbitrary code
+	(http://kolab.org/security/kolab-vendor-notice-12.txt)
+
+    - clamav-0.88.5-2.20061018
+
+	buffer overflow, remotely exploitable (CVE-2006-4018)
+	(http://kolab.org/security/kolab-vendor-notice-10.txt)
+
+	heap overflow, remotely exploitable (CVE-2006-4182),
+	denial of service, remotely exploitable (CVE-2006-5295)
+	(http://kolab.org/security/kolab-vendor-notice-13.txt)
+
+    - file-4.15-2.5.0_kolab
+
+	kolab/issue1458 (Password protected .sxw files can be banned by
+	                 amavisd, as a result of the file command)
+
+    - openldap-2.3.27-2.20061018_kolab
+
+	New upstream version, fixes CVE-2006-4600 (Bugtraq ID 19832)
+	and other problems.
+
+	kolab/issue1229 (Master openldap's slurpd fails to start after
+	                 adding slave)
+	kolab/issue1431 (Slave cannot access master ldap server via SSL)
+
+    - imapd-2.2.12-2.5.0_kolab2
+
+	Fix folder structure for foldernames with non-alphanumeric characters,
+	when using skiplist as the database backend for mailboxes.db.
+
+    - perl-kolab-5.8.7-20061110
+
+	kolab/issue1194 (serious performance problem on high number of users)
+
+    - kolabd-2.0.99-20061110
+
+	Added missing relay service for postfix.
+
+	Changed main.cf masquerading defaults so email to
+	user@machine.example.org is actually delivered.
+
+	Use mailbox_transport instead of local_transport for
+	kolabmailboxfilter to work around issue825.
+
+	Removed doubled attribute cyrus-autocreatequota.
+
+	Added indexes for delegate and delete.
+
+	Updated freebusy.conf template for freebusy IMAP caching.
+
+	Changed imapd.conf template to use berkeley db instead of
+	skiplist for annotations.db and mailboxes.db as a workaround
+	for kolab/issue840 (Annotations needs to be more robust).
+
+	kolab/issue824  (kolabmailboxfilter run once for each recipient)
+	kolab/issue1264 (Add support for sieve based notifications)
+	kolab/issue1273 (Sending as delegate broken in Kolab server 2.1)
+	kolab/issue1428 (Fixed locking issue)
+	kolab/issue1433 (Some files in /kolab/etc/postfix have wrong ownership)
+
+    - kolab-webadmin-2.0.99-20061110
+
+	Fixes for setting folder type of shared folders.
+
+	Guard against large number of users.
+
+	kolab/issue1457 (updated French translation)
+
+    - kolab-resource-handlers-2.0.99-20061110
+
+	Improvements and fixes for freebusy IMAP caching.
+
+	kolab/issue815  (invitation replies vanish in resmgr)
+	kolab/issue957  (All-day events from Outlook don't show up in freebusy)
+	kolab/issue974  (Localize the text for rewritten From: headers)
+	kolab/issue1042 (empty lines at the end of mails delivered via LMTP)
+	kolab/issue1352 (resmgr can create wrong range dates)
+	kolab/issue1387 (resmgr replies to replies creating mail loop)
+	kolab/issue1422 (Dummy freebusy info)
+
+
+Changes between 2.1-beta-1 and 2.1-beta-2:
+
+    OpenPKG updates:
+
+      openpkg-2.5.2-2.5.2
+      openpkg-registry-0.2.7-20060223
+      libxslt-1.1.15-2.5.1
+      php-smarty-2.6.10-20051003
+      clamav-0.88.2-20060524
+
+      binutils-2.16.1-2.5.1
+	http://www.openpkg.org/security/advisories/OpenPKG-SA-2006.009-binutils.html
+
+      openldap-2.3.11-2.5.1
+	http://www.openpkg.org/security/advisories/OpenPKG-SA-2006.008-openldap.html
+
+
+    Kolab updates:
+
+      More distconf changes by Richard Bos and Markus Huewe.
+
+      - perl-kolab-5.8.7-20060619
+
+	kolab/issue1194 (kolabd quota performance)
+	kolab/issue1220 (postfix permissions)
+	kolab/issue1237 (Handling of @@@var@@@ in Conf.pm (Gunnar Wrobel))
+
+      - kolabd-2.0.99-20060619
+
+	* The default imapd configuration has been changed to enable the
+	  hashimapspool option.  This affects the upgrade procedure.
+	  See 1st.README for upgrade instructions.
+
+	* amavis now logs to /kolab/var/amavisd/amavisd.log.  This is
+	  part of the fix for Issue1015
+
+	kolab/issue1015 (fixing logging and logrotate for amavisd)
+	kolab/issue1089 (enable hashimapspool for imapd to cope with many users)
+	kolab/issue1101 (allowapop: no; disable apop access to imapd by default)
+	kolab/issue1105 (fix compilation of kolabd on FreeBSD)
+	kolab/issue1257 (wrong attribute name for imap quota)
+
+      - kolab-webadmin-2.0.99-20060619
+
+	* patch from Tobias Koenig in order to support setting of
+	  foldertype for public folders
+
+	kolab/issue848 (Modifying address book entry may break distribution list)
+	kolab/issue1106 (email validation in webgui)
+	kolab/issue1214 (number of days for vacation messages on webinterface)
+	kolab/issue1263 (Bug in the shared folders folder-type code) [Wrobel]
+
+      - kolab-resource-handlers-2.0.99-20060619
+
+	* create empty pfbcache.db if missing
+
+	kolab/issue973 (quoting and rewriting From header)
+	kolab/issue966 (Wrong CN for resource accounts)
+	kolab/issue1042 (server modifies email content)
+	kolab/issue1195 (error message in bounce)
+	kolab/issue1243 (rewriting fails when "From:" contains quoted printable)
+	kolab/issue1245 (rewriting problems on folded Header "From:"-line)
+
+
+$Id: release-notes.txt,v 1.542 2010/04/28 16:14:42 gunnar Exp $

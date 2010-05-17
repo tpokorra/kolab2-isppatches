@@ -1,0 +1,247 @@
+diff -r fce4450434a7 framework/Share/Share/kolab.php
+--- a/framework/Share/Share/kolab.php	Thu Nov 29 14:45:46 2007 +0100
++++ b/framework/Share/Share/kolab.php	Thu Nov 29 14:49:04 2007 +0100
+@@ -17,6 +17,13 @@ define('HORDE_ANNOT_SHARE_ATTR', HORDE_A
+  * Marks a share without a name. These shares are still invalid
+  */
+ define('KOLAB_SHARE_INVALID', 'KOLAB_SHARE_INVALID');
++
++/**
++ * Kolab specific free/busy relevance
++ */
++define('KOLAB_FBRELEVANCE_ADMINS',  0);
++define('KOLAB_FBRELEVANCE_READERS', 1);
++define('KOLAB_FBRELEVANCE_NOBODY',  2);
+ 
+ /**
+  * Horde_Share_kolab:: provides the kolab backend for the horde share driver.
+@@ -825,16 +832,135 @@ class Horde_Share_Object_kolab extends H
+      */
+     function isDefault()
+     {
++        $type = $this->getType();
++        if (is_a($type, 'PEAR_Error')) {
++            return false;
++        }
++        return $type[1];
++    }
++
++    //FIXME: The following five functions (actually also most other things in this class
++    //       needs to go into Kolab/IMAP.php
++    /**
++     * Get the folder type
++     *
++     * @return mixed  Array containing the type and the default status or a PEAR_Error
++     *                if the folder annotation cannot be accessed.
++     */
++    function getType()
++    {
+         $imap = &$this->_shareOb->getImap();
+-        $annotation = $imap->getAnnotation(KOLAB_ANNOT_FOLDER_TYPE, 'value.shared', $this->_folder);
++        $annotation = $imap->getAnnotation(KOLAB_ANNOT_FOLDER_TYPE,
++                                           'value.shared', 
++                                           $this->_folder);
+         if (is_a($annotation, 'PEAR_Error')) {
+-            return false;
+-        }
+-        if (empty($annotation)) {
+-            return false;
+-        }
+-        $type = explode('.', $annotation);
+-        return (!empty($type[1]) && $type[1] == 'default');
++            return $annotation;
++        }
++        
++        if (!empty($annotation)) {
++            $default = false;
++            $subtype = '';
++            $type = explode('.', $annotation);
++            if (!empty($type[0])) {
++                $foldertype = $type[0];
++                if (!empty($type[1])) {
++                    $subtype = $type[1];
++                    if ($type[1] == 'default') {
++                        $default = true;
++                    }
++                }
++            }
++            return array($foldertype, $default, $subtype);
++        } else {
++            return PEAR::raiseError(sprintf(_("Unknown folder type for folder %s."), $this->_folder));
++        }
++    }
++
++    /**
++     * Get the free/busy relevance for this folder
++     *
++     * @return int  Value containing the FB_RELEVANCE.
++     */
++    function getFbrelevance()
++    {
++        $imap = &$this->_shareOb->getImap();
++        $entry = KOLAB_ANNOT_ROOT . 'incidences-for';
++
++        $annotation = $imap->getAnnotation($entry, 'value.shared', $this->_folder);
++        if (is_a($annotation, 'PEAR_Error') || empty($annotation)) {
++            return KOLAB_FBRELEVANCE_ADMINS;
++        }
++        switch ($annotation) {
++        case 'admins':
++            return KOLAB_FBRELEVANCE_ADMINS;
++        case 'readers':
++            return KOLAB_FBRELEVANCE_READERS;
++        case 'nobody':
++            return KOLAB_FBRELEVANCE_NOBODY;
++        default:
++            return KOLAB_FBRELEVANCE_ADMINS;
++        }
++    }
++
++    /**
++     * Set the free/busy relevance for this folder
++     *
++     * @param int $relevance Value containing the FB_RELEVANCE
++     *
++     * @return mixed  True on success or a PEAR_Error.
++     */
++    function setFbrelevance($relevance)
++    {
++        switch ($relevance) {
++        case KOLAB_FBRELEVANCE_ADMINS:
++            $value = 'admins';
++            break;
++        case KOLAB_FBRELEVANCE_READERS:
++            $value = 'readers';
++            break;
++        case KOLAB_FBRELEVANCE_NOBODY:
++            $value = 'nobody';
++            break;
++        default:
++            $value = 'admins';
++        }
++
++        $imap = &$this->_shareOb->getImap();
++        $entry = KOLAB_ANNOT_ROOT . 'incidences-for';
++        return $imap->setAnnotation($entry, array('value.shared' => $value), $this->_folder);
++    }
++
++    /**
++     * Get the extended free/busy access settings for this folder
++     *
++     * @return array  Array containing the users with access to the
++     *                extended information.
++     */
++    function getXfbaccess()
++    {
++        $imap = &$this->_shareOb->getImap();
++        $entry = KOLAB_ANNOT_ROOT . 'xfb-readable';
++
++        $annotation = $imap->getAnnotation($entry, 'value.shared', $this->_folder);
++        if (is_a($annotation, 'PEAR_Error') || empty($annotation)) {
++            return array();
++        }
++        return explode(' ', $annotation);
++    }
++
++    /**
++     * Set the extended free/busy access settings for this folder
++     *
++     * @param array $access  Array containing the users with access to the
++     *                      extended information.
++     *
++     * @return mixed  True on success or a PEAR_Error.
++     */
++    function setXfbaccess($access)
++    {
++        $imap = &$this->_shareOb->getImap();
++        $entry = KOLAB_ANNOT_ROOT . 'xfb-readable';
++        return $imap->setAnnotation($entry, array('value.shared' => join(' ', $access)), $this->_folder);
+     }
+ 
+     /**
+@@ -910,13 +1036,18 @@ class Horde_Share_Object_kolab extends H
+             break;
+ 
+         case 'params':
+-            $params = $this->getAttribute('params');
++            $params = @unserialize($this->getAttribute('params'));
+             if (is_a($params, 'PEAR_Error') || $params == '') {
+-                $params = serialize(array('source' => 'kolab',
+-                                          'default' => $this->get('default'),
+-                                          'name' => $this->get('name')));
+-            }
+-            $this->data['params'] = $params;
++                $params = array('source' => 'kolab',
++                                'default' => $this->get('default'),
++                                'name' => $this->get('name'));
++            }
++            $type = $this->getType();
++            if (!is_a($type, 'PEAR_Error') && $type[0] == 'event') {
++                $params = array_merge($params, array('fbrelevance' => $this->getFbrelevance(),
++                                                     'xfbaccess'   => $this->getXfbaccess()));
++            }
++            $this->data['params'] = serialize($params);
+             break;
+ 
+         case 'default':
+@@ -967,8 +1098,9 @@ class Horde_Share_Object_kolab extends H
+             $value = unserialize($value);
+             if (isset($value['default'])) {
+                 $this->data['default'] = $value['default'];
+-            }
+-            break;
++                unset($value['default']);
++            }
++            $value = serialize($value);
+ 
+         default:
+             $this->data[$attribute] = $value;
+@@ -1017,6 +1149,7 @@ class Horde_Share_Object_kolab extends H
+                 }
+             } elseif ($attribute == 'default') {
+                 $imap = &$this->_shareOb->getImap();
++                //FIXME: Simplify with getType
+                 $annotation = $imap->getAnnotation(KOLAB_ANNOT_FOLDER_TYPE, 'value.shared', $this->_folder);
+                 if (is_a($annotation, 'PEAR_Error')) {
+                     return $annotation;
+@@ -1037,6 +1170,40 @@ class Horde_Share_Object_kolab extends H
+                 continue;
+             } elseif ($attribute == 'folder') {
+                 continue;
++            } elseif ($attribute == 'params') {
++                $type = $this->getType();
++                if (!is_a($type, 'PEAR_Error') && $type[0] == 'event') {
++                    $params = @unserialize($value);
++                    if (isset($params['fbrelevance'])) {
++                        $result = $this->setFbrelevance($params['fbrelevance']);
++                        if (is_a($result, 'PEAR_Error')) {
++                            return $result;
++                        }
++                        unset($params['fbrelevance']);
++                    }
++                    if (isset($params['xfbaccess'])) {
++                        $result = $this->setXfbaccess($params['xfbaccess']);
++                        if (is_a($result, 'PEAR_Error')) {
++                            return $result;
++                        }
++                        unset($params['xfbaccess']);
++                    }
++
++                    if (empty($params)) {
++                        continue;
++                    }
++                    
++                    $value = @serialize($params);
++                }
++
++                $imap = &$this->_shareOb->getImap();
++                // setAnnotation apparently does not suppoort UTF-8 nor any special characters
++                $store = base64_encode($value);
++                $entry = HORDE_ANNOT_SHARE_ATTR . $attribute;
++                $result = $imap->setAnnotation($entry, array('value.shared' => $store), $this->_folder);
++                if (is_a($result, 'PEAR_Error')) {
++                    return $result;
++                }
+             } else {
+                 $imap = &$this->_shareOb->getImap();
+                 // setAnnotation apparently does not suppoort UTF-8 nor any special characters

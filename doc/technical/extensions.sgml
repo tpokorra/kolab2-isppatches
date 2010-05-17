@@ -1,0 +1,79 @@
+<chapter><title> Possible Extensions </title>
+<sect1><title> Virus Checking </title>
+<para>By using the <ulink url="http://www.amavis.org/">AMaViS</ulink> interface
+it is possible to attach a mail virus scanner. <filename>AMaViS</filename> does
+not have the capability of filtering mails - it needs an additionaly installed
+virus scanner.
+</para>
+
+<para>
+Please note that currently no powerful virus scanner exists as free software.
+</para>
+</sect1>
+
+<sect1><title> Spam Filtering </title>
+<para>Spam mails are quite common and annoying for users. There are two
+main possibilities how to handle this spam mails.
+</para>
+
+<orderedlist>
+<listitem><para>The MTA - postfix - is capable of handling header and body
+checks. Look <ulink url="http://www.hispalinux.es/~data/postfix/">here</ulink>
+for a detailed HOWTO with respect to the regular expression filtering
+capabilities of the MTA Postfix. It is possible to define multiple rules that
+match body or header area of incomming emails.
+</para></listitem>
+<listitem><para>Additional programmes like <ulink
+url="http://spamassassin.org/">SpamAssassin</ulink> which provide a means of
+tagging incomming mails. The tags are created as additional headers in the mail.
+Apart from header and body regular expressions SpamAssassin can also use
+databases which provide well known spam sources.
+Within the client filters can be defined according to the individual preference
+of every user on how much spam rating he likes to accept.
+</para></listitem>
+</orderedlist>
+
+</sect1>
+
+<sect1><title> Webmail Interface </title>
+<para>It is possible to use a webinterface to access emails from a remote
+site. This is primarily intended for users who are off site and can not use a
+mail user agent. Note that not the full groupware functionality can be provided
+at this point in time by using a webmail interface. This can change in the
+future.
+</para>
+</sect1>
+
+<sect1><title> LDAP over TLS </title>
+<para>The directory service OpenLDAP2 which Kolab uses can handle authentication
+and encryption. Accessing LDAP via TLS of course makes sense as the
+authentication also transfers password hashes that could be intercepted - and 
+be exploited in replay attacks - if
+transferred in the clear. The service SASL which authenticates the services
+Postfix and Cyrus can access LDAP via TLS. As we have to address also the legacy 
+clients we can not restrict direct access to LDAP to TLS.
+</para>
+</sect1>
+
+<sect1><title> LDAP Migration Tool </title>
+
+<para>Many sites already have site wide user data available in some sort of
+directory service. If it is possible to export this user data into so called
+University of Michigan LDAP 3.3 / OpenLDAP ldif format it can be imported into 
+Kolab's OpenLDAP.
+</para>
+
+<para>Especially Microsoft Exchange 5.5 and also Microsoft Exchange 2000 user
+data can be exported after authentication into a ldif file which in turn can be
+inserted into the Kolab OpenLDAP service.
+</para>
+
+<para>All directory services use slightly different schema's. The challenge of
+migration hereby is to adapt the exported LDAP data into Kolab's schema. This
+can be done by using scripts that are adapted to the originating directory
+service.
+</para>
+
+</sect1>
+</chapter>
+

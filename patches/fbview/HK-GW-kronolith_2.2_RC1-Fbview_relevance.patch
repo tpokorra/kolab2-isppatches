@@ -1,0 +1,118 @@
+Allows to set the free/busy relevance on a calendar.
+
+diff -r e7fdad8797ac kronolith/calendars.php
+--- a/kronolith/calendars.php	Thu Nov 29 14:36:50 2007 +0100
++++ b/kronolith/calendars.php	Thu Nov 29 14:43:24 2007 +0100
+@@ -39,6 +39,7 @@ case 'save':
+         $cal = $kronolith_shares->newShare(md5(microtime()));
+         $cal->set('name', $id);
+         $cal->set('desc', Util::getFormData('description', ''));
++        $cal->set('params', serialize(array('fbrelevance' => (int) Util::getFormData('fbrelevance', 0))));
+         $result = $kronolith_shares->addShare($cal);
+         if (is_a($result, 'PEAR_Error')) {
+             $notification->push($result, 'horde.error');
+@@ -50,6 +51,7 @@ case 'save':
+         $original_name = $cal->get('name');
+         $cal->set('name', $id);
+         $cal->set('desc', Util::getFormData('description', ''));
++        $cal->set('params', serialize(array('fbrelevance' => (int) Util::getFormData('fbrelevance', 0))));
+ 
+         if ($original_name != $id) {
+             $result = $kronolith_driver->rename($original_name, $id);
+@@ -125,9 +127,16 @@ case 'delete':
+ $remote_calendars = unserialize($prefs->getValue('remote_cals'));
+ $current_user = Auth::getAuth();
+ $my_calendars = array();
++$fbrelevance = array();
+ foreach (Kronolith::listCalendars() as $id => $cal) {
+     if ($cal->get('owner') == $current_user) {
+         $my_calendars[$id] = $cal;
++        $params = @unserialize($cal->get('params'));
++        if (isset($params['fbrelevance'])) {
++            $fbrelevance[$id] = $params['fbrelevance'];
++        } else {
++            $fbrelevance[$id] = 0;
++        }
+     }
+ }
+ 
+diff -r e7fdad8797ac kronolith/templates/calendars/calendars.inc
+--- a/kronolith/templates/calendars/calendars.inc	Thu Nov 29 14:36:50 2007 +0100
++++ b/kronolith/templates/calendars/calendars.inc	Thu Nov 29 14:43:24 2007 +0100
+@@ -8,7 +8,8 @@ var fields = [];
+ <?php foreach ($my_calendars as $id => $cal): ?>
+ fields['<?php echo htmlspecialchars($id) ?>'] = [
+         "<?php echo rawurlencode(String::convertCharset($cal->get('name'), NLS::getCharset(), 'UTF-8')) ?>",
+-        "<?php echo rawurlencode(String::convertCharset($cal->get('desc'), NLS::getCharset(), 'UTF-8')) ?>"];
++        "<?php echo rawurlencode(String::convertCharset($cal->get('desc'), NLS::getCharset(), 'UTF-8')) ?>",
++        "<?php echo $fbrelevance[$id] ?>"];
+ <?php endforeach; ?>
+ 
+ function newChoice()
+@@ -25,6 +26,7 @@ function newChoice()
+         document.shares.edit_share.value = share;
+         document.shares.id.value = decodeURIComponent(fields[share][0]);
+         document.shares.description.value = decodeURIComponent(fields[share][1]);
++        document.shares.fbrelevance[fields[share][2]].checked = true;
+         urlObj.innerHTML = "<?php echo Util::addParameter(Horde::applicationUrl('month.php', true, -1), 'display_cal', '') ?>" + share;
+         subscriptionUrlObj.innerHTML = "<?php echo $webdav ? (Horde::url($registry->get('webroot', 'horde'), true, -1) . '/rpc.php/kronolith/" + share + ".ics"') : Util::addParameter(Horde::applicationUrl('ics.php', true, -1), 'c', '') . '" + share' ?>;
+     }
+@@ -126,11 +128,55 @@ function checkSubmit()
+    <textarea id="description" name="description" rows="4" cols="60"></textarea>
+   </td>
+  </tr>
+- <tr>
+-  <td valign="top" class="nowrap rightAlign">
++</table>
++
++<div class="control">
++ <?php echo _("Free/Busy relevance") ?>
++</div>
++
++<table width="100%" cellspacing="0">
++ <tr>
++  <td colspan="2">
++   <?php echo _("This calendar is only included into the free/busy data for ...") ?>
++  </td>
++ </tr>
++ <tr>
++  <td width="15%" class="nowrap rightAlign">
++   <strong><?php echo _("owners/administrators") ?></strong>&nbsp;
++  </td>
++  <td width="85%">
++   <input id="admins" name="fbrelevance" type="radio" class="checkbox" value="0"/><br />
++  </td>
++ </tr>
++ <tr>
++  <td valign="top" class="nowrap rightAlign">
++   <strong><?php echo _("readers") ?></strong>&nbsp;
++  </td>
++  <td>
++   <input id="readers" name="fbrelevance" type="radio" class="checkbox" value="1"/>
++  </td>
++ </tr>
++ <tr>
++  <td valign="top" class="nowrap rightAlign">
++   <strong><?php echo _("no one") ?></strong>&nbsp;
++  </td>
++  <td>
++   <input id="none" name="fbrelevance" type="radio" class="checkbox" value="2"/><br />
++  </td>
++ </tr>
++  <td>
++</table>
++
++<div class="control">
++ <?php echo _("Calendar links:") ?>
++</div>
++
++<table width="100%" cellspacing="0">
++ <tr>
++  <td width="15%" class="nowrap rightAlign">
+    <strong><?php echo _("URL") ?></strong>&nbsp;
+   </td>
+-  <td>
++  <td width="85%">
+    <span id="calendar_url"><em><?php echo _("Select a calendar above to display the URL") ?></em></span>
+   </td>
+  </tr>

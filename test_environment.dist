@@ -1,0 +1,17 @@
+# This is a development helper that should allow quick installation
+# and update of a Kolab Server from CVS HEAD.
+#
+# Simply copy this file from test_environment.dist to test_environment
+# and adapt the settings to your need.
+
+# The location where the binary packages should be downloaded to.
+BINARY_PKGS_DIR=/root/kolab-server-2.2.3/ix86-debian5.0 
+
+# The location where the binary packages should be downloaded to.
+SOURCE_PKGS_DIR=/root/kolab-server-2.2.3/sources
+
+# The location to which the Kolab server should be installed.
+KOLABDIR=/kolab
+
+# Create the Kolab user with this uid
+KOLABUID=19414

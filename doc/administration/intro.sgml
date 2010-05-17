@@ -1,0 +1,147 @@
+<chapter><title> Design criteria </title>
+
+<para>The administration module used for the Kolab server will be explained in
+this document. We wanted to have a simple and clean design and avoid
+unnecessary complexity. The goal was to have one interface to users and
+administrators which can be understood from all users. This means we will not
+split the configuration of the server into modules containing directives used
+for the MTA, IMAP and LDAP in different masks. We tried to abstract the tasks to
+be done and group them in an intuitive way from the users perspective.
+</para>
+
+<para>The administration will take place via a webinterface that can be used
+for day to day activities on the Kolab server. A central decision was to place
+nearly all available data used for the configuration of the server into the LDAP
+server as well as all the user data. So by backing up the LDAP data from the
+server it is possible to restore the state of the Kolab server even after a
+hardware disaster. The only configuration data that does not make sense to place
+into the LDAP server is the configuration of the LDAP server itself.
+</para>
+
+<para>
+In case administration is done on the command line it is recommended to add
+<filename>/kolab/bin</filename> and <filename>/kolab/sbin</filename> to the
+<filename>PATH</filename> environment
+variable. E.g. <filename>export
+PATH=/kolab/bin:/kolab/sbin:$PATH</filename>. This is especially useful in case
+some tools like <filename>rpm</filename> are also available in the hosting
+operating system enviroment.
+</para>
+
+<para>The LDAP directory services play a central role in our security concept
+of the Kolab server. We do not relay exclusively on the security of the
+apache webserver and the PHP language which drive the web interface. Our central
+point in security are the access control lists implemented within LDAP. We use a
+special account <filename>manager</filename> who can manipulate the
+whole LDAP tree. Additionally there are two groups of administrative accounts
+which have different access permissions to the LDAP tree. At least the groupware
+user can only manipulate part of his own LDAP data. So in case a potential
+attacker of the Kolab server would gain control over the Apache webserver he 
+will not be able to manipulate accounts and data on the machine - as long as the 
+password used by <filename>manager</filename> is not in his posession.
+</para>
+
+<para>The design of the Kolab LDAP schema is shown in the adjacent figure with respect to the
+different name spaces.
+<inlinegraphic entityref="kolab-ldap" fileref="kolab-ldap" scale="50"></inlinegraphic>
+</para>
+
+<para>
+The Kolab administration module is divided into two main components:
+</para>
+
+<orderedlist>
+<listitem><para>a PHP driven web frontend which authenticates an user or
+administrator and presents forms to add, modify or delete objects and puts them
+into the LDAP server
+</para></listitem>
+<listitem><para>a Perl backend that fills all the changed objects from the LDAP
+server into the configuration files of the affected services
+</para></listitem>
+</orderedlist>
+
+<para>The PHP web frontend runs on an SSL enhanced Apache server. Login onto
+the administration module is only allowed by using a secure SSL connection. Any
+user can connect to the administration module. At login time
+the user has to authenticate himself via his LDAP stored credentials. If the
+credentials show the user as being part of the administration group he will get
+presented additional forms to change the servers configuration. Otherwise the
+user will only be able to change his LDAP entry and to handle his vacation and
+forwarding settings.
+</para>
+
+<para>The Perl based backend will jump into action whenever an administrative
+user has changed the settings of one or more Kolab components. The action to
+activate the settings changed by the user must explicitly be taken by pressing
+the activation button on the appropriate form. This will toggle the Perl backend
+into action and read the data from LDAP, process them and write the appropriate
+configuration file(s) and restart the affected service to activate the changes.
+</para>
+
+<para>The scheme of the Kolab server components and their interaction is shown in the adjacent figure.
+The interaction of processes are shown with different linestyles. Solid drawn line represent the interaction
+of the web frontend and backend to administer the server. Dashed lines show the interaction of
+the different server component with respect to authentication. Finally the dotted lines show
+the interaction of an user with the Kolab server.
+</para>
+
+<para>
+<inlinegraphic entityref="kolab-structure" fileref="kolab-structure" scale="70"></inlinegraphic>
+</para>
+
+<para>
+When installing the kolab server the first time a self signed cryptograpic
+certificate is created. For production purposes we strongly recommend to get a
+proper certificate signed by an authority (CA) which is accepted by the client
+software. This can either be an internal CA or a commercial CA provider. 
+</para>
+
+<para>
+To create a certificate, you need to start with a certificate 
+request (or, as some certificate authorities like to put 
+it, "certificate signing request", since that's exactly what they do, 
+they sign it and give you the result back, thus making it authentic 
+according to their policies).  A certificate request can then be sent 
+to a certificate authority to get it signed into a certificate, or if 
+you have your own certificate authority 
+</para>
+
+<para>The certificate request is created like this:</para>
+
+<programlisting>/kolab/bin/openssl req -new -key privkey.pem -out cert.csr</programlisting> 
+
+<para>
+Now, cert.csr can be sent to the certificate authority, if they can 
+handle files in PEM format.  If not, use the extra argument 
+<filename>-outform</filename> followed by the keyword for the format to use 
+When the certificate authority has then done the checks the need 
+to do (and probably gotten payment from you), they will hand over 
+your new certificate to you. 
+</para>
+
+<para>
+If the certificate authority was kind enough, your certificate is a raw 
+DER thing in PEM format. However, some certificate authorities will 
+encode them with things like PKCS7 or PKCS12, or something 
+else. In this case you have to convert it like described in the 
+openssl documentation or better ask the certificate authority to 
+provide the key in PEM format. Please have a look dumpcert  
+which might be of some help. 
+</para>
+
+<para>
+Concatenate the certificate and the key into a new file and using 
+that one should be enough. 
+</para>
+
+<para>
+We did not test this procedure within the kroupware project 
+though.
+</para>
+
+<para>
+Further details can be obtained from
+<filename>http://www.openssl.org</filename>
+</para>
+
+</chapter>

@@ -1,0 +1,93 @@
+Index: sqlite-3.6.22/Makefile.in
+--- sqlite-3.6.22/Makefile.in.orig	2008-10-14 20:07:37 +0200
++++ sqlite-3.6.22/Makefile.in	2008-10-15 19:59:08 +0200
+@@ -179,6 +179,30 @@
+ LIBOBJ = $(OBJS$(USE_AMALGAMATION))
+ 
+ 
++# FTS1 support
++ifdef FTS1
++TCC    += -DSQLITE_ENABLE_FTS1 -I$(TOP)/ext/fts1
++LIBOBJ += fts1.lo fts1_hash.lo fts1_porter.lo fts1_tokenizer1.lo
++endif
++
++# FTS2 support
++ifdef FTS2
++TCC    += -DSQLITE_ENABLE_FTS2 -I$(TOP)/ext/fts2
++LIBOBJ += fts2.lo fts2_hash.lo fts2_porter.lo fts2_tokenizer1.lo
++endif
++
++# FTS3 support
++ifdef FTS3
++TCC    += -DSQLITE_ENABLE_FTS3 -I$(TOP)/ext/fts3
++LIBOBJ += fts3.lo fts3_hash.lo fts3_porter.lo fts3_icu.lo fts3_tokenizer1.lo fts3_tokenizer.lo
++endif
++
++# RTREE support
++ifdef RTREE
++TCC    += -DSQLITE_ENABLE_RTREE -I$(TOP)/ext/rtree
++LIBOBJ += rtree.lo
++endif
++
+ # All of the source code files.
+ #
+ SRC = \
+@@ -486,7 +486,7 @@
+ 	./config.status
+ 
+ libsqlite3.la:	$(LIBOBJ)
+-	$(LTLINK) -o $@ $(LIBOBJ) $(TLIBS) \
++	$(LTLINK) -o $@ -ldl $(LIBOBJ) $(TLIBS) \
+ 		${ALLOWRELEASE} -rpath "$(libdir)" -version-info "8:6:8"
+ 
+ libtclsqlite3.la:	tclsqlite.lo libsqlite3.la
+@@ -786,3 +810,38 @@
+ sqlite3.dll: $(REAL_LIBOBJ) sqlite3.def
+ 	$(TCC) -shared -o $@ sqlite3.def \
+ 		-Wl,"--strip-all" $(REAL_LIBOBJ)
++
++fts1.lo:	$(TOP)/ext/fts1/fts1.c $(HDR)
++	$(LTCOMPILE) -c $(TOP)/ext/fts1/fts1.c
++fts1_hash.lo:	$(TOP)/ext/fts1/fts1_hash.c $(HDR)
++	$(LTCOMPILE) -c $(TOP)/ext/fts1/fts1_hash.c
++fts1_porter.lo:	$(TOP)/ext/fts1/fts1_porter.c $(HDR)
++	$(LTCOMPILE) -c $(TOP)/ext/fts1/fts1_porter.c
++fts1_tokenizer1.lo:	$(TOP)/ext/fts1/fts1_tokenizer1.c $(HDR)
++	$(LTCOMPILE) -c $(TOP)/ext/fts1/fts1_tokenizer1.c
++
++fts2.lo:	$(TOP)/ext/fts2/fts2.c $(HDR)
++	$(LTCOMPILE) -c $(TOP)/ext/fts2/fts2.c
++fts2_hash.lo:	$(TOP)/ext/fts2/fts2_hash.c $(HDR)
++	$(LTCOMPILE) -c $(TOP)/ext/fts2/fts2_hash.c
++fts2_porter.lo:	$(TOP)/ext/fts2/fts2_porter.c $(HDR)
++	$(LTCOMPILE) -c $(TOP)/ext/fts2/fts2_porter.c
++fts2_tokenizer1.lo:	$(TOP)/ext/fts2/fts2_tokenizer1.c $(HDR)
++	$(LTCOMPILE) -c $(TOP)/ext/fts2/fts2_tokenizer1.c
++
++fts3.lo:	$(TOP)/ext/fts3/fts3.c $(HDR)
++	$(LTCOMPILE) -c $(TOP)/ext/fts3/fts3.c
++fts3_hash.lo:	$(TOP)/ext/fts3/fts3_hash.c $(HDR)
++	$(LTCOMPILE) -c $(TOP)/ext/fts3/fts3_hash.c
++fts3_icu.lo:	$(TOP)/ext/fts3/fts3_icu.c $(HDR)
++	$(LTCOMPILE) -c $(TOP)/ext/fts3/fts3_icu.c
++fts3_porter.lo:	$(TOP)/ext/fts3/fts3_porter.c $(HDR)
++	$(LTCOMPILE) -c $(TOP)/ext/fts3/fts3_porter.c
++fts3_tokenizer.lo:	$(TOP)/ext/fts3/fts3_tokenizer.c $(HDR)
++	$(LTCOMPILE) -c $(TOP)/ext/fts3/fts3_tokenizer.c
++fts3_tokenizer1.lo:	$(TOP)/ext/fts3/fts3_tokenizer1.c $(HDR)
++	$(LTCOMPILE) -c $(TOP)/ext/fts3/fts3_tokenizer1.c
++
++rtree.lo:	$(TOP)/ext/rtree/rtree.c $(HDR)
++	$(LTCOMPILE) -c $(TOP)/ext/rtree/rtree.c
++
+Index: sqlite-3.6.22/sqlite3.pc.in
+--- sqlite-3.6.22/sqlite3.pc.in.orig	2008-10-14 20:07:39 +0200
++++ sqlite-3.6.22/sqlite3.pc.in	2008-10-15 19:59:34 +0200
+@@ -8,6 +8,5 @@
+ Name: SQLite
+ Description: SQL database engine
+ Version: @RELEASE@
+-Libs: -L${libdir} -lsqlite3
+-Libs.private: @LIBS@
++Libs: -L${libdir} -lsqlite3 @LIBS@
+ Cflags: -I${includedir}

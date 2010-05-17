@@ -1,0 +1,14 @@
+INSTALL
+Makefile
+Makefile.in
+README
+aclocal.m4
+autom4te.cache
+config.log
+config.status
+configure
+install-sh
+kolabcheckperm
+kolabd.spec
+missing
+kolab.globals

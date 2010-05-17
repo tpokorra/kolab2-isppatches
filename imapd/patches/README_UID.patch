@@ -1,0 +1,28 @@
+DESCRIPTION:
+
+Allows to use the uid instead of the mail address for logging into
+the cyrus imap server.
+
+IMPACT:
+
+Without this patch users will be unable to use the UID for logging in.
+
+REFERENCES:
+
+Kolab bug tracker merge: 
+
+https://intevation.de/roundup/kolab/merge5
+
+Wiki page:
+
+http://wiki.kolab.org/index.php/Template:Patches_cyrus
+
+Mercurial patch repository:
+
+http://hg.pardus.de/cgi-bin/hg.cgi/kolab/patches/cyrus-imapd/summary
+
+HISTORY
+
+This has been specifically written for Kolab and is not compatible
+with upstream. It needs to be rewritten to a general LDAP filter
+support if it should be integrated upstream.

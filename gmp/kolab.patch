@@ -1,0 +1,20 @@
+--- gmp.spec	2008-01-01 15:31:54.000000000 +0100
++++ /tmp/gmp.spec	2008-08-25 16:07:30.000000000 +0200
+@@ -32,7 +32,7 @@
+ Group:        Algorithm
+ License:      LGPL
+ Version:      4.2.2
+-Release:      20080101
++Release:      20080101_kolab
+ 
+ #   package options
+ %option       with_cxx  no
+@@ -84,7 +84,7 @@
+         amd64-solaris* ) CFLAGS="$CFLAGS -DNO_ASM"; export ABI=32 ;;
+     esac
+     ./configure \
+-        --prefix=%{l_prefix} \
++        --prefix=%{l_prefix} --build=`gcc -dumpmachine` \
+ %if "%{with_cxx}" == "yes"
+         --enable-cxx \
+ %endif

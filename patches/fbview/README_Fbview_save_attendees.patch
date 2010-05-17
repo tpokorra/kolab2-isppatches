@@ -1,0 +1,23 @@
+DESCRIPTION:
+
+This allows to store the list of attendees in the user preferences.
+The patch implements this in a hackish way and it was consequently
+rejected upstream (http://bugs.horde.org/ticket/?id=4788). This 
+should be solved using Horde::Groups or the Turba API.
+
+IMPACT:
+
+You won't be able to store the list of attendees.
+
+REFERENCES:
+
+Mercurial patch repository:
+
+http://hg.pardus.de/cgi-bin/hg.cgi/horde/HORDE_3_2_RC1/summary
+
+HISTORY
+
+The patch has been originally developed by Stuart Binge
+(Codefusion).
+
+Horde issue #4788

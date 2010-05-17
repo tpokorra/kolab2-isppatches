@@ -1,0 +1,290 @@
+<chapter><title> OpenPKG </title>
+
+<sect1><title> Why use OpenPKG </title>
+
+<para>The <ulink url="http://www.openpkg.org"> OpenPKG Project </ulink>
+"... is a project founded by the Development Team from Cable & Wireless
+Deutschland's Application Services division. The goal is the creation and
+maintainance of portable and easy to install software packages for use on
+the major Unix server platforms" (cite from the project homepage).
+</para>
+
+<para> 
+OpenPGK only distributes Free Software.
+The packaging code of OpenPGK is Free Software under
+a simple, non-protecting Free Software license (X11 style).
+Code coming for packages from other vendors keeps its Free Software license.
+</para>
+
+<para>A major goal for the Kolab Server is to not be focused on one single 
+GNU/Linux distribution. OpenPKG is designed for having a compatible single
+software repository for Free Software over different
+Unix flavours, FreeBSD, and all GNU/Linux distributions.
+OpenPKG is also designed to be minimal invasive to the underlying operating
+system.
+</para>
+
+<para> Within the Kolab project most of the server software needs to be
+recent. Unfortunately many operating system distributions 
+provide the needed
+server software in different and mostly elder releases - for rather good
+and understandable reasons. 
+It is a problem to provide
+the Kolab Server and possible updates to many distributions
+and avoid platform-specific packaging.
+</para>
+
+<para>
+Mandrake users are currently the only Linux users benefitting from direct vendor support. 
+
+The kolab-server package is available in "main" of Mandrake 10.0 (but, for 
+marketing reasons it was left off the download ISOs, so it must be 
+installed from the FTP mirrors on systems installed using the download 
+ISOs), and works out-the-box, with GUI setup tools (ie replaces running 
+the command-line bootstrap script).
+
+For instance, this will get you a fully functional Kolab setup on Mandrake 
+10.0:
+</para>
+<programlisting>
+# urpmi kolab-server
+# kolab_bootstrap
+</programlisting>
+<para>Therefore a decision was made to use the OpenPKG packaging system.
+OpenPKG uses the RedHat Package Manager version 4. All relevant options for
+compiling
+and installing the Kolab software packages are supported by RPM spec
+files.
+</para>
+
+<para>We use the version 1.2.0 of OpenPKG and a variety of more recent packages
+from the OpenPKG Current branch for the Kolab server. The results are to be
+submitted
+to the OpenPKG project where applicable and should also apply for forthcoming
+versions of OpenPKG.
+</para>
+
+</sect1>
+
+<sect1><title> OpenPKG setup </title>
+
+<para>OpenPKG is installed via a bootstraping mechanism which creates a seperate
+filesystem branch beneath a prefix on the filesystem of the machine - a good
+choice might be <filename>/kolab</filename>.
+A quick tutorial about the OpenPKG bootstrapping is available <ulink
+url="http://www.openpkg.org/doc/quickref/openpkg.txt">online</ulink>.
+</para>
+
+<sect2><title> Remarks about Bootstrapping OpenPKG </title>
+
+<para> Bootstrapping of OpenPKG from source is the preferable option. OpenPKG
+requires a set of special users and groups in the system. It's important to use the
+special openpkg user when making changes to the OpenPKG installation, to avoid
+unintended interference with the underlying Unix system. We recommend to bootstrap
+the OpenPKG environment with the following commands (depending on the version of OpenPKG
+you are installing):
+</para>
+
+<para><programlisting>
+sh openpkg-XXX.src.sh --prefix=/kolab --user=kolab --group=kolab -v
+sh openpkg-XXX.ix86-linux2.4-kol.sh
+</programlisting></para>
+
+<para>
+The bootstrap process will create the following directory structure under the prefix
+<filename>/kolab</filename>:
+</para>
+
+<para><programlisting>
+RPM
+bin
+cgi
+etc
+include
+info
+lib
+libexec
+local
+man
+pub
+sbin
+share
+var
+</programlisting></para>
+
+<para>All binaries, config directories, logfiles etc. of the OpenPKG
+software live under the prefix directory <filename>/kolab</filename>.
+</para>
+
+<para>You are now ready to continue the setup of the OpenPKG system which acts as base of the Kolab
+server installation. Doing so means using <filename>/kolab/bin/rpm</filename> to get the appropiate
+packages into the system. Note that since OpenPKG 1.2 you must do this as root. 
+Use caution to not confuse openpkg's rpm with an eventual rpm of
+the underlying linux distribution. Packages used by OpenPKG
+will not fit in other rpm based distributions like RedHat or SuSE because of the
+required basepackage of <filename>openpkg</filename>. This way it can be assured that the OpenPKG
+RPM database does not interfere with an eventual existing RPM database of the
+underlying system.</para>
+
+<para>As many of the services used by the Kolab server must be compiled using
+non-OpenPKG options we supply own RPM spec files.</para>
+
+</sect2>
+
+<sect2><title> Installation of prerequired Software Packages</title>
+
+<para> Following the OpenPKG instructions a choice of software packages were
+built from source and installed into the OpenPKG environment of Kolab. Remember 
+that the order in which you install the packages is also important as there 
+are package dependencies. Therefore we provided a working installation order of
+the packages. The following packages are the required minimum for the Kolab
+components:
+</para>
+
+<orderedlist>
+<listitem><para> make-3.80-1.2.0 </para></listitem>
+<listitem><para> binutils-2.13.2.1-1.2.0 </para></listitem>
+<listitem><para> patch-2.5.8-1.2.0 </para></listitem>
+<listitem><para> libtool-1.4.3-1.2.0 </para></listitem>
+<listitem><para> gcc-3.2.1-1.2.0 </para></listitem>
+<listitem><para> zlib-1.1.4-1.2.0 </para></listitem>
+<listitem><para> db-4.1.25.0-1.2.0 </para></listitem>
+<listitem><para> bzip2-1.0.2-1.2.0 </para></listitem>
+<listitem><para> expat-1.95.5-1.2.0 </para></listitem>
+<listitem><para> readline-4.3-1.2.0 </para></listitem>
+<listitem><para> perl-5.8.0-1.2.0 </para></listitem>
+<listitem><para> m4-1.4o-1.2.0 </para></listitem>
+<listitem><para> bison-1.35-1.2.0 </para></listitem>
+<listitem><para> flex-2.5.4a-1.2.0 </para></listitem>
+<listitem><para> autoconf-2.57-1.2.0 </para></listitem>
+<listitem><para> openssl-0.9.7-1.2.0 </para></listitem>
+<listitem><para> pcre-3.9.1-1.2.0 </para></listitem>
+<listitem><para> perl-crypto-1.2.0-1.2.0 </para></listitem>
+<listitem><para> perl-conv-1.2.0-1.2.0 </para></listitem>
+<listitem><para> perl-ds-1.2.0-1.2.0 </para></listitem>
+<listitem><para> perl-util-1.2.0-1.2.0 </para></listitem>
+<listitem><para> perl-net-1.2.0-1.2.0 </para></listitem>
+<listitem><para> perl-term-1.2.0-1.2.0 </para></listitem>
+<listitem><para> perl-mail-1.2.0-1.2.0 </para></listitem>
+<listitem><para> perl-time-1.2.0-1.2.0 </para></listitem>
+<listitem><para> perl-ssl-1.2.0-1.2.0 </para></listitem>
+<listitem><para> perl-sys-1.2.0-1.2.0 </para></listitem>
+<listitem><para> perl-www-1.2.0-1.2.0 </para></listitem>
+<listitem><para> perl-xml-1.2.0-1.2.0 </para></listitem>
+<listitem><para> perl-ldap-1.2.0-1.2.0 </para></listitem>
+<listitem><para> gdbm-1.8.3-1.2.0 </para></listitem>
+<listitem><para> procmail-3.22-1.2.0 </para></listitem>
+<listitem><para> automake-1.7.2-1.2.0 </para></listitem>
+<listitem><para> mm-1.2.2-1.2.0 </para></listitem>
+</orderedlist>
+
+<para> Note that it makes no sense to proceed to later chapters of this
+documentation unless the bootstrapping has successfully been completed.
+It is also recommendable to read the OpenPKG documentation and
+get familiar with its concept and the maintenance, namely the RPM
+package manager.</para>
+
+<para> Note also that OpenPKG RPM, SPEC files, and RPM packages can not
+be used with other RPM based Linux distributions like RedHat and SuSE!</para>
+
+</sect2>
+
+<sect2><title> Logging of OpenPKG Server Packages </title>
+<para> OpenPKG introduces the <ulink url="http://www.ossp.org/pkg/lib/fsl/">
+Fake Syslog Library </ulink>
+to separate the server software from the syslog procedure of the underlying
+Unix system. We had problems with fsl including the new revised version
+of OpenPKG 1.2.  
+Therefore all services used for the Kolab server uses the syslog functionality of
+the underlying Linux distribution.
+</para>
+</sect2>
+
+<sect2><title> OpenPKG System Startup Procedure </title>
+<para> OpenPKG places a single SystemV startup script inside the systems
+<filename>/etc/init.d</filename> directory. From there it rolls out an own
+single runlevel structure under <filename>/kolab/etc/rc.d</filename></para>
+<para> We describe later how the Kolab services fit in there.</para>
+</sect2>
+</sect1>
+</chapter>
+
+<chapter><title> Kolab Quick Installation </title>
+
+<sect1><title> Setup of the Kolab server </title>
+
+<para> If you suceeded in installing the OpenPKG environment described above you can now
+install the core services of the Kolab server.
+</para>
+
+<sect2><title> Kroupware CVS</title>
+
+<para> It is recommended that you use the CVS that is provided by Intevation. This is the place
+where bugfixes will be first checked in and provided to the public. Please set the following environment
+variable. This is done via <filename>export</filename> if you use the bash shell.
+<screen>
+CVSROOT=:pserver:anonymous@intevation.de:/home/kroupware/
+                 jail/kolabrepository
+</screen>
+</para>
+
+<para> A web interface to the CVS is available at
+<ulink URL="http://intevation.de/cgi-bin/viewcvs-kolab.cgi/server/"> http://intevation.de/cgi-bin
+/viewcvs-kolab.cgi/server/</ulink>.</para>
+<para>To download the necessary files used for the Kolab server issue the following commands:
+</para>
+
+<orderedlist>
+<listitem><para> (as kolab user) cd /kolab/RPM/SRC </para></listitem>
+<listitem><para> cvs co -d apache server/apache </para></listitem>
+<listitem><para> cvs co -d imapd server/imapd </para></listitem>
+<listitem><para> cvs co -d kolab server/kolab </para></listitem>
+<listitem><para> cvs co -d monit server/monit </para></listitem>
+<listitem><para> cvs co -d openldap server/openldap </para></listitem>
+<listitem><para> cvs co -d postfix server/postfix </para></listitem>
+<listitem><para> cvs co -d proftpd server/proftpd </para></listitem>
+<listitem><para> cvs co -d sasl server/sasl </para></listitem>
+</orderedlist>
+</sect2>
+</sect1>
+
+<sect1><title> Quick Kolab Installation </title>
+
+<para> The installation order of the packages is important as there are dependencies between them.
+A list of packages as of the time of writing this document is listed here.
+</para>
+
+<orderedlist>
+<listitem><para> openldap-2.1.12 </para></listitem>
+<listitem><para> sasl-2.1.10 </para></listitem>
+<listitem><para> proftpd-1.2.8rc1 </para></listitem>
+<listitem><para> postfix-2.0.3 </para></listitem>
+<listitem><para> cyrus-imapd-2.1.11 </para></listitem>
+<listitem><para> monit-3.1 </para></listitem>
+<listitem><para> apache-1.3.27 </para></listitem>
+<listitem><para> kolab-1.0beta2 </para></listitem>
+</orderedlist>
+
+<para> As most of those packages need to be modified we provide specfiles and a Makefile along
+with some needed patches. So you should not download the OpenPKG RPM files provided
+for that Free Software projects and use instead
+our CVS Versions of the specfiles. All data needed for compilation and installation of the packages
+can be downloaded via anonymous CVS. Of course we do not provide the source packages of all the
+different services. But the rpm build mechanism automatically downloads the needed tarballs from
+their originating site before compilation by using the wget mechanism.
+</para>
+
+<para> There are pre-build source and binary RPM packages available. Refer to
+<ulink url="ftp://ftp.kde.org/pub/kde/unstable/server/kolab/"> KDE FTP Server</ulink>
+for the latest version.</para>
+
+<para> Installing the packets should end with the installation of the kolab RPM. At this point kolab
+does bootstraps itself. Thereby creating a random password used for manager access of the server.
+You should note that password in order to be able to log into the webinterface as manager. At any time
+you can lookup the password in the created configuration file
+<filename>/kolab/etc/openldap/slapd.conf</filename>
+</para>
+
+</sect1>
+
+</chapter>

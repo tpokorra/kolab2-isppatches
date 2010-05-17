@@ -1,0 +1,228 @@
+From: Gunnar Wrobel <wrobel@pardus.de>
+Subject: [PATCH] issue3983.patch
+
+Fixes unit testing for PHP 5.3.*.
+
+STATUS: UNMERGED
+
+REF: http://issues.kolab.org/issue3983
+
+Signed-off-by: Gunnar Wrobel <wrobel@pardus.de>
+
+diff -Naur --exclude='*~' a/framework/Kolab_FreeBusy/lib/Horde/Kolab/FreeBusy/Access.php a/framework/Kolab_FreeBusy/lib/Horde/Kolab/FreeBusy/Access.php
+--- a/framework/Kolab_FreeBusy/lib/Horde/Kolab/FreeBusy/Access.php	2010-01-23 23:00:42.000000000 +0100
++++ b/framework/Kolab_FreeBusy/lib/Horde/Kolab/FreeBusy/Access.php	2010-03-25 15:49:15.000000000 +0100
+@@ -407,7 +407,7 @@
+     {
+         $userdom = false;
+         $ownerdom = false;
+-        if (ereg( '(.*)@(.*)', $this->user, $regs)) {
++        if (preg_match('/(.*)@(.*)/', $this->user, $regs)) {
+             // Regular user
+             $user = $regs[1];
+             $userdom  = $regs[2];
+@@ -415,7 +415,7 @@
+             $user = $this->user;
+         }
+ 
+-        if(ereg( '(.*)@(.*)', $this->owner, $regs)) {
++        if(preg_match('/(.*)@(.*)/', $this->owner, $regs)) {
+             // Regular owner
+             $owner = $regs[1];
+             $ownerdom = $regs[2];
+diff -Naur --exclude='*~' a/framework/Kolab_FreeBusy/lib/Horde/Kolab/FreeBusy/Cache.php a/framework/Kolab_FreeBusy/lib/Horde/Kolab/FreeBusy/Cache.php
+--- a/framework/Kolab_FreeBusy/lib/Horde/Kolab/FreeBusy/Cache.php	2010-01-23 23:00:42.000000000 +0100
++++ b/framework/Kolab_FreeBusy/lib/Horde/Kolab/FreeBusy/Cache.php	2010-03-25 15:57:35.000000000 +0100
+@@ -61,7 +61,7 @@
+         /* Now we really need the free/busy library */
+         require_once 'Horde/Kolab/FreeBusy/Imap.php';
+ 
+-        $fb = &new Horde_Kolab_FreeBusy_Imap();
++        $fb = new Horde_Kolab_FreeBusy_Imap();
+ 
+         $result = $fb->connect($access->imap_folder);
+         if (is_a($result, 'PEAR_Error')) {
+@@ -93,11 +93,11 @@
+ 
+         $fbfilename = $this->_getFilename($access->folder, $access->owner);
+ 
+-        $c_pvcal = &new Horde_Kolab_FreeBusy_Cache_File_pvcal($this->_cache_dir, $fbfilename);
++        $c_pvcal = new Horde_Kolab_FreeBusy_Cache_File_pvcal($this->_cache_dir, $fbfilename);
+ 
+         if (!empty($conf['fb']['use_acls'])) {
+-            $c_acl   = &new Horde_Kolab_FreeBusy_Cache_File_acl($this->_cache_dir, $fbfilename);
+-            $c_xacl  = &new Horde_Kolab_FreeBusy_Cache_File_xacl($this->_cache_dir, $fbfilename);
++            $c_acl   = new Horde_Kolab_FreeBusy_Cache_File_acl($this->_cache_dir, $fbfilename);
++            $c_xacl  = new Horde_Kolab_FreeBusy_Cache_File_xacl($this->_cache_dir, $fbfilename);
+         }
+ 
+         /* missing data means delete the cache files */
+@@ -206,7 +206,7 @@
+             }
+         }
+ 
+-        $c_pvcal = &new Horde_Kolab_FreeBusy_Cache_File_pvcal($this->_cache_dir, $file);
++        $c_pvcal = new Horde_Kolab_FreeBusy_Cache_File_pvcal($this->_cache_dir, $file);
+         $pvCal = $c_pvcal->loadPVcal($extended);
+         if (is_a($pvCal, 'PEAR_Error')) {
+             return $pvCal;
+@@ -243,16 +243,16 @@
+         }
+ 
+         $owner = $access->owner;
+-        if (ereg('(.*)@(.*)', $owner, $regs)) {
++        if (preg_match('/(.*)@(.*)/', $owner, $regs)) {
+             $owner = $regs[2] . '/' . $regs[1];
+         }
+         $user = $access->user;
+-        if (ereg('(.*)@(.*)', $user, $regs)) {
++        if (preg_match('/(.*)@(.*)/', $user, $regs)) {
+             $user = $regs[2] . '/' . $regs[1];
+         }
+         $c_file = str_replace("\0", '', str_replace('.', '^', $user . '/' . $owner));
+ 
+-        $c_vcal = &new Horde_Kolab_FreeBusy_Cache_File_vcal($this->_cache_dir,
++        $c_vcal = new Horde_Kolab_FreeBusy_Cache_File_vcal($this->_cache_dir,
+ 							    $c_file, $extended);
+ 
+         /* If the current vCal cache did not expire, we can deliver it */
+@@ -261,7 +261,7 @@
+         }
+ 
+         // Create the new iCalendar.
+-        $vCal = &new Horde_iCalendar();
++        $vCal = new Horde_iCalendar();
+         $vCal->setAttribute('PRODID', '-//kolab.org//NONSGML Kolab Server 2//EN');
+         $vCal->setAttribute('METHOD', 'PUBLISH');
+ 
+@@ -295,7 +295,7 @@
+             } else {
+                 $extended_pvc = $extended;
+             }
+-            $c_pvcal = &new Horde_Kolab_FreeBusy_Cache_File_pvcal($this->_cache_dir, $file);
++            $c_pvcal = new Horde_Kolab_FreeBusy_Cache_File_pvcal($this->_cache_dir, $file);
+             $pvCal = $c_pvcal->loadPVcal($extended_pvc);
+             if (is_a($pvCal, 'PEAR_Error')) {
+                 Horde::logMessage(sprintf("Ignoring partial free/busy file %s: %s)",
+@@ -401,7 +401,7 @@
+      */
+     function _getFilename($folder, $owner)
+     {
+-        if (ereg('(.*)@(.*)', $owner, $regs)) {
++        if (preg_match('/(.*)@(.*)/', $owner, $regs)) {
+             $owner = $regs[2] . '/' . $regs[1];
+         }
+ 
+@@ -434,7 +434,7 @@
+                 Horde::logMessage($message, __FILE__, __LINE__, PEAR_LOG_INFO);
+             }
+ 
+-            $rvCal = &new Horde_iCalendar();
++            $rvCal = new Horde_iCalendar();
+             $result = $rvCal->parsevCalendar($remote);
+ 
+             if (is_a($result, 'PEAR_Error')) {
+@@ -606,7 +606,7 @@
+ 
+         if (dba_exists($uid, $this->_db)) {
+             $lst = dba_fetch($uid, $this->_db);
+-            $lst = split(',', $lst);
++            $lst = explode(',', $lst);
+             $lst = array_diff($lst, array($filename));
+             $result = dba_replace($uid, join(',', $lst), $this->_db);
+             if ($result === false) {
+@@ -639,7 +639,7 @@
+ 
+         if (dba_exists($uid, $this->_db)) {
+             $lst = dba_fetch($uid, $this->_db);
+-            $lst = split(',', $lst);
++            $lst = explode(',', $lst);
+             $lst[] = $filename;
+             $result = dba_replace($uid, join(',', array_keys(array_flip($lst))), $this->_db);
+             if ($result === false) {
+@@ -674,7 +674,7 @@
+         $result = false;
+         if (dba_exists($uid, $this->_db)) {
+             $lst = dba_fetch($uid, $this->_db);
+-            $lst = split(',', $lst);
++            $lst = explode(',', $lst);
+             $result = in_array($filename, $lst);
+         }
+         $this->_close();
+@@ -699,7 +699,7 @@
+         $result = array();
+         if (dba_exists($uid, $this->_db)) {
+             $lst = dba_fetch($uid, $this->_db);
+-            $lst = split(',', $lst);
++            $lst = explode(',', $lst);
+             $result = array_filter($lst, array($this, '_notEmpty'));
+         }
+         $this->_close();
+@@ -849,8 +849,8 @@
+      */
+     function store($filename, $xacl, $oldxacl)
+     {
+-        $xacl = split(' ', $xacl);
+-        $oldxacl = split(' ', $oldxacl);
++        $xacl = explode(' ', $xacl);
++        $oldxacl = explode(' ', $oldxacl);
+         $both = array_intersect($xacl, $oldxacl);
+ 
+         /* Removed access rights */
+diff -Naur --exclude='*~' a/framework/Kolab_FreeBusy/lib/Horde/Kolab/FreeBusy/Imap.php a/framework/Kolab_FreeBusy/lib/Horde/Kolab/FreeBusy/Imap.php
+--- a/framework/Kolab_FreeBusy/lib/Horde/Kolab/FreeBusy/Imap.php	2010-01-23 23:00:42.000000000 +0100
++++ b/framework/Kolab_FreeBusy/lib/Horde/Kolab/FreeBusy/Imap.php	2010-03-25 15:56:05.000000000 +0100
+@@ -147,10 +147,10 @@
+         }
+ 
+         if (is_null($startDate)) {
+-            $startDate = &new Horde_Date(array('mday' => 1, 'month' => 1, 'year' => 0000));
++            $startDate = new Horde_Date(array('mday' => 1, 'month' => 1, 'year' => 0000));
+         }
+         if (is_null($endDate)) {
+-            $endDate = &new Horde_Date(array('mday' => 31, 'month' => 12, 'year' => 9999));
++            $endDate = new Horde_Date(array('mday' => 31, 'month' => 12, 'year' => 9999));
+         }
+         $startts = $startDate->timestamp();
+         $endts = $endDate->timestamp();
+@@ -161,14 +161,14 @@
+             /* check if event period intersects with given period */
+             if (!(($object['start-date'] > $endts) || 
+                   ($object['end-date'] < $startts))) {
+-                $event = &new Kolab_Event($object);
++                $event = new Kolab_Event($object);
+                 $result[] = $event;
+                 continue;
+             }
+ 
+             /* do recurrence expansion if not keeping anyway */
+             if (isset($object['recurrence'])) {
+-                $event = &new Kolab_Event($object);
++                $event = new Kolab_Event($object);
+                 $next = $event->recurrence->nextRecurrence($startDate);
+                 while ($next !== false && 
+                        $event->recurrence->hasException($next->year, $next->month, $next->mday)) {
+@@ -178,7 +178,7 @@
+ 
+                 if ($next !== false) {
+                     $duration = $next->timestamp() - $event->start->timestamp();
+-                    $next_end = &new Horde_Date($event->end->timestamp() + $duration);
++                    $next_end = new Horde_Date($event->end->timestamp() + $duration);
+ 
+                     if ((!(($endDate->compareDateTime($next) < 0) || 
+                            ($startDate->compareDateTime($next_end) > 0)))) {
+diff -Naur --exclude='*~' a/framework/Kolab_FreeBusy/test/Horde/Kolab/FreeBusy/AllTests.php a/framework/Kolab_FreeBusy/test/Horde/Kolab/FreeBusy/AllTests.php
+--- a/framework/Kolab_FreeBusy/test/Horde/Kolab/FreeBusy/AllTests.php	2010-01-23 23:00:42.000000000 +0100
++++ b/framework/Kolab_FreeBusy/test/Horde/Kolab/FreeBusy/AllTests.php	2010-03-25 15:56:31.000000000 +0100
+@@ -17,6 +17,11 @@
+ require_once 'PHPUnit/Framework/TestSuite.php';
+ require_once 'PHPUnit/TextUI/TestRunner.php';
+ 
++require_once 'Horde/Prefs.php';
++require_once 'Horde/Date.php';
++require_once 'Horde/Kolab/FreeBusy/Imap.php';
++require_once 'Horde/Kolab/Test/FreeBusy.php';
++
+ /**
+  * Combine the tests for this package.
+  *

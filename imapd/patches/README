@@ -1,0 +1,9 @@
+If you patch cyrus-imapd with these patches for Kolab you will
+need to ensure in addition that you remove two files from the 
+sources:
+
+rm -f lib/imapopts.h lib/imapopts.c
+
+Both will get rebuild automatically during the build process. 
+If you don't rebuild them during build time they will be 
+outdated.

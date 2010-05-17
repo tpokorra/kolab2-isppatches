@@ -1,0 +1,18 @@
+DESCRIPTION:
+
+Adds routines in the Horde::Share library to store the free/busy
+relevance and the free/busy access settings.  This could be submitted
+upstream after some restructuring.
+
+IMPACT:
+
+Setting/Getting these parameters won't work in fbview.
+
+REFERENCES:
+
+Mercurial patch repository:
+
+http://hg.pardus.de/cgi-bin/hg.cgi/horde/HORDE_3_2_RC1/summary
+
+HISTORY
+

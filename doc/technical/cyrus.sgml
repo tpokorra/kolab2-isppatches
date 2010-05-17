@@ -1,0 +1,369 @@
+<chapter><title> Cyrus IMAP Daemon </title>
+
+<para> On basis of the IMAP daemon's source package of OpenPKG
+a modified spec file was developed:</para>
+ 
+<para><programlisting>
+#   package information
+Name:         imapd
+Summary:      Cyrus IMAP Server
+URL:          http://asg.web.cmu.edu/cyrus/imapd/
+Vendor:       Carnegie Mellon University
+Packager:     The OpenPKG Project
+Distribution: OpenPKG [EVAL]
+Group:        Mail
+License:      BSD
+Version:      2.1.11
+Release:      20030125
+
+%option	      with_fsl  no      
+
+#   list of sources
+%define url   ftp://ftp.andrew.cmu.edu/pub/cyrus-mail/
+		    cyrus-imapd-%{version}.tar.gz
+Source0:      %( [ ! -f %{SOURCE cyrus-imapd-%{version}.tar.gz} ] \
+                 && wget -c %url; echo %url )
+Source1:      imapd.conf
+Source2:      rc.imapd
+Source3:      Makefile
+Patch0:       imapd.patch
+Patch1:       groupfile.patch
+Patch2:       makefile.patch
+Patch3:       configure-db4.patch
+Patch4:	      perl.patch
+
+#   build information
+Prefix:       %{l_prefix}
+BuildRoot:    %{l_buildroot}
+BuildPreReq:  OpenPKG, openpkg &gt;= 1.2, sasl, db &gt;= 4.1.24, \
+              openssl, make, perl
+PreReq:       OpenPKG, openpkg &gt;= 1.2, sasl, openssl, MTA
+AutoReq:      no
+AutoReqProv:  no
+Provides:     IMAP
+
+%description
+
+    The Cyrus IMAP server is an IMAP4 and POP3 daemon that differs from
+    other IMAP server implementations in that it is generally intended to
+    be run on sealed servers, where normal users are not permitted to log
+    in. The mailbox database is stored in parts of the filesystem that are
+    private to the Cyrus IMAP system. All user access to mail is through
+    the IMAP, POP3, or KPOP protocols.
+
+%prep
+    %setup -q -n cyrus-imapd-%{version}
+    %patch0 -p0
+    %patch1 -p0
+    %patch2 -p0
+    %patch3 -p0
+    %patch4 -p0
+
+%build
+    cflags="-I%{l_prefix}/include"
+    ldflags="-L%{l_prefix}/lib"
+    case "%{l_target}" in
+        *-solaris* ) ldflags="$ldflags -lsocket -lnsl" ;;
+    esac
+    CC="%{l_cc}" \
+    CPPFLAGS="$cflags" \
+    CFLAGS="%{l_cflags -O} $cflags" \
+    LDFLAGS="$ldflags" \
+%if "%{with_fsl}" == "yes"
+    libs="`%{l_prefix}/bin/fsl-config --libs`" \
+    ldflags="$ldflags `%{l_prefix}/bin/fsl-config --ldflags`" \
+%endif
+    LIBS="$libs" \
+    LDFLAGS="$ldflags -L%{l_prefix}/lib/sasl" \
+    ./configure \
+        --prefix=%{l_prefix} \
+        --libdir=%{l_prefix}/lib \
+        --with-openssl=%{l_prefix} \
+        --with-dbdir=%{l_prefix} \
+        --with-sasl=%{l_prefix} \
+        --with-statedir=%{l_prefix}/var/imapd \
+        --with-auth=unix \
+        --with-cyrus-prefix=%{l_prefix} \
+        --with-cyrus-user=%{l_musr} \
+        --with-cyrus-group=%{l_mgrp} \
+        --without-ucdsnmp \
+        --without-zephyr \
+        --with-staticsasl=%{l_prefix} \
+        --without-afs \
+	--with-perl=%{l_prefix}/bin/perl \
+	--with-lock=fcntl
+
+    #   redirect the hard coded file paths
+    %{l_shtool} subst -e "s;/etc/\(.*\).conf; \
+        %{l_prefix}/etc/imapd/\\1.conf;" \
+        imap/*.c imap/*.h master/*.c master/*.h
+    %{l_shtool} subst -e "s;/etc/imapd.group; \
+        %{l_prefix}/etc/imapd/imapd.group;" lib/auth_unix.c
+    %{l_make} %{l_mflags}
+    %{l_shtool} subst -t -e "s;\(INSTALL.* = \).*\(%{l_prefix}.*$\); \
+        \1$RPM_BUILD_ROOT\2;g" \
+ 	perl/imap/Makefile perl/sieve/managesieve/Makefile
+
+
+%install
+    rm -rf $RPM_BUILD_ROOT
+
+    %{l_shtool} mkdir -f -p -m 755 $RPM_BUILD_ROOT%{l_prefix}/etc/imapd
+    %{l_shtool} mkdir -f -p -m 755 $RPM_BUILD_ROOT%{l_prefix}/var/imapd
+    %{l_shtool} mkdir -f -p -m 755 $RPM_BUILD_ROOT%{l_prefix}/var/spool
+    %{l_shtool} mkdir -f -p -m 755 $RPM_BUILD_ROOT%{l_prefix}
+                                                  /var/spool/imap/sieve
+    %{l_shtool} mkdir -f -p -m 755 $RPM_BUILD_ROOT%{l_prefix}/etc/rc.d
+    for dir in a b c d e f g h i j k l m n o p q r s t u v w x y z
+    do
+     (
+        %{l_shtool} mkdir -f -p -m 755 $RPM_BUILD_ROOT%{l_prefix}
+                                        /var/spool/imap/sieve/$dir
+     )
+    done
+
+    %{l_make} %{l_mflags} install \
+        prefix=$RPM_BUILD_ROOT%{l_prefix} \
+        exec_prefix=$RPM_BUILD_ROOT%{l_prefix} \
+        cyrus_prefix=$RPM_BUILD_ROOT%{l_prefix}
+
+    #   offer a sane configuration
+    #cp master/conf/small.conf master/conf/cyrus.conf
+    #%{l_shtool} subst -e "s;/var/imap/socket;%{l_prefix}
+                                         /var/imapd/socket;g" \
+    #    master/conf/cyrus.conf
+    %{l_shtool} install -c -m 644 \
+        -e 's;@l_prefix@;%{l_prefix};g' \
+        -e 's;@l_musr@;%{l_musr};g' \
+        %{SOURCE imapd.conf} $RPM_BUILD_ROOT%{l_prefix} 
+                                        /etc/imapd/imapd.conf 
+    %{l_shtool} install -c -m 644 \
+        -e "s;/var/imap/socket;%{l_prefix}/var/imapd/socket;g" \
+        master/conf/small.conf $RPM_BUILD_ROOT%{l_prefix} 
+                                        /etc/imapd/cyrus.conf
+
+    #   install the run command file
+    %{l_shtool} install -c -m 755 -e 's;@l_prefix@;%{l_prefix};g' \
+        -e 's;@l_musr@;%{l_musr};g' -e 's;@l_mgrp@;%{l_mgrp};g' \
+        %{SOURCE rc.imapd} $RPM_BUILD_ROOT%{l_prefix}/etc/rc.d/
+
+    #   use mkimap to create many directories for us
+    cp $RPM_BUILD_ROOT%{l_prefix}/etc/imapd/imapd.conf imapd.conf.hack
+    %{l_shtool} subst -e "s;%{l_prefix};$RPM_BUILD_ROOT%{l_prefix};" \
+        imapd.conf.hack
+    tools/mkimap imapd.conf.hack
+
+    #   determine files
+    %{l_rpmtool} files -v -ofiles -r$RPM_BUILD_ROOT \
+        %{l_files_std} \
+        '%config %{l_prefix}/etc/imapd/imapd.conf' \
+        '%config %{l_prefix}/etc/imapd/cyrus.conf'
+
+%files -f files
+
+%clean
+    rm -rf $RPM_BUILD_ROOT
+</programlisting></para>
+
+<para> In order to avoid problems with the detection of the Berkeley database the following patch (configure-db4.patch) is needed:
+</para>
+
+<para><programlisting>
+--- configure.orig	2003-01-26 15:51:04.000000000 +0100
++++ configure	2003-02-01 02:41:18.000000000 +0100
+@@ -1977,7 +1977,7 @@
+ 
+ #Try to detect the name of the DB4/DB3 library
+ dbfound="no"
+-for dbname in db-4.1 db4.1 db-4.0 db4.0 db-4 db4 db-3.3 \
+        db3.3 db-3.2 db3.2 db-3.1 db3.1 db-3 db3 db
++for dbname in db db-4.1 db4.1 db-4.0 db4.0 db-4 db4 db-3.3 \ 
+        db3.3 db-3.2 db3.2 db-3.1 db3.1 db-3 db3
+   do
+     echo $ac_n "checking for db_create in -l$dbname""... $ac_c" 1&gt;&6
+ echo "configure:1984: checking for db_create in -l$dbname" &gt;&5
+</programlisting></para>
+
+<para> As cyrus is not completely consistent with respect to avoid 
+the system's /etc/group file we provide the following patch (groupfile.patch).
+Note that cyrus is not fully consistent in that respect. Users don't need
+to exist locally on the mailserver and can be taken from LDAP. For groups that doesn't
+apply. We felt that introducing a spearate group file which is not read by the
+system would help here. The modified cyrus imapd now reads /etc/imapd.group instead
+of /etc/group. The outcome is that groups of imap users don't exist on the
+mailserver. </para>
+
+<para><programlisting>
+--- lib/auth_unix.c	Thu Oct 10 16:38:26 2002
++++ lib/auth_unix.c	Thu Oct 10 17:48:04 2002
+@@ -48,6 +48,7 @@
+ #include &lt;stdlib.h&gt;
+ #include &lt;pwd.h&gt;
+ #include &lt;grp.h&gt;
++#include &lt;stdio.h&gt;
+ #include &lt;ctype.h&gt;
+ #include &lt;string.h&gt;
+ 
+@@ -143,6 +144,26 @@
+     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+ };
+ 
++
++static struct group* fgetgrnam(const char* name)
++{
++    struct group *grp;
++    FILE *groupfile;
++
++    groupfile = fopen("/etc/imapd.group","r");
++    if (!groupfile) groupfile = fopen("/etc/group", "r");
++    if (groupfile) {
++       while ((grp = fgetgrent(groupfile))) {
++         if (strcmp(grp-&gt;gr_name, name) == 0) {
++           fclose(groupfile);
++           return grp;
++         }
++       }
++    } 
++    if (groupfile) fclose(groupfile);
++    return NULL;
++} 
++
+ /*
+  * Convert 'identifier' into canonical form.
+  * Returns a pointer to a static buffer containing the canonical form
+@@ -185,7 +206,7 @@
+      */
+     
+     if (!strncmp(retbuf, "group:", 6)) {
+-	grp = getgrnam(retbuf+6);
++	grp = fgetgrnam(retbuf+6);
+ 	if (!grp) return 0;
+ 	strcpy(retbuf+6, grp-&gt;gr_name);
+ 	return retbuf;
+@@ -228,6 +249,7 @@
+     struct passwd *pwd;
+     struct group *grp;
+     char **mem;
++    FILE *groupfile;
+ 
+     identifier = auth_canonifyid(identifier, 0);
+     if (!identifier) return 0;
+@@ -241,20 +263,23 @@
+     newstate-&gt;ngroups = 0;
+     newstate-&gt;group = (char **) 0;
+ 
+-    setgrent();
+-    while ((grp = getgrent())) {
+-	for (mem = grp-&gt;gr_mem; *mem; mem++) {
+-	    if (!strcmp(*mem, identifier)) break;
+-	}
+-
+-	if (*mem || (pwd && pwd-&gt;pw_gid == grp-&gt;gr_gid)) {
+-	  newstate-&gt;ngroups++;
+-	  newstate-&gt;group = (char **)xrealloc((char *)newstate-&gt;group,
+-				newstate-&gt;ngroups * sizeof(char *));
+-         newstate-&gt;group[newstate-&gt;ngroups-1] = xstrdup(grp-&gt;gr_name);
+-	}
+-    }
+-    endgrent();
++    groupfile = fopen("/etc/imapd.group", "r");
++    if (!groupfile) groupfile = fopen("/etc/group","r");
++    if (groupfile) {
++       while ((grp = fgetgrent(groupfile))) {
++         for (mem = grp-&gt;gr_mem; *mem; mem++) {
++            if (!strcmp(*mem, identifier)) break;
++         }
++
++         if (*mem || (pwd && pwd-&gt;pw_gid == grp-&gt;gr_gid)) {
++           newstate-&gt;ngroups++;
++           newstate-&gt;group = (char **)xrealloc((char *)newstate-&gt;group,
++                                       newstate-&gt;ngroups * sizeof(char *));
++           newstate-&gt;group[newstate-&gt;ngroups-1] = xstrdup(grp-&gt;gr_name);
++         }
++       }
++       fclose(groupfile);
++    } 
+     return newstate;
+ }
+</programlisting></para>
+ 
+<para> The community process resulted in an additional path to be included as there can be compile errors on some systems due to not found libraries.
+Therefore the patch makefile.patch is needed:
+</para>
+
+<para><programlisting>
+--- timsieved/Makefile.in	Fri Jan 24 10:41:36 2003
++++ timsieved/Makefile.in	Fri Jan 24 10:42:01 2003
+@@ -52,7 +52,7 @@
+ CYRUS_GROUP=@cyrus_group@
+ 
+ DEFS = @DEFS@ @LOCALDEFS@
+-CPPFLAGS = -I. -I.. -I../sieve/ -I$(srcdir) -I$(srcdir)/../sieve -I$(srcdir)/../imap \
+   -I$(srcdir)/../acap -I$(srcdir)/../lib @COM_ERR_CPPFLAGS@ @CPPFLAGS@ @SASLFLAGS@
++CPPFLAGS = -I. -I../et -I.. -I../sieve/ -I$(srcdir) -I$(srcdir)/../sieve -I$(srcdir)/../imap \ 
+   -I$(srcdir)/../acap -I$(srcdir)/../lib @COM_ERR_CPPFLAGS@ @CPPFLAGS@ @SASLFLAGS@
+ CFLAGS = @CFLAGS@
+ LDFLAGS = @LDFLAGS@
+ 
+--- notifyd/Makefile.in	Fri Jan 24 10:42:13 2003
++++ notifyd/Makefile.in	Fri Jan 24 10:42:26 2003
+@@ -52,7 +52,7 @@
+ CYRUS_GROUP=@cyrus_group@
+ 
+ DEFS = @DEFS@ @LOCALDEFS@
+-CPPFLAGS = -I. -I.. -I../sieve/ -I$(srcdir) -I$(srcdir)/../sieve -I$(srcdir)/../imap \
+   -I$(srcdir)/../acap -I$(srcdir)/../lib @COM_ERR_CPPFLAGS@ @CPPFLAGS@ @SASLFLAGS@
++CPPFLAGS = -I. -I../et -I.. -I../sieve/ -I$(srcdir) -I$(srcdir)/../sieve -I$(srcdir)/../imap \ 
+   -I$(srcdir)/../acap -I$(srcdir)/../lib @COM_ERR_CPPFLAGS@ @CPPFLAGS@ @SASLFLAGS@
+ CFLAGS = @CFLAGS@
+ LDFLAGS = @LDFLAGS@
+ 
+--- imap/Makefile.in	Fri Jan 24 10:42:53 2003
++++ imap/Makefile.in	Fri Jan 24 10:43:15 2003
+@@ -62,7 +62,7 @@
+ CYRUS_GROUP=@cyrus_group@
+ 
+ DEFS = @DEFS@ @LOCALDEFS@
+-CPPFLAGS = -I. -I.. -I../sieve -I$(srcdir) -I$(srcdir)/../lib -I$(srcdir)/../acap \ 
+   -I../acap @COM_ERR_CPPFLAGS@ @SIEVE_CPPFLAGS@ @CPPFLAGS@ @SASLFLAGS@
++CPPFLAGS = -I. -I../et -I.. -I../sieve -I$(srcdir) -I$(srcdir)/../lib -I$(srcdir)/../acap \ 
+   -I../acap @COM_ERR_CPPFLAGS@ @SIEVE_CPPFLAGS@ @CPPFLAGS@ @SASLFLAGS@
+ IMAP_LIBS = @IMAP_LIBS@
+ SIEVE_LIBS = @SIEVE_LIBS@
+ IMAP_COM_ERR_LIBS = @IMAP_COM_ERR_LIBS@
+</programlisting></para>
+
+<para> Due to changes in OpenPKG 1.2 perl handling we need the perl.patch:
+</para>
+
+<para><programlisting>
+--- perl/Makefile.in.orig	2003-02-02 23:56:22.000000000 +0100
++++ perl/Makefile.in	2003-02-02 23:56:42.000000000 +0100
+@@ -52,9 +52,9 @@
+ INSTALL = @INSTALL@
+ 
+ # Note that we use the *dynamic* sasl libraries
+-SASL_LIB=@LIB_DYN_SASL@
++SASL_LIB=@LIB_DYN_SASL@ -ldl -ldb
+ SASL_INC=@DYNSASLFLAGS@
+-OPENSSL_LIB=@OPENSSL_LIB@
++OPENSSL_LIB=@OPENSSL_LIB@ -ldl -ldb
+ OPENSSL_INC=@OPENSSL_INC@
+ 
+ PERL=@PERL@
+--- perl/sieve/Makefile.in.orig	2003-02-03 03:54:47.000000000 +0100
++++ perl/sieve/Makefile.in	2003-02-03 03:55:27.000000000 +0100
+@@ -63,9 +63,9 @@
+ cyrus_prefix = @cyrus_prefix@
+ 
+ # Note that we use the *dynamic* sasl libraries
+-SASL_LIB=@LIB_DYN_SASL@
++SASL_LIB=@LIB_DYN_SASL@ -ldl -ldb
+ SASL_INC=@DYNSASLFLAGS@
+-OPENSSL_LIB=@OPENSSL_LIB@
++OPENSSL_LIB=@OPENSSL_LIB@ -ldl -ldb
+ OPENSSL_INC=@OPENSSL_INC@
+ 
+ CC=@CC@
+</programlisting></para>
+</chapter>

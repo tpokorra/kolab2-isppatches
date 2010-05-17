@@ -1,0 +1,5 @@
+Fix kolab/issue2346 (Compilation of postfix fails on CentOS 5.1 64Bit)
+
+The /lib64 patch for the OpenPKG spec file is needed for packages before
+postfix-2.5.1-20080217 and distributions which don't have /lib and /lib64
+pointing to the same directory.
