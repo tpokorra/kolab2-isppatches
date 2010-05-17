@@ -1060,7 +1060,8 @@ objectclass ( 1.3.6.1.4.1.19414.3.2.2
         VATNumber $
         germanTaxId $
         kolabDeleteflag $
-        kolabComment ) )
+        kolabComment $
+		lastLogin ) )
 
 # kolab organization with country support
 objectclass ( 1.3.6.1.4.1.19414.3.2.3
