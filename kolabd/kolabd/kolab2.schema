@@ -990,7 +990,9 @@ objectclass ( 1.3.6.1.4.1.19414.2.2.1
         kolabFreeBusyFuture $
         kolabFreeBusyPast $
         uid $
-        userPassword ) )
+        userPassword $
+		passwordSecUserRegEx $
+		passwordSecAdminRegEx ) )
 
 # public folders are typically visible to everyone subscribed to
 # the server without the need for an extra login. Subfolders are
