@@ -2496,3 +2496,7 @@ msgstr "Alles"
 #: unknown
 msgid "LDAP Error: failed to modify customer object: %s"
 msgstr "LDAP-Fehler: Konnte Kunden-Objekt nicht abändern: %s"
+
+#: unknown
+msgid "Customer/Domain Specific Settings"
+msgstr "Kunden-/Domänenspezifische Einstellungen"
