@@ -2460,3 +2460,7 @@ msgstr "Domänenkontingent für Domäne %s muss eine ganze Zahl sein"
 #: ../../../www/admin/user/user.php.in:236
 msgid "Default quota for domain %s must be integer"
 msgstr "Standard-Kontingent für Domäne %s muss eine ganze Zahl sein"
+
+#: ../../../www/admin/user/user.php.in:257
+msgid "LDAP Error: failed to modify domain quotas: %s"
+msgstr "LDAP Fehler: Konnte die Domänenkontingent nicht verändern: %s"
