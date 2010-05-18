@@ -2424,3 +2424,15 @@ msgstr "Passwörter stimmen nicht überein"
 
 #~ msgid "LDAP Error: Could not remove old entry %s,%s: %s"
 #~ msgstr "LDAP-Fehler: Konnte den alten Eintrag %s,%s nicht entfernen: %s"
+
+#: tpl_messages.php:119
+msgid "Domain Quotas (MBytes)"
+msgstr "Domänenkontingent (MBytes)"
+
+#: tpl_messages.php:126
+msgid "Domain:"
+msgstr "Domäne:"
+
+#: tpl_messages.php:127
+msgid "Default:"
+msgstr "Standard:"
