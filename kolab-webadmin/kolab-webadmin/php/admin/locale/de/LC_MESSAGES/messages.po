@@ -2424,3 +2424,7 @@ msgstr "Passwörter stimmen nicht überein"
 
 #~ msgid "LDAP Error: Could not remove old entry %s,%s: %s"
 #~ msgstr "LDAP-Fehler: Konnte den alten Eintrag %s,%s nicht entfernen: %s"
+
+#: unknown
+msgid "May not have alias in domain %s"
+msgstr "Aliasnamen in Domäne %s ist nicht erlaubt"
