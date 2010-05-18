@@ -2501,3 +2501,15 @@ msgstr "Maximales Kontingent pro Konto"
 #: unknown
 msgid "Domain or customer quota for domain %s requires a default quota"
 msgstr "Domänen- oder Kundenkontingent für Domäne %s erfordert einen Wert für Standard Kontingent"
+
+#: unknown
+msgid "Quota for domain %s may not exceed %d MBytes"
+msgstr "Kontingent für Domäne %s kann %d MBytes nicht überschreiten"
+
+#: unknown
+msgid "Default quota for domain %s may not exceed %d MBytes"
+msgstr "Standard Kontingent für Domäne %s kann %d MBytes nicht überschreiten"
+
+#: unknown
+msgid "Default quota may not exceed %d MBytes"
+msgstr "Standard Kontingent kann %d MBytes nicht überschreiten"
