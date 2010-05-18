@@ -2428,3 +2428,15 @@ msgstr "Passwörter stimmen nicht überein"
 #: unknown
 msgid "Domain or customer quota for domain %s requires a default quota"
 msgstr "Domänen- oder Kundenkontingent für Domäne %s erfordert einen Wert für Standard Kontingent"
+
+#: unknown
+msgid "Domain quota may not exceed %d MBytes"
+msgstr "Domänenkontingent kann %d MBytes nicht überschreiten"
+
+#: unknown
+msgid "Mail quota for customer %s must be an integer"
+msgstr "E-Mail Kontingent für Kunden %s muss eine ganze Zahl sein"
+
+#: unknown
+msgid "Mail quota for customer %s cannot be set below %d MBytes, as this much is already being used"
+msgstr "E-Mail Kontingent für Kunden %s kann nicht kleiner als %d MBytes sein, da soviel bereits benutzt wird"
