@@ -117,6 +117,7 @@ index   kolabDelegate   approx,sub,pres,eq
 index   kolabHomeServer pres,eq
 index   kolabDeleteflag pres,eq
 index   member          pres,eq
+index   domains         pres,eq
 
 include @ldapserver_confdir@/slapd.access
 
