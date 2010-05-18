@@ -2436,3 +2436,11 @@ msgstr "Anzahl Konten:"
 #: tpl_messages.php:129
 msgid "Change"
 msgstr "Ändern"
+
+#: ../../../www/admin/user/user.php.in:239
+msgid "No. of accounts for domain %s must be set at least to %d accounts"
+msgstr "Anzahl Konten für Domäne %s muss mindestens %d Konten sein"
+
+#: ../../../www/admin/user/user.php.in:236
+msgid "No. of accounts for domain %s must be integer"
+msgstr "Anzahl Konten für Domäne %s muss eine ganze Zahl sein"
