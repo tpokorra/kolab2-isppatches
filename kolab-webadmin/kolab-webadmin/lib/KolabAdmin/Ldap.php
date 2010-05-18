@@ -521,6 +521,70 @@ class KolabLDAP {
 	return $this->cached_domains;
   }
 
+  function domainsOfSelectedCustomer() {
+    $cdn = $_SESSION['customer_dn'];
+    $base = $_SESSION['base_dn'];
+    if($cdn == $base)
+      if($_SESSION['ignore_customer'])
+        return $this->domains(true);
+      else
+        return $this->domainsOfNoCustomer();
+    $idn = substr($cdn, 0, strlen($cdn) - strlen($base))
+        . 'cn=customers,cn=internal,' . $base;
+    $obj = $this->read($idn);
+    if(!$obj)
+      return array();
+    $obj = $obj['domains'];
+    unset($obj['count']);
+    sort($obj);
+    return $obj;
+  }
+
+  function domainsOfCustomer($customer) {
+    $dn = "cn=$customer,cn=customers,cn=internal," . $_SESSION['base_dn'];
+    $obj = $this->read($dn);
+    if(!$obj)
+      return ldap_error($this->connection);
+    $obj = $obj['domains'];
+    unset($obj['count']);
+    sort($obj);
+    return $obj;
+  }
+
+  function domainsOfNoCustomer() {
+    $all = $this->domains(true);
+    $domains = array();
+    foreach($all as $domain) {
+      $result = ldap_list($this->connection, 'cn=customers,cn=internal,'
+          . $_SESSION['base_dn'], "(&(objectClass=kolabGroupOfNames)"
+          . "(domains=$domain))");
+      if(!$result)
+        continue;
+      $count = ldap_count_entries($this->connection, $result);
+      if($count !== FALSE && !$count)
+        $domains[] = $domain;
+      ldap_free_result($result);
+    }
+    sort($domains);
+    return $domains;
+  }
+
+  function customerOfDomain($domain) {
+    $result = $this->search('cn=customers,cn=internal,' . $_SESSION['base_dn'],
+        "(&(objectClass=kolabGroupOfNames)(domains=$domain))", array('cn'));
+    if(!$result)
+      return '';
+    $result = $this->getEntries();
+    return $result['count'] ? $result[0]['cn'][0] : '';
+  }
+
+  function customerNameOfDomain($domain) {
+    $result = $this->search('cn=customers,cn=internal,' . $_SESSION['base_dn'],
+        "(&(objectClass=kolabGroupOfNames)(domains=$domain))",
+        array('description'));
+    return $result['count'] ? $result[0]['description'][0] : _('No customer');
+  }
+
   function addToDomainGroups( $member, $domains ) {
 	if (empty($domains)) {
 	  return true;
