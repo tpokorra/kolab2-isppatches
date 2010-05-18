@@ -275,6 +275,35 @@ class KolabLDAP {
     return false;
   }
 
+  function uidprefixForDn($dn) {
+    if($this->search("cn=customers,cn=internal," . $_SESSION['base_dn'],
+        '(&(objectclass=kolabGroupOfNames)(member=' . $this->escape($dn)
+        . '))', array('uidPrefix'))) {
+      $entry = $this->getEntries();
+      return $entry[0]['uidprefix'][0];
+	}
+    else
+      return false;
+  }
+
+  function getUidsForPrefix($dn, $prefix = '') {
+    if($prefix == '')
+      $prefix = $_SESSION['uid_prefix'];
+    global $errors;
+    $result = $this->search($dn, '(&(objectclass=kolabInetOrgPerson)(uid=' . $prefix
+        . '*))', array('uid'));
+    ldap_sort($this->connection, $result, 'uid');
+    $entries = $this->getEntries();
+    unset($entries['count']);
+    if(count($entries) > 0) {
+      foreach($entries as $val)
+        $uids[] = str_replace($prefix, "", $val['uid'][0]);
+      return $uids
+    }
+    else
+      return false;
+  }
+
   function aliasForDn( $dn ) {
     global $errors;
     $res = ldap_read( $this->connection, $dn, '(objectclass=*)', array( 'alias' ) );
