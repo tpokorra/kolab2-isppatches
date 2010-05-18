@@ -23,6 +23,9 @@ $kolab_prefix = '@prefix@';
 $php_dir      = '@phplibdir2@';
 $locale_dir   = "$php_dir/@kolab_php_module_prefix@admin/locale/";
 
+// Hide 'Forwarding' information in user list
+define('HIDE_FORWARD_IN_USER_LIST', 'false');
+
 /*
   Local variables:
   mode: php
