@@ -2428,3 +2428,7 @@ msgstr "Passwörter stimmen nicht überein"
 #: unknown
 msgid "May not have alias in domain %s"
 msgstr "Aliasnamen in Domäne %s ist nicht erlaubt"
+
+#: unknown
+msgid "Not a valid e-mail address: %s"
+msgstr "Keine gültige E-Mail-Adresse: %s"
