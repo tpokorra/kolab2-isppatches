@@ -2492,3 +2492,7 @@ msgstr "Sind Sie wirklich sicher, dass dieser Kunde gelöscht werden soll?"
 #: unknown
 msgid "Everything"
 msgstr "Alles"
+
+#: unknown
+msgid "LDAP Error: failed to modify customer object: %s"
+msgstr "LDAP-Fehler: Konnte Kunden-Objekt nicht abändern: %s"
