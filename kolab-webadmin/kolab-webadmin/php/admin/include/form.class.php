@@ -213,7 +213,7 @@ class KolabForm {
 	$str .= '<tr>';
 	$str .= '<td><label>'.$value['name'].'</label></td>';
 	if( ereg( 'readonly', $value['attrs'] ) ) {
-	  $str .= '<td><span class="ctrl">'.(join('<br/>',$value['options'])).'</span></td>';
+	  $str .= '<td><div class="ctrl">'.(join('<br/>',$value['options'])).'</div></td>';
 	} else {
 	  $str .= '<td><table class="contentform">';
 	  foreach( $value['options'] as $opt ) {
