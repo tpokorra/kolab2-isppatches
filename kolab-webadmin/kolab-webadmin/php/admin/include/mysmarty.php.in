@@ -30,6 +30,7 @@ function switchToCustomer($idx) {
 		$_SESSION['customer_descr'] = $cus['descr'];
 		$_SESSION['customer_subtree'] = $cus['subtree'];
 		$_SESSION['ignore_customer'] = $cus['ignore'];
+		$_SESSION['groupware_disabled'] = $cus['nogroupware'];
 	}
 }
 
