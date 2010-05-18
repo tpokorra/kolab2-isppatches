@@ -2424,3 +2424,7 @@ msgstr "Passwörter stimmen nicht überein"
 
 #~ msgid "LDAP Error: Could not remove old entry %s,%s: %s"
 #~ msgstr "LDAP-Fehler: Konnte den alten Eintrag %s,%s nicht entfernen: %s"
+
+#: unknown
+msgid "Domain or customer quota for domain %s requires a default quota"
+msgstr "Domänen- oder Kundenkontingent für Domäne %s erfordert einen Wert für Standard Kontingent"
