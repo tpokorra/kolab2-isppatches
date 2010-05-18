@@ -187,9 +187,12 @@
 {section name=id loop=$kolabhost}
 	<form method="post" action="">
 	<tr class="contentrow{cycle values="even,odd"}">
-	   <td class="contentcell">{$kolabhost[id]|escape:"html"}</td>
+		<td class="contentcell">
+			{$kolabhost[id]|escape:"html"}
+		</td>
 	   <td class="actioncell">{strip}
 		<input type="hidden" name="akolabhost" value="{$kolabhost[id]}" />
+		<input type="submit" name="savekolabhost" value="{tr msg="Save"}" />
 		<input type="submit" name="deletekolabhost" value="{tr msg="Delete"}" />
            {/strip}</td>
 	</tr>
