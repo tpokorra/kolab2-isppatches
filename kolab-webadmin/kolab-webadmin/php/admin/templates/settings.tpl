@@ -200,9 +200,13 @@
 {/section}
 	<form method="post" action="">
 	<tr class="contentrow{cycle values="even,odd"}">
-	   <td class="contentcell"> 
-		<input type="text" size="60" name="akolabhost" />
-           </td><td class="actioncell"><input type="submit" name="addkolabhost" value="{tr msg="Add"}" /></td>
+		<td class="contentcell"> 
+			{tr msg="Host"}:
+			<input type="text" size="60" name="akolabhost" />
+		</td>
+		<td class="actioncell">
+			<input type="submit" name="addkolabhost" value="{tr msg="Add"}" />
+		</td>
 	</tr>
 	</form>
 </table>
