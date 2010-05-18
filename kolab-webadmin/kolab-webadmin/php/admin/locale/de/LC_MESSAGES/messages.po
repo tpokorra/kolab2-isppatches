@@ -2444,3 +2444,55 @@ msgstr "Regulärer Ausdruck für Benutzer-Passwörter"
 #: tpl_messages.php
 msgid "Regular expression for administrator passwords"
 msgstr "Regulärer Ausdruck für Administrator-Passwörter"
+
+#: passwordpolicy.tpl
+msgid "Password policy"
+msgstr "Passwortrichtlinie"
+
+#: passwordpolicy.tpl
+msgid "The following password requirements are required for user passwords:"
+msgstr "Die folgenden Kennwortrichtlinien gelten für die Passwörter von Benutzern:"
+
+#: passwordpolicy.tpl
+msgid "A password must have at least 8 characters."
+msgstr "Ein Passwort muss mindestens aus 8 Zeichen bestehen."
+
+#: passwordpolicy.tpl
+msgid "A password must have one or more of the following characters"
+msgstr "Ein Passwort muß von folgenden Zeichen ein oder mehrere enthalten"
+
+#: passwordpolicy.tpl
+msgid "Lower case letters"
+msgstr "Kleinbuchstaben"
+
+#: passwordpolicy.tpl
+msgid "Upper case letters"
+msgstr "Grossbuchstaben"
+
+#: passwordpolicy.tpl
+msgid "Numbers"
+msgstr "Zahlen"
+
+#: passwordpolicy.tpl
+msgid "Special characters"
+msgstr "Sonderzeichen"
+
+#: passwordpolicy.tpl
+msgid "The following password requirements are required for administrator passwords:"
+msgstr "Die folgenden Kennwortrichtlinien gelten für die Passwörter von Administratoren:"
+
+#: passwordpolicy.tpl
+msgid "A password must have at least 12 characters."
+msgstr "Ein Passwort muss mindestens aus 12 Zeichen bestehen."
+
+#: settings.tpl
+msgid "Here are two examples how to set up a password security with regular expressions"
+msgstr "Hier sind zwei Beispiele für das Setzen der Passwortsicherheit mit regulären Ausdrücken"
+
+#: settings.tpl
+msgid "Password must have at least 8 characters"
+msgstr "Passwort muss mindestens aus 8 Zeichen bestehen"
+
+#: settings.tpl
+msgid "Password must have at least 10 characters with numbers, upper and lower case letters"
+msgstr "Passwort muss mindestens aus 10 Zeichen bestehen und Nummern sowie Groß- und Kleinschreibung beinhalten"
