@@ -2424,3 +2424,15 @@ msgstr "Passwörter stimmen nicht überein"
 
 #~ msgid "LDAP Error: Could not remove old entry %s,%s: %s"
 #~ msgstr "LDAP-Fehler: Konnte den alten Eintrag %s,%s nicht entfernen: %s"
+
+#: tpl_messages.php:119
+msgid "Account restriction"
+msgstr "Kontenbeschränkung"
+
+#: tpl_messages.php:129
+msgid "No. of accounts:"
+msgstr "Anzahl Konten:"
+
+#: tpl_messages.php:129
+msgid "Change"
+msgstr "Ändern"
