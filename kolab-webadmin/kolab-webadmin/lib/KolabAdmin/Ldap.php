@@ -686,6 +686,22 @@ class KolabLDAP {
     }
   }
 
+  function addToCustomerGroup($member, $customer_id) {
+    $customer = getCustomerList(true, $customer_id);
+    if(empty($customer_id) || (empty($customer) || is_array($customer)))
+      return true;
+    $custgrpdn = 'cn=' . $customer . ',cn=customers,cn=internal,'
+        . $_SESSION['base_dn'];
+    $result = $this->search($custgrpdn, "(&(objectClass=kolabGroupOfNames)"
+        . "(member=$member))");
+    if(ldap_count_entries($this->connection,$result) <= 0) {
+      if(!ldap_mod_add($this->connection, "cn=" . $customer . ",cn=customers,cn=internal,"
+          . $_SESSION['base_dn'], array('member' => $member)))
+        return false;
+    }
+    return true;
+  }
+
   // Set deleflag on object, or if $delete_now is
   // true, just delete it
   function deleteObject( $dn, $delete_now = false ) {
