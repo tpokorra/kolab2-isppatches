@@ -388,6 +388,33 @@ class KolabLDAP {
 	return $customers;
   }
 
+  // get boolean flag for customer groupware
+  function groupwareForCustomer($dn = '') {
+    if(empty($dn))
+      $dn = $_SESSION['auth_dn'];
+    if(!$this->is_bound)
+      return false;
+    $result = $this->search("cn=customers,cn=internal," . $_SESSION['base_dn'],
+        '(&(objectclass=kolabGroupOfNames)(member=' . $dn . '))',
+        array('disablegroupware'));
+    $entries = $this->getEntries();
+    return $entries[0]['disablegroupware'][0] ? 'TRUE' : 'FALSE';
+  }
+
+  function groupwareByCustomer($cust_dn) {
+    if(!$this->is_bound)
+      return '';
+    $result = ldap_read($this->connection, $cust_dn, '(objectClass=kolabGroupOfNames)',
+        array('disableGroupware'));
+    if(!ldap_count_entries($this->connection, $result)) {
+      ldap_free_result($result);
+      return '';
+    }
+    $objs = ldap_get_entries($this->connection, $result);
+    ldap_free_result($result);
+    return $objs[0]['disablegroupware'][0];
+  }
+
   function domainsForMaintainerDn( $dn ) {
     if( !$this->is_bound ) {
       return false;
