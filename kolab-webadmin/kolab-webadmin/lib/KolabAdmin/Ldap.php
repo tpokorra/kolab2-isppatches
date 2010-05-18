@@ -377,6 +377,7 @@ class KolabLDAP {
 		  'dn'          => $c_dn,
 		  'descr'       => $val['description'][0],
 		  'subtree'     => $val['dn'],
+		  'homeserver'  => $val['kolabhomeserver'][0],
 		  'ignore'      => 0
 		);
 	  else
