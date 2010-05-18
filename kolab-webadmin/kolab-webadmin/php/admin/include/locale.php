@@ -112,6 +112,21 @@ bindtextdomain($domain, $locale_dir);
 bind_textdomain_codeset($domain, "UTF-8");
 textdomain($domain);
 
+// Adjust session for language switch
+if(!empty($_REQUEST["lang"]))
+	foreach($_SESSION['customer_dn_options'] as $key => $opt)
+		if(!$opt['subtree'])
+			switch($opt['ignore']) {
+				case 0:
+					$_SESSION['customer_dn_options'][$key]['descr']
+							= _('No customer');
+					break;
+				case 1:
+					$_SESSION['customer_dn_options'][$key]['descr']
+							= _('Everything');
+					break;
+			}
+
 /*
   Local variables:
   mode: php
