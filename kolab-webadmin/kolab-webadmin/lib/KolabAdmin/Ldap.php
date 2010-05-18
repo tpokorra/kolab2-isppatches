@@ -655,6 +655,20 @@ class KolabLDAP {
 	}	
   }
 
+  function removeFromCustomerGroups($member, $customers) {
+    if(empty($customers))
+      return true;
+    foreach($customers as $customer) {
+      $cusgrpdn = 'cn=' . $this->dn_escape($customer) . ',cn=customers,cn=internal,'
+          . $_SESSION['base_dn'];
+      $cus_obj = $this->read($cusgrpdn);
+      if($cus_obj)
+        if(!ldap_mod_del($this->connection, $cusgrpdn, array('member' => $member)))
+          return false;
+    }
+    return true;
+  }
+
   // Set deleflag on object, or if $delete_now is
   // true, just delete it
   function deleteObject( $dn, $delete_now = false ) {
