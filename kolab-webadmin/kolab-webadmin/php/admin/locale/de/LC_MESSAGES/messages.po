@@ -2497,3 +2497,7 @@ msgstr "MBytes"
 #: tpl_messages.php
 msgid "Maximum quota per account"
 msgstr "Maximales Kontingent pro Konto"
+
+#: unknown
+msgid "Domain or customer quota for domain %s requires a default quota"
+msgstr "Domänen- oder Kundenkontingent für Domäne %s erfordert einen Wert für Standard Kontingent"
