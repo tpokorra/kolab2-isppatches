@@ -163,6 +163,12 @@
 					</td>
 				</tr>
 				<tr>
+					<td>{tr msg="Number of allowed accounts"}:</td>
+					<td>
+						<input type="text" name="domaindefault_maxaccounts" size="20"  value="{$domaindefaults.maxaccounts}" />
+					</td>
+				</tr>
+				<tr>
 					<td colspan="2" align="center">
 						<input type="submit" name="submitdomainsettings" value="{tr msg="Update"}" />
 					</td>
