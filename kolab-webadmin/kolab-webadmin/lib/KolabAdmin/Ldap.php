@@ -417,6 +417,20 @@ class KolabLDAP {
 	return $customers;
   }
 
+  function uidPrefixByCustomer($cust_dn) {
+    if(!$this->is_bound)
+      return '';
+    $result = ldap_read($this->connection, $cust_dn, '(objectClass=kolabGroupOfNames)',
+        array('uidPrefix'));
+    if(!ldap_count_entries($this->connection, $result)) {
+      ldap_free_result($result);
+      return '';
+    }
+    $objs = ldap_get_entries($this->connection, $result);
+    ldap_free_result($result);
+    return $objs[0]['uidprefix'][0];
+  }
+
   function domainsForMaintainerDn( $dn ) {
     if( !$this->is_bound ) {
       return false;
