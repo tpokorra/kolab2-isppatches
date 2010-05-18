@@ -23,6 +23,15 @@ $kolab_prefix = '@prefix@';
 $php_dir      = '@phplibdir2@';
 $locale_dir   = "$php_dir/@kolab_php_module_prefix@admin/locale/";
 
+// IMAP Connection
+$imap_host = "127.0.0.1";
+$imap_port = "143";
+$imap_manager = "manager"
+$imap_password = "PutYourManagerPasswordHere";
+
+// IMAP connect timeout in seconds
+define('IMAP_CONNECT_TIMEOUT', 2);
+
 /*
   Local variables:
   mode: php
