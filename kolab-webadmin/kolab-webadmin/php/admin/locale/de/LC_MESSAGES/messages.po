@@ -2438,3 +2438,7 @@ msgstr "Der Präfix wird automatisch vor die eindeutige Benutzer-ID (UID) von Be
 #: tpl_messages.php
 msgid "UID Prefix"
 msgstr "UID-Präfix"
+
+#: unknown
+msgid "(will be generated automatically)"
+msgstr "(wird automatisch erzeugt)"
