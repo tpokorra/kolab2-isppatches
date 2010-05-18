@@ -681,7 +681,7 @@ msgid ""
 "The principal authors of the Kolab client and server software are (in "
 "alphabetical order):"
 msgstr ""
-"Die Hauptentiwckler der Kolab-Klienten- und Server-Software sind (in "
+"Die Hauptentwickler der Kolab-Klienten- und Server-Software sind (in "
 "alphabetischer Reihenfolge):"
 
 #: tpl_messages.php:125
@@ -786,7 +786,7 @@ msgstr "Eingeschaltet"
 
 #: tpl_messages.php:154
 msgid "Quota settings"
-msgstr "Plattenplatz-Einstellungen"
+msgstr "Plattenplatz-Kontingent-Einstellungen"
 
 #: tpl_messages.php:155
 msgid "Warn users when they have used"
@@ -795,7 +795,7 @@ msgstr "Benutzer warnen, wenn der Verbrauch"
 #: tpl_messages.php:156
 #, php-format
 msgid "% of their quota"
-msgstr "% des zugestandenen Plattenplatzes beträgt"
+msgstr "% des zugestandenen Kontingents beträgt"
 
 #: tpl_messages.php:158
 msgid "Free/Busy settings"
@@ -1059,7 +1059,7 @@ msgstr "Versionen der Komponenten des Kolab2-Groupware-Server"
 
 #: tpl_messages.php:242
 msgid "PEAR/Horde Versions"
-msgstr ""
+msgstr "PEAR/Horde-Versionen"
 
 #: tpl_messages.php:243
 msgid "Kolab2 Patched OpenPKG Package Versions"
@@ -1098,7 +1098,7 @@ msgstr ""
 #: ../../../www/admin/sharedfolder/sf.php.in:112
 #: ../../../www/admin/user/user.php.in:349
 msgid "Error: need valid action to proceed"
-msgstr "Fehler: kann nicht weitermachen ohne zulässige Aktion"
+msgstr "Fehler: Kann nicht weitermachen ohne zulässige Aktion"
 
 #: ../../../www/admin/addressbook/addr.php.in:81
 #: ../../../www/admin/administrator/admin.php.in:127
@@ -1109,7 +1109,7 @@ msgstr "Fehler: kann nicht weitermachen ohne zulässige Aktion"
 #: ../../../www/admin/user/user.php.in:370
 #: ../../../www/admin/user/user.php.in:772
 msgid "Error: You don't have the required Permissions"
-msgstr "Fehler: Sie haben die erforderlichen Zugriffsrechte nicht"
+msgstr "Fehler: Sie haben nicht die erforderlichen Zugriffsrechte"
 
 #: ../../../www/admin/addressbook/addr.php.in:95
 msgid "Primary E-Mail Address"
@@ -1147,7 +1147,7 @@ msgid ""
 "depends on it. To modify this entry, first remove it from the distribution "
 "list."
 msgstr ""
-"Der DN der Adresse konnte nicht verändert werden; Verteilerliste <a "
+"Der DN der Adresse konnte nicht geändert werden; Verteilerliste <a "
 "href='@kolab_wui@/distributionlist/list.php?action=modify&dn=%s'>'%s'</a> "
 "hängt davon ab. Um dieses Konto zu verändern, müssen Sie es erst aus der "
 "Verteilerliste entfernen."
@@ -1191,7 +1191,7 @@ msgstr "%s erfolgreich aktualisiert"
 #: ../../../www/admin/sharedfolder/sf.php.in:247
 #, php-format
 msgid "LDAP Error: could not read %s: %s"
-msgstr "LDAP-Fehler: konnte %s nicht lesen: %s"
+msgstr "LDAP-Fehler: Konnte %s nicht lesen: %s"
 
 #: ../../../www/admin/addressbook/addr.php.in:215
 #: ../../../www/admin/administrator/admin.php.in:238
@@ -1200,7 +1200,7 @@ msgstr "LDAP-Fehler: konnte %s nicht lesen: %s"
 #: ../../../www/admin/sharedfolder/sf.php.in:251
 #, php-format
 msgid "LDAP Error: could not modify object %s: %s"
-msgstr "LDAP-Fehler: konnte Objekt %s nicht modifizieren: %s"
+msgstr "LDAP-Fehler: Konnte Objekt %s nicht ändern: %s"
 
 #: ../../../www/admin/addressbook/addr.php.in:227
 #: ../../../www/admin/administrator/admin.php.in:256
@@ -1210,7 +1210,7 @@ msgstr "LDAP-Fehler: konnte Objekt %s nicht modifizieren: %s"
 #: ../../../www/admin/user/user.php.in:689
 #, php-format
 msgid "LDAP Error: could not add object %s: %s"
-msgstr "LDAP-Fehler: konnte Objekt %s nicht hinzufügen: %s"
+msgstr "LDAP-Fehler: Konnte Objekt %s nicht hinzufügen: %s"
 
 #: ../../../www/admin/addressbook/addr.php.in:230
 #, php-format
@@ -1220,7 +1220,7 @@ msgstr "%s erfolgreich hinzugefügt"
 #: ../../../www/admin/addressbook/addr.php.in:240
 #: ../../../www/admin/addressbook/addr.php.in:258
 msgid "Modify External Address"
-msgstr "Externe Adresse verändern"
+msgstr "Externe Adresse bearbeiten"
 
 #: ../../../www/admin/addressbook/addr.php.in:261
 #: ../../../www/admin/addressbook/addr.php.in:281
@@ -1257,7 +1257,7 @@ msgstr ""
 #: ../../../www/admin/addressbook/addr.php.in:312
 #, php-format
 msgid "LDAP Error: could not delete %s: %s"
-msgstr "LDAP-Fehler: konnte %s nicht löschen: %s"
+msgstr "LDAP-Fehler: Konnte %s nicht löschen: %s"
 
 #: ../../../www/admin/addressbook/addr.php.in:315
 #: ../../../www/admin/distributionlist/list.php.in:312
@@ -1288,12 +1288,12 @@ msgstr "ist gleich"
 #: ../../../www/admin/addressbook/index.php.in:125
 #: ../../../www/admin/user/index.php.in:188
 msgid "begins with"
-msgstr "fängt an mit"
+msgstr "beginnt an mit"
 
 #: ../../../www/admin/addressbook/index.php.in:126
 #: ../../../www/admin/user/index.php.in:189
 msgid "ends with"
-msgstr "endete mit"
+msgstr "endet mit"
 
 #: ../../../www/admin/administrator/admin.php.in:52
 #: ../../../www/admin/domainmaintainer/domainmaintainer.php.in:53
@@ -1310,7 +1310,7 @@ msgstr ""
 #: ../../../www/admin/domainmaintainer/domainmaintainer.php.in:110
 #: ../../../www/admin/maintainer/maintainer.php.in:132
 msgid "non volatile"
-msgstr "nicht-flüchtig"
+msgstr "unveränderlich"
 
 #: ../../../www/admin/administrator/admin.php.in:136
 #: ../../../www/admin/domainmaintainer/domainmaintainer.php.in:111
@@ -1336,7 +1336,7 @@ msgstr "LDAP-Fehler: DN %s existiert nicht: %s"
 #: ../../../www/admin/administrator/admin.php.in:243
 #: ../../../www/admin/administrator/admin.php.in:293
 msgid "Modify Administrator"
-msgstr "Administrator verändern"
+msgstr "Administrator bearbeiten"
 
 #: ../../../www/admin/administrator/admin.php.in:244
 #: ../../../www/admin/administrator/admin.php.in:266
@@ -1347,14 +1347,14 @@ msgstr "Administrator "
 #: ../../../www/admin/domainmaintainer/domainmaintainer.php.in:244
 #: ../../../www/admin/maintainer/maintainer.php.in:241
 msgid " successfully modified"
-msgstr " erfolgreich verändert"
+msgstr " erfolgreich geändert"
 
 #: ../../../www/admin/administrator/admin.php.in:262
 #: ../../../www/admin/domainmaintainer/domainmaintainer.php.in:265
 #: ../../../www/admin/maintainer/maintainer.php.in:261
 #, php-format
 msgid "LDAP Error: could not add object %s to maintainer group: %s"
-msgstr "LDAP-Fehler: konnte Objekt %s nicht zur Verwaltergruppe hinzufügen: %s"
+msgstr "LDAP-Fehler: Konnte Objekt %s nicht zur Verwaltergruppe hinzufügen: %s"
 
 #: ../../../www/admin/administrator/admin.php.in:266
 #: ../../../www/admin/domainmaintainer/domainmaintainer.php.in:272
@@ -1390,14 +1390,14 @@ msgstr ""
 #, php-format
 msgid "LDAP Error: Could not remove %s from admin group: %s"
 msgstr ""
-"LDAP-Fehler: Konnte %s nicht aus der Verwalter-Gruppe nicht entfernen: %s"
+"LDAP-Fehler: Konnte %s nicht aus der Administratoren-Gruppe entfernen: %s"
 
 #: ../../../www/admin/administrator/admin.php.in:322
 #: ../../../www/admin/domainmaintainer/domainmaintainer.php.in:326
 #: ../../../www/admin/maintainer/maintainer.php.in:322
 #, php-format
 msgid "LDAP Error: could not mark %s for deletion: %s"
-msgstr "LDAP-Fehler: konnte %s nicht zum Löschen vormerken: %s"
+msgstr "LDAP-Fehler: Konnte %s nicht zum Löschen vormerken: %s"
 
 #: ../../../www/admin/administrator/admin.php.in:328
 msgid "Administrator Deleted"
@@ -1432,7 +1432,7 @@ msgstr "Kein Benutzer mit dieser E-Mail-Adresse, UID oder Alias: %s"
 #: ../../../www/admin/distributionlist/list.php.in:62
 msgid "User or distribution list with this email address already exists"
 msgstr ""
-"Es existiert bereits eine Benutzer oder Verteilerliste mit dieser E-Mail-"
+"Es existiert bereits ein Benutzer oder eine Verteilerliste mit dieser E-Mail-"
 "Adresse"
 
 #: ../../../www/admin/distributionlist/list.php.in:111
@@ -1477,7 +1477,7 @@ msgstr "Verteilerliste aktualisiert"
 #: ../../../www/admin/user/user.php.in:637
 #, php-format
 msgid "LDAP Error: Could not read %s: %s"
-msgstr "LDAP-Fehler: konnte %s nicht lesen: %s"
+msgstr "LDAP-Fehler: Konnte %s nicht lesen: %s"
 
 #: ../../../www/admin/distributionlist/list.php.in:220
 #: ../../../www/admin/distributionlist/list.php.in:249
@@ -1487,12 +1487,12 @@ msgstr "LDAP-Fehler: konnte %s nicht lesen: %s"
 #: ../../../www/admin/user/user.php.in:714
 #, php-format
 msgid "LDAP Error: Could not modify object %s: %s"
-msgstr "LDAP-Fehler: konnte Objekt %s nicht modifizieren: %s"
+msgstr "LDAP-Fehler: Konnte Objekt %s nicht ändern: %s"
 
 #: ../../../www/admin/distributionlist/list.php.in:231
 #, php-format
 msgid "LDAP Error: Could not add object %s: %s"
-msgstr "LDAP-Fehler: konnte Objekt %s nicht hinzufügen: %s"
+msgstr "LDAP-Fehler: Konnte Objekt %s nicht hinzufügen: %s"
 
 #: ../../../www/admin/distributionlist/list.php.in:252
 #: ../../../www/admin/user/user.php.in:702
@@ -1510,7 +1510,7 @@ msgstr "Verteilerliste '%s' wurde hinzugefügt"
 #: ../../../www/admin/distributionlist/list.php.in:272
 #: ../../../www/admin/distributionlist/list.php.in:286
 msgid "Modify Distribution List"
-msgstr "Verteilerliste verändern"
+msgstr "Verteilerliste bearbeiten"
 
 #: ../../../www/admin/distributionlist/list.php.in:289
 #: ../../../www/admin/distributionlist/list.php.in:304
@@ -1535,7 +1535,7 @@ msgstr " gelöscht"
 #: ../../../www/admin/distributionlist/list.php.in:315
 #, php-format
 msgid "LDAP Error: Could not delete %s: %s"
-msgstr "LDAP-Fehler: konnte %s nicht löschen: %s"
+msgstr "LDAP-Fehler: Konnte %s nicht löschen: %s"
 
 #: ../../../www/admin/domainmaintainer/domainmaintainer.php.in:49
 msgid "Please enter a uid value"
@@ -1544,12 +1544,12 @@ msgstr "Bitte geben Sie eine UID ein"
 #: ../../../www/admin/domainmaintainer/domainmaintainer.php.in:137
 msgid "Check domains this domain maintainer should be able to maintain"
 msgstr ""
-"Überprüfen der Domänen, die dieser Domänenverwalter verwalten können sollte"
+"Kreuzen Sie die Domänen an, die dieser Domänenverwalter verwalten können sollte"
 
 #: ../../../www/admin/domainmaintainer/domainmaintainer.php.in:243
 #: ../../../www/admin/domainmaintainer/domainmaintainer.php.in:296
 msgid "Modify Domain Maintainer"
-msgstr "Domänenverwalter verändern"
+msgstr "Domänenverwalter bearbeiten"
 
 #: ../../../www/admin/domainmaintainer/domainmaintainer.php.in:244
 #: ../../../www/admin/maintainer/maintainer.php.in:241
@@ -1601,7 +1601,7 @@ msgstr " Verwalter)"
 #: ../../../www/admin/maintainer/maintainer.php.in:240
 #: ../../../www/admin/maintainer/maintainer.php.in:292
 msgid "Modify Maintainer"
-msgstr "Verwalter verändern"
+msgstr "Verwalter bearbeiten"
 
 #: ../../../www/admin/maintainer/maintainer.php.in:266
 #: ../../../www/admin/maintainer/maintainer.php.in:272
@@ -1656,7 +1656,7 @@ msgstr "LDAP-Fehler: Konnte das Kolab-Konfigurationsobjekt nicht verändern: %s"
 #: ../../../www/admin/settings/index.php.in:223
 #, php-format
 msgid "LDAP Error: Failed to delete domain object %s: %s"
-msgstr "LDAP-Fehler: konnte das Domänen-Objekt %s nicht löschen: %s"
+msgstr "LDAP-Fehler: Konnte das Domänen-Objekt %s nicht löschen: %s"
 
 #: ../../../www/admin/settings/index.php.in:273
 msgid "POP3 Service"
@@ -1748,7 +1748,7 @@ msgstr "Ordnerposition"
 #: ../../../www/admin/user/user.php.in:379
 #: ../../../www/admin/user/user.php.in:381
 msgid "Non volatile"
-msgstr "Nicht-flüchtig"
+msgstr "unveränderlich"
 
 #: ../../../www/admin/sharedfolder/sf.php.in:128
 msgid "Folder Type"
@@ -1756,7 +1756,7 @@ msgstr "Ordnertyp"
 
 #: ../../../www/admin/sharedfolder/sf.php.in:132
 msgid "Quota Limit"
-msgstr "Plattenplatzbeschränkung"
+msgstr "Plattenplatz-Kontingent"
 
 #: ../../../www/admin/sharedfolder/sf.php.in:133
 msgid "MBytes (empty for unlimited)"
@@ -1783,7 +1783,7 @@ msgstr "Gemeinsam genutzter Ordner '%s' hinzugefügt"
 #: ../../../www/admin/sharedfolder/sf.php.in:275
 #: ../../../www/admin/sharedfolder/sf.php.in:295
 msgid "Modify Shared Folder"
-msgstr "Gemeinsam genutzten Ordner verändern"
+msgstr "Gemeinsam genutzten Ordner bearbeiten"
 
 #: ../../../www/admin/sharedfolder/sf.php.in:311
 msgid "Delete Shared Folder"
@@ -1791,7 +1791,7 @@ msgstr "Gemeinsam genutzten Ordner löschen"
 
 #: ../../../www/admin/sharedfolder/sf.php.in:320
 msgid "Shared folder "
-msgstr "Gemeinsam genutzte Ordner "
+msgstr "Gemeinsam genutzter Ordner "
 
 #: ../../../www/admin/sharedfolder/sf.php.in:320
 msgid " marked for deletion"
@@ -1887,7 +1887,7 @@ msgstr "Bevollmächtigter %s existiert nicht"
 #: ../../../www/admin/user/user.php.in:158
 #, php-format
 msgid "Illegal user or group %s"
-msgstr "Illegaler Benutzer oder Gruppe %s"
+msgstr "Ungültiger Benutzer oder Gruppe %s"
 
 #: ../../../www/admin/user/user.php.in:167
 msgid "Free/Busy interval can not be negative"
@@ -1942,7 +1942,7 @@ msgstr ""
 
 #: ../../../www/admin/user/user.php.in:415
 msgid "Invitation Policy"
-msgstr "Einladungs-Policy"
+msgstr "Einladungs-Richtlinie"
 
 #: ../../../www/admin/user/user.php.in:419
 msgid "For automatic invitation handling"
@@ -1976,7 +1976,7 @@ msgstr "Eine E-Mail-Adresse pro Zeile."
 
 #: ../../../www/admin/user/user.php.in:447
 msgid "User Quota in MBytes"
-msgstr "Plattenplatz des Benutzers in MBytes"
+msgstr "Plattenplatz-Kontingent des Benutzers in MBytes"
 
 #: ../../../www/admin/user/user.php.in:460
 msgid "Free/Busy interval in days"
@@ -1997,12 +1997,12 @@ msgstr ""
 #: ../../../www/admin/user/user.php.in:670
 #: ../../../www/admin/user/user.php.in:750
 msgid "Modify User"
-msgstr "Benutzer verändern"
+msgstr "Benutzer bearbeiten"
 
 #: ../../../www/admin/user/user.php.in:671
 #, php-format
 msgid "User '%s' successfully modified"
-msgstr "Benutzer '%s' erfolgreich verändert"
+msgstr "Benutzer '%s' erfolgreich geändert"
 
 #: ../../../www/admin/user/user.php.in:723
 msgid "User "
@@ -2114,11 +2114,11 @@ msgstr "Server-Fehler, kein LDAP-Objekt!"
 
 #: ../include/auth.class.php.in:45
 msgid "Could not bind to LDAP server: "
-msgstr "Konnte nicht auf dem LDAP-Server binden: "
+msgstr "Anmeldung am LDAP-Server fehlgeschlagen: "
 
 #: ../include/auth.class.php.in:56
 msgid "Could not bind to LDAP server"
-msgstr "Konnte nicht auf dem LDAP-Server binden"
+msgstr "Anmeldung am LDAP-Server fehlgeschlagen"
 
 #: ../include/auth.class.php.in:83 ../include/auth.class.php.in:87
 msgid "Wrong username or password"
@@ -2130,7 +2130,7 @@ msgstr "E-Mail-Adresse"
 
 #: ../include/form.class.php:45
 msgid "Quota must be smaller than 4096"
-msgstr "Plattenplatz muss kleiner sein als 4096"
+msgstr "Plattenplatz-Kontingent muss kleiner sein als 4096"
 
 #: ../include/form.class.php:46
 msgid "Quota can not be negative"
@@ -2138,11 +2138,11 @@ msgstr "Plattenplatz kann nicht negativ sein"
 
 #: ../include/form.class.php:47
 msgid "Quota must be a number"
-msgstr "Plattenplatz muss eine Zahl sein"
+msgstr "Plattenplatz-Kontingent muss eine Zahl sein"
 
 #: ../include/form.class.php:48
 msgid "Quota must be an integer"
-msgstr "Plattenplatz muss eine ganze Zahl sein"
+msgstr "Plattenplatz-Kontingent muss eine ganze Zahl sein"
 
 #: ../include/form.class.php:55
 msgid ""
@@ -2190,11 +2190,11 @@ msgstr "Alle"
 
 #: ../include/form.class.php:375
 msgid "* Required field."
-msgstr "* Obligatorisches Feld"
+msgstr "* Pflichtfeld"
 
 #: ../include/form.class.php:396 ../include/form.class.php:399
 msgid "Required field "
-msgstr "Obligatorisches Feld "
+msgstr "Pflichtfeld "
 
 #: ../include/form.class.php:396 ../include/form.class.php:399
 msgid " is empty"
