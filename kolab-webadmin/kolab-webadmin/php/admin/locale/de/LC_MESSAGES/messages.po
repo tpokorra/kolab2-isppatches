@@ -2496,3 +2496,7 @@ msgstr "Passwort muss mindestens aus 8 Zeichen bestehen"
 #: settings.tpl
 msgid "Password must have at least 10 characters with numbers, upper and lower case letters"
 msgstr "Passwort muss mindestens aus 10 Zeichen bestehen und Nummern sowie Groß- und Kleinschreibung beinhalten"
+
+#: unknown
+msgid "Password does not meet security policy requirements"
+msgstr "Passwort entspricht nicht den Sicherheitsrichtlinien"
