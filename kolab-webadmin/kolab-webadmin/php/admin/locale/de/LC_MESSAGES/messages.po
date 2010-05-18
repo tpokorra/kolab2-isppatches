@@ -2438,3 +2438,7 @@ msgstr "%1.1f von %d MBytes"
 #, php-format
 msgid "No quota limit"
 msgstr "Kein Kontingent"
+
+#: tpl_messages.php:45
+msgid "Unknown"
+msgstr "Unbekannt"
