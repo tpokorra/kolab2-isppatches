@@ -352,6 +352,7 @@ class KolabLDAP {
 		$domains[] = $val['cn'][0];
 	  }
 	}
+	sort($domains);
 	return $domains;
   }
 
