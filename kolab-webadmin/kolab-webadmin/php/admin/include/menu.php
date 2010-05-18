@@ -41,7 +41,7 @@ if( $auth->group() == "admin" || $auth->group() == "maintainer" || $auth->group(
 												 array( 'name' => _('Vacation'),
 														'url'  => 'vacation.php' )));
 }
-if( $auth->group() == "admin" || $auth->group() == "maintainer") {
+if($auth->group() == "admin" || $auth->group() == "maintainer" || $auth->group() == "domain-maintainer") {
   $menuitems['addressbook'] = array( 'name' => _('Addressbook'),
 									 'url'  => $topdir.'/addressbook/',
 									 'title' => _('Manage Address Book'),
@@ -102,7 +102,7 @@ if( $auth->group() == 'admin' ) {
 									'url'  => $topdir.'/domainmaintainer/domainmaintainer.php?action=modify&dn='.urlencode($mdn),
 									'title' => _('Manage Domain Maintainer') );  
 }
-if( $auth->group() == 'admin' ) {
+if( $auth->group() == 'admin' || $auth->group() == 'maintainer' ) {
   $menuitems['service'] = array( 'name' => _('Settings'),
 								 'url'  => $topdir.'/settings/',
 								 'title' => _('System Settings') );
