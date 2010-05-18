@@ -30,6 +30,10 @@ function switchToCustomer($idx) {
 		$_SESSION['customer_descr'] = $cus['descr'];
 		$_SESSION['customer_subtree'] = $cus['subtree'];
 		$_SESSION['ignore_customer'] = $cus['ignore'];
+		if(empty($cus['uidprefix']))
+			unset($_SESSION['uid_prefix']);
+		else
+			$_SESSION['uid_prefix'] = $cus['uidprefix'];
 	}
 }
 
