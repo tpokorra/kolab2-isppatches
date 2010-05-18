@@ -2428,3 +2428,13 @@ msgstr "Passwörter stimmen nicht überein"
 
 #~ msgid "LDAP Error: Could not remove old entry %s,%s: %s"
 #~ msgstr "LDAP-Fehler: Konnte den alten Eintrag %s,%s nicht entfernen: %s"
+
+#: ../../../www/admin/user/user.php.in:150
+#, php-format
+msgid "%1.1f out of %d MBytes"
+msgstr "%1.1f von %d MBytes"
+
+#: ../../../www/admin/user/user.php.in:152
+#, php-format
+msgid "No quota limit"
+msgstr "Kein Kontingent"
