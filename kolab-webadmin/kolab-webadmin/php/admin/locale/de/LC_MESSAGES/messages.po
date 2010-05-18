@@ -2444,3 +2444,7 @@ msgstr "Anzahl Konten für Domäne %s muss mindestens %d Konten sein"
 #: ../../../www/admin/user/user.php.in:236
 msgid "No. of accounts for domain %s must be integer"
 msgstr "Anzahl Konten für Domäne %s muss eine ganze Zahl sein"
+
+#: ../../../www/admin/user/user.php.in:558
+msgid "You may not create new accounts or domain %s (max. %s allowed)"
+msgstr "Sie dürfen für die Domäne %s kein neues Konto anlegen (max. %s erlaubt)"
