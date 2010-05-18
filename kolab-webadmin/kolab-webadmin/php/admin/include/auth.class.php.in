@@ -59,7 +59,7 @@ class KolabAuth {
 			// User not logged in, check login/password
 			if( isset( $_POST['username'] ) && isset( $_POST['password'] ) ) {
 				$dn = $ldap->dnForUid( $_POST['username'] );
-                if (!$dn) {
+                if (!$dn && !defined('DENY_MAILADDRESS_LOGIN')) {
 					$dn = $ldap->dnForMail( $_POST['username'] ); // try mail attribute
 				}
 				if( $dn ) {
