@@ -64,7 +64,34 @@ class KolabAuth {
 				}
 				if( $dn ) {
 					$auth_user = $ldap->uidForDn( $dn );
+					$customer_dn = $ldap->dnForCustomer( $dn );
 					$auth_group = $ldap->groupForUid( $auth_user );
+					if($auth_group == 'domain-maintainer')
+						$customer_dns = $ldap->dnForCustomers($dn, true);
+					else if($auth_group == 'maintainer' || $auth_group == 'admin') {
+						$customer_dns = $ldap->dnForCustomers('', true)
+						array_unshift($customer_dns, array(
+							'dn'          => $_SESSION['base_dn'],
+							'descr'       => _('No customer'),
+							'subtree'     => '',
+							'ignore'      => 0
+						));
+						if(count($customer_dns) > 1)
+							array_unshift($customer_dns, array(
+								'dn'          => $_SESSION['base_dn'],
+								'descr'       => _('Everything'),
+								'subtree'     => '',
+								'ignore'      => 1
+							));
+						array_unshift($customer_dns, array(
+							'dn'          => $_SESSION['base_dn'],
+							'descr'       => '----------------',
+							'subtree'     => '',
+							'ignore'      => 2
+						));
+					}
+					else
+						$customer_dns = array();
 					$tmp_group = ($auth_user=='manager')?'manager':$auth_group;
 					if( !in_array( $tmp_group, $this->params['allow_user_classes'] ) ) {
 						$this->error_string = _("User class '$tmp_group' is denied access");
@@ -78,6 +105,23 @@ class KolabAuth {
 						$_SESSION['auth_pw'] = $_POST['password'];
 						$_SESSION['auth_group'] = $auth_group;
 						$_SESSION['remote_ip'] = $_SERVER['REMOTE_ADDR'];
+						if(empty($customer_dn))
+							$customer_dn = $_SESSION['base_dn'];
+						if(!empty($customer_dn)) {
+							$_SESSION['customer_dn'] = $customer_dn;
+							$_SESSION['customer_subtree'] = $customer_dn ==
+									$_SESSION['base_dn'] ? '' : substr($customer_dn, 0,
+									strlen($customer_dn) - strlen($_SESSION['base_dn']))
+									. 'cn=customers,cn=internal,' . $_SESSION['base_dn'];
+						}
+						$_SESSION['customer_dn_options'] = $customer_dns;
+						sortCustomerList();
+						$_SESSION['ignore_customer'] = $auth_group == 'maintainer'
+								|| $auth_group == 'admin';
+						if(isset($_SESSION['customer_dn']) || $auth_group == "user") {
+							// we sorted stuff, better safe than sorry
+							switchToCustomer(0);
+						}
 						return true;
 					} else {
 						$this->error_string = _("Wrong username or password");
