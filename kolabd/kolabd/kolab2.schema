@@ -1147,3 +1147,9 @@ objectclass ( 1.3.6.1.4.1.19414.3.2.7
 # are included in future Kolab Server            #
 # Development releases                           #
 ##################################################
+
+objectclass ( 1.3.6.1.4.1.32283.3.1.1
+  NAME 'kolabHostSettings'
+  DESC 'Per-kolabHost settings'
+  SUP top STRUCTURAL
+  MUST ( kolabHostRef ) )
