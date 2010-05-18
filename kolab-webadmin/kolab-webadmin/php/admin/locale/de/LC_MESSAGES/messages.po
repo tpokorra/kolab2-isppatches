@@ -206,6 +206,14 @@ msgstr "Passwort überprüfen"
 msgid "Primary Email Address"
 msgstr "Primäre E-Mail-Adresse"
 
+#: tpl_messages.php:45
+msgid "Alias"
+msgstr "Alias"
+
+#: tpl_messages.php:45
+msgid "Forwarding"
+msgstr "Weiterleitung"
+
 #: tpl_messages.php:45 ../../../www/admin/administrator/admin.php.in:132
 #: ../../../www/admin/domainmaintainer/domainmaintainer.php.in:107
 #: ../../../www/admin/maintainer/maintainer.php.in:129
