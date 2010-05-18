@@ -2473,3 +2473,27 @@ msgstr "Plattenplatz-Kontingent des Benutzers überschreitet maximale Größe (m
 msgid "User Quota exceeds Domain Quota (%s MBytes left out of %s MBytes)"
 msgstr "Plattenplatz-Kontingent des Benutzers überschreitet zulässigen "
 "Plattenplatz für Domäne (%s MBytes von %s MBytes übrig)"
+
+#: tpl_messages.php
+msgid "LDAP Error: failed to add domain quotas: %s"
+msgstr "LDAP Fehler: Konnte Domänenkontingent nicht speichern"
+
+#: tpl_messages.php
+msgid "Domain Default Settings"
+msgstr "Domänenvorgabe-Einstellungen"
+
+#: tpl_messages.php
+msgid "This settings apply as default values for newly created domains."
+msgstr "Diese Einstellungen gelten als Voreinstellungen für neu angelegte Domänen."
+
+#: tpl_messages.php
+msgid "Quota for Domains"
+msgstr "Kontingent für Domänen"
+
+#: tpl_messages.php
+msgid "MBytes"
+msgstr "MBytes"
+
+#: tpl_messages.php
+msgid "Maximum quota per account"
+msgstr "Maximales Kontingent pro Konto"
