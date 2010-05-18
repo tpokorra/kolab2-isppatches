@@ -507,6 +507,14 @@ class KolabLDAP {
 	}	
   }
 
+  function hasPasswordPolicy() {
+    $result = $this->search($_SESSION['base_dn'], "(&(objectClass=kolab)"
+        . "(|(passwordSecUserRegEx=*)(passwordSecAdminRegEx=*)))",
+        array('passwordSecUserRegEx', 'passwordSecAdminRegEx'));
+    $entries = $this->getEntries();
+    return $entries["count"] > 0;
+  }
+
   // Set deleflag on object, or if $delete_now is
   // true, just delete it
   function deleteObject( $dn, $delete_now = false ) {
