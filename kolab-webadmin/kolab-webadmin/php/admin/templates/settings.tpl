@@ -163,6 +163,13 @@
 					</td>
 				</tr>
 				<tr>
+					<td>{tr msg="Maximum quota per account"}:</td>
+					<td>
+						<input type="text" name="domaindefault_domaindefaultquota" size="20"  value="{$domaindefaults.domaindefaultquota}" />
+						{tr msg="MBytes"}
+					</td>
+				</tr>
+				<tr>
 					<td colspan="2" align="center">
 						<input type="submit" name="submitdomainsettings" value="{tr msg="Update"}" />
 					</td>
