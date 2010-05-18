@@ -2424,3 +2424,13 @@ msgstr "Passwörter stimmen nicht überein"
 
 #~ msgid "LDAP Error: Could not remove old entry %s,%s: %s"
 #~ msgstr "LDAP-Fehler: Konnte den alten Eintrag %s,%s nicht entfernen: %s"
+
+#: tpl_messages.php:135
+#: ../../../www/admin/domainmaintainer/domainmaintainer.php.in:134
+msgid "Prefix for Unique Identity (UID)"
+msgstr "Präfix für eindeutige Benutzer-ID (UID)"
+
+#: tpl_messages.php:137
+#: ../../../www/admin/domainmaintainer/domainmaintainer.php.in:
+msgid "Prefix is set automatically before unique identity (UID) of users."
+msgstr "Der Präfix wird automatisch vor die eindeutige Benutzer-ID (UID) von Benutzern gesetzt"
