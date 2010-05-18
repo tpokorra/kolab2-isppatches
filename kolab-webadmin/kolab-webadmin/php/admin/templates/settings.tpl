@@ -4,27 +4,9 @@
   buffer-file-coding-system: utf-8
   End:
 *}
+<hr />
 <h1>{tr msg="Kolab Server Settings"}</h1>
-
-{if count($systemaliasconf)>0 }
-<a name="systemaliasconf"></a>
-<h2>{tr msg="Administrative email addresses"}</h2>
-<div class="contentsimple">
-<p>{tr msg="You have not yet set up a receiving account for the administrative email addresses hostmaster@yourdomain.tld, postmaster@yourdomain.tld, MAILER-DAEMON@yourdomain.tld, abuse@yourdomain.tld and virusalert@yourdomain.tld. Enter the email address of a kolab account below and press the button to create a distribution list for each of those addresses. Later you can add or remove people from the lists like any other distribution list"}</p>
-{section name=id loop=$systemaliasconf}
-<div class="contentform">
-<form id="systemalias_{$systemaliasconf[id].n}" method="post" action="">
-<div>
-{tr msg="Email address of account that should receive administrative mail for domain "}  {$systemaliasconf[id].domain|escape:html}:
-<input type="text" name="systemaliasmail_{$systemaliasconf[id].n}" size="80"  value="{$systemaliasmail[id]|escape:"html"}" /><br/>
-<div class="align_right"><input type="submit" name="submitsystemalias_{$systemaliasconf[id].n}" value="{tr msg="Create Distribution Lists"}" /></div>
-</div>
-</form>
-</div>
-{/section}
-<br />
-</div>
-{/if}
+<hr />
 
 <h2>{tr msg="Enable or Disable individual Services"}</h2>
 <form id="serviceform" method="post" action="">
@@ -122,31 +104,6 @@
  </form>
 </div>
 <br />
-<h2>{tr msg="Domains"}</h2>
-<table class="contenttable" cellpadding="0" cellspacing="1px">
-	<tr class="contentrow">
-	<th>{tr msg="Domain"}</th><th>{tr msg="Action"}</th>
-	</tr>
-{section name=id loop=$postfixmydestination}
-	<form method="post" action="">
-	<tr class="contentrow{cycle values="even,odd"}">
-	   <td class="contentcell">{$postfixmydestination[id]|escape:"html"}</td>
-	   <td class="actioncell">{strip}
-		<input type="hidden" name="adestination" value="{$postfixmydestination[id]}" />
-		<input type="submit" name="deletedestination" value="{tr msg="Delete"}" />
-           {/strip}</td>
-	</tr>
-	</form>
-{/section}
-	<form method="post" action="">
-	<tr class="contentrow{cycle values="even,odd"}">
-	   <td class="contentcell"> 
-		<input type="text" size="60" name="adestination" />
-           </td><td class="actioncell"><input type="submit" name="adddestination" value="{tr msg="Add"}" /></td>
-	</tr>
-	</form>
-</table>
-<br/>
 <h2>{tr msg="Mail Filter Settings"}</h2>
 <div class="contentform">
 <form id="kolabfilterform" method="post" action="">
@@ -201,5 +158,100 @@
 		<input type="text" size="60" name="akolabhost" />
            </td><td class="actioncell"><input type="submit" name="addkolabhost" value="{tr msg="Add"}" /></td>
 	</tr>
+	</form>
+</table>
+
+<br /><br />
+<hr />
+<h1>{tr msg="Customer/Domain Specific Settings"}</h1>
+<hr />
+
+{if count($systemaliasconf)>0 }
+<a name="systemaliasconf"></a>
+<h2>{tr msg="Administrative email addresses"}</h2>
+<div class="contentsimple">
+<p>{tr msg="You have not yet set up a receiving account for the administrative email addresses hostmaster@yourdomain.tld, postmaster@yourdomain.tld, MAILER-DAEMON@yourdomain.tld, abuse@yourdomain.tld and virusalert@yourdomain.tld. Enter the email address of a kolab account below and press the button to create a distribution list for each of those addresses. Later you can add or remove people from the lists like any other distribution list"}</p>
+{section name=id loop=$systemaliasconf}
+<div class="contentform">
+<form id="systemalias_{$systemaliasconf[id].n}" method="post" action="">
+<div>
+{tr msg="Email address of account that should receive administrative mail for domain "}  {$systemaliasconf[id].domain|escape:html}:
+<input type="text" name="systemaliasmail_{$systemaliasconf[id].n}" size="80"  value="{$systemaliasmail[id]|escape:"html"}" /><br/>
+<div class="align_right"><input type="submit" name="submitsystemalias_{$systemaliasconf[id].n}" value="{tr msg="Create Distribution Lists"}" /></div>
+</div>
+</form>
+</div>
+{/section}
+<br />
+</div>
+{/if}
+
+<br />
+
+<h2>{tr msg="Domains"}</h2>
+<table class="contenttable" cellpadding="0" cellspacing="1px">
+	<tr class="contentrow">
+	<th>{tr msg="Domain"}</th><th>{tr msg="Action"}</th>
+	</tr>
+{section name=id loop=$postfixmydestination}
+	<form method="post" action="">
+	<tr class="contentrow{cycle values="even,odd"}">
+	   <td class="contentcell">{$postfixmydestination[id]|escape:"html"}</td>
+	   <td class="actioncell">{strip}
+		<input type="hidden" name="adestination" value="{$postfixmydestination[id]}" />
+		<input type="submit" name="deletedestination" value="{tr msg="Delete"}" />
+           {/strip}</td>
+	</tr>
+	</form>
+{/section}
+	<form method="post" action="">
+	<tr class="contentrow{cycle values="even,odd"}">
+	   <td class="contentcell"> 
+		<input type="text" size="60" name="adestination" />
+           </td><td class="actioncell"><input type="submit" name="adddestination" value="{tr msg="Add"}" /></td>
+	</tr>
+	</form>
+</table>
+<br/>
+
+<h2>{tr msg="Customers"}</h2>
+<table class="contenttable" cellpadding="0" cellspacing="1px">
+	<tr class="contentrow">
+		<th>{tr msg="Customer ID"}</th>
+		<th>{tr msg="Customer name"}</th>
+		<th>{tr msg="Action"}</th>
+	</tr>
+{section name=id loop=$customers}
+	<tr class="contentrow{cycle values="even,odd"}">
+		<td class="contentcell">{$customers[id].cn|escape:"html"}</td>
+		<form method="post" action="">
+		<td class="contentcell" nowrap>
+			<input type="text" name="description" size="25" value="{$customers[id].description}" />
+			<input type="hidden" name="customer_cn" value="{$customers[id].cn}" />
+			<input type="submit" name="changecustomer" value="{tr msg="Change"}" />
+		</td>
+		</form>
+		<td class="actioncell">{strip}
+			<form method="post" action="">
+				<input type="hidden" name="customer_cn" value="{$customers[id].cn}" />
+				<input type="submit" name="deletecustomer" value="{tr msg="Delete"}" onclick="
+					return confirm('{tr msg="Are you really sure to delete this customer?"}\n{$customers[id].description}');
+				" />
+			</form>
+		{/strip}</td>
+	</tr>
+{/section}
+	<form method="post" action="">
+		<tr class="contentrow{cycle values="even,odd"}">
+			<td class="contentcell">
+				<input type="text" size="30" name="customer_cn" />
+			</td>
+			<td class="contentcell">
+				<input type="text" size="25" name="description" />
+			</td>
+			<td class="actioncell">
+				<input type="submit" name="addcustomer" value="{tr msg="Add"}" />
+			</td>
+		</tr>
 	</form>
 </table>
