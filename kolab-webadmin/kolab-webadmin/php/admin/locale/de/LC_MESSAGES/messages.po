@@ -2434,3 +2434,7 @@ msgstr "Präfix für eindeutige Benutzer-ID (UID)"
 #: ../../../www/admin/domainmaintainer/domainmaintainer.php.in:
 msgid "Prefix is set automatically before unique identity (UID) of users."
 msgstr "Der Präfix wird automatisch vor die eindeutige Benutzer-ID (UID) von Benutzern gesetzt"
+
+#: tpl_messages.php
+msgid "UID Prefix"
+msgstr "UID-Präfix"
