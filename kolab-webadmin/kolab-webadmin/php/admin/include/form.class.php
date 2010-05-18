@@ -178,6 +178,27 @@ class KolabForm {
 	$str .= '<td>'.KolabForm::comment_helper($value).'</td>';
 	$str .= '</tr>'."\n";
 	break;
+      case 'uid':  
+	$str .= '<tr>';
+	if(ereg('readonly', $value['attrs'])) {
+		$str .= '<td>UID <label>' . $value['name'] . '</label></td>';
+		$str .= '<td><p class="ctrl">' . MySmarty::htmlentities($value['value'])
+				. '</p><input name="' . $key . '" type="hidden" value="'
+				. MySmarty::htmlentities($value['value']) . '" /></td>';
+	}
+	else {
+		$str .= '<td><label for="'.$key.'">'.$value['name'].'</label></td>';
+		$uid_prefix = $_SESSION["uid_prefix"];
+		$str .= '<td nowrap>';
+		if($uid_prefix)
+			$str .= '<span class="ctrl">'.MySmarty::htmlentities($uid_prefix).'</span> ';
+		$str .= '<input name="' . $key . '" id="' . $key . '" type="' . $value['type']
+				. '" value="' . MySmarty::htmlentities($value['value']) . '" '
+				. MySmarty::htmlentities($value['attrs']) . ' size="' . $size . '" /></td>';
+	}
+	$str .= '<td>'.KolabForm::comment_helper($value).'</td>';
+	$str .= '</tr>'."\n";
+	break;
       case 'comment':
 	$str .= '<tr>';
 	$str .= '<td>'.$value['name'].'</td>';
