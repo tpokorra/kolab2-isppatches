@@ -160,6 +160,10 @@ msgstr "Kommentar"
 msgid "First Name"
 msgstr "Vorname"
 
+#: ../../../www/admin/user/user.php.in:
+msgid "Customer for which this user should be created, non volatile"
+msgstr "Kunde für den dieser Benutzer angelegt wird, unveränderlich"
+
 #: tpl_messages.php:37 tpl_messages.php:39 tpl_messages.php:41
 #: tpl_messages.php:43 ../../../www/admin/addressbook/addr.php.in:90
 #: ../../../www/admin/addressbook/addr.php.in:93
@@ -2442,3 +2446,75 @@ msgstr "UID-Präfix"
 #: unknown
 msgid "(will be generated automatically)"
 msgstr "(wird automatisch erzeugt)"
+
+#: ../../../www/admin/user/user.php.in:797
+msgid "LDAP Error: could not add object %s to customer group: %s"
+msgstr "LDAP Fehler: Konnte Objekt %s nicht zur Kundengruppe hinzufügen: %s"
+
+#: ../../../www/admin/domainmaintainer/domainmaintainer.php
+msgid "Customer"
+msgstr "Kunde"
+
+#: ../../../www/admin/domainmaintainer/domainmaintainer.php
+msgid "No customer"
+msgstr "Kein Kunde"
+
+#: ../../../www/admin/domainmaintainer/domainmaintainer.php
+msgid "Customers this domain maintainer sould be able to manage"
+msgstr "Kunden, die dieser Domänenverwalter verwalten können soll"
+
+#: ../../../www/admin/domainmaintainer/domainmaintainer.php
+msgid "LDAP Error: Failed to delete internal customer group object %s: %s"
+msgstr "LDAP Fehler: Konnte internes Kundengruppen Objekt %s nicht löschen: %s"
+
+#: ../../../www/admin/domainmaintainer/domainmaintainer.php
+msgid "Error deleting customer root object: Customer CN is empty"
+msgstr "Fehler beim Löschen des Kunden Stamm-Objektes: Kunden CN ist leer"
+
+#: ../../../www/admin/domainmaintainer/domainmaintainer.php
+msgid "LDAP Error: Failed to delete customer root object %s: %s"
+msgstr "LDAP Fehler: Konnte Kunden Stamm-Objekt %s nicht löschen: %s"
+
+#: ../../../www/admin/domainmaintainer/domainmaintainer.php
+msgid "LDAP Error: failed to add new customer root object: %s"
+msgstr "LDAP Fehler: Konnte Kunden Stamm-Objekt nicht hinzufügen: %s"
+
+#: ../../../www/admin/domainmaintainer/domainmaintainer.php
+msgid "LDAP Error: failed to add customer external addressbook object: %s"
+msgstr "LDAP Fehler: Konnte externes Kunden Adressbuch-Objekt nicht hinzufügen: %s"
+
+#: ../../../www/admin/domainmaintainer/domainmaintainer.php
+msgid "LDAP Error: failed to add customer internal shared folder object: %s"
+msgstr "LDAP Fehler Konnte internes Kundenobjekt für Gemeinsame Ordner nicht hinzufügen: %s"
+
+#: ../../../www/admin/domainmaintainer/domainmaintainer.php
+msgid "LDAP Error: failed to add internal customer group object: %s"
+msgstr "LDAP Fehler: Konnte internes Kundengruppen-Objekt nicht hinzufügen: %s"
+
+#: tpl_messages.php
+msgid "Customers"
+msgstr "Kunden"
+
+#: tpl_messages.php
+msgid "Customer ID"
+msgstr "Kunden ID"
+
+#: tpl_messages.php
+msgid "Customer name"
+msgstr "Kundenname"
+
+#: tpl_messages.php
+msgid "Are you really sure to delete this customer?"
+msgstr "Sind Sie wirklich sicher, dass dieser Kunde gelöscht werden soll?"
+
+#: unknown
+msgid "Everything"
+msgstr "Alles"
+
+#: unknown
+msgid "LDAP Error: failed to modify customer object: %s"
+msgstr "LDAP-Fehler: Konnte Kunden-Objekt nicht abändern: %s"
+
+#: unknown
+msgid "Customer/Domain Specific Settings"
+msgstr "Kunden-/Domänenspezifische Einstellungen"
