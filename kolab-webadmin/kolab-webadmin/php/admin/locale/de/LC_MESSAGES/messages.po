@@ -2444,3 +2444,11 @@ msgstr "E-Mail Kontingent für Kunden %s kann nicht kleiner als %d MBytes sein, 
 #: unknown
 msgid "User quota must be an integer, not %s"
 msgstr "Benutzer-Kontingent muss eine ganze Zahl sein, nicht %s"
+
+#: unknown
+msgid "User Quota exceeds Customer Quota (%d MBytes left out of %d MBytes)"
+msgstr "Benutzer-Kontingent überschreitet Domänenkontingent (%d MBytes von %d MBytes übrig)"
+
+#: unknown
+msgid "No Quota left to create another user for domain %s"
+msgstr "Kein Kontingent mehr übrig, um einen weiteren Benutzer für Domäne %s zu erstellen"
