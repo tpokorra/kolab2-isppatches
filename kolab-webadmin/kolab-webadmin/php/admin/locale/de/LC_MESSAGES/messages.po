@@ -2428,3 +2428,19 @@ msgstr "Passwörter stimmen nicht überein"
 #: ../include/passwd.php:43
 msgid "Password does not meet password policy requirements"
 msgstr "Passwort entspricht nicht den Passwortrichtlinien"
+
+#: tpl_messages.php
+msgid "Password Security Settings"
+msgstr "Passwort-Sicherheitseinstellungen"
+
+#: tpl_messages.php
+msgid "The safeness of passwords can be be assured and validated by using regular expressions. Users and administrators may have different security level. A checked password must match the regular expression to be found as valid. Password checking is disabled if the field is empty."
+msgstr "Die Sicherheit von Passwörtern kann mit regulären Ausdrücken überprüft und sichergestellt werden. Für Benutzer und Administratoren können unterschiedliche Sicherheitsstufen festgelegt werden. Das überprüfte Passwort muss dem regulären Ausdruck entsprechen, um als gültig eingestuft zu werden. Bei leerem Feld findet keine Sicherheitsüberprüfung des Passwortes statt."
+
+#: tpl_messages.php
+msgid "Regular expression for user passwords"
+msgstr "Regulärer Ausdruck für Benutzer-Passwörter"
+
+#: tpl_messages.php
+msgid "Regular expression for administrator passwords"
+msgstr "Regulärer Ausdruck für Administrator-Passwörter"
