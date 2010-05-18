@@ -23,6 +23,9 @@ $kolab_prefix = '@prefix@';
 $php_dir      = '@phplibdir2@';
 $locale_dir   = "$php_dir/@kolab_php_module_prefix@admin/locale/";
 
+// Security policy for login
+define("DENY_MAILADDRESS_LOGIN", "false");
+
 /*
   Local variables:
   mode: php
