@@ -2436,3 +2436,7 @@ msgstr "Domäne:"
 #: tpl_messages.php:127
 msgid "Default:"
 msgstr "Standard:"
+
+#: tpl_messages.php:129
+msgid "Change"
+msgstr "Ändern"
