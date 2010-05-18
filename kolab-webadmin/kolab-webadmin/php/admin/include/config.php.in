@@ -23,6 +23,10 @@ $kolab_prefix = '@prefix@';
 $php_dir      = '@phplibdir2@';
 $locale_dir   = "$php_dir/@kolab_php_module_prefix@admin/locale/";
 
+// Domain-Maintainer Prefix Autocount
+define("UID_PREFIX_AUTOSET", "true");
+define("UID_PREFIX_START", "0001");
+
 /*
   Local variables:
   mode: php
