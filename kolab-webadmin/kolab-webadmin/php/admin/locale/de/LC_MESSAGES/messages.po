@@ -2448,3 +2448,7 @@ msgstr "Anzahl Konten für Domäne %s muss eine ganze Zahl sein"
 #: ../../../www/admin/user/user.php.in:558
 msgid "You may not create new accounts or domain %s (max. %s allowed)"
 msgstr "Sie dürfen für die Domäne %s kein neues Konto anlegen (max. %s erlaubt)"
+
+#: tpl_messages.php
+msgid "Number of allowed accounts"
+msgstr "Anzahl erlaubter Konten"
