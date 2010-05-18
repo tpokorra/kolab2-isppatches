@@ -24,6 +24,12 @@ function changeLanguage(combobox) {ldelim}
 	val=combobox.options[combobox.selectedIndex].value;
         if(val!="") window.location="{$lang_url}"+val;
 {rdelim}
+
+function changeCustomer(combobox) {ldelim}
+	var val = combobox.options[combobox.selectedIndex].value;
+	if(val != '')
+		window.location = '{$customer_url}' + val;
+{rdelim}
 -->
 </script>
 
@@ -40,6 +46,17 @@ function changeLanguage(combobox) {ldelim}
 {tr msg="Not logged in"}
 {/if}
 <br/>
+{if count($customer_select) > 1}
+	<select name="custom" class="langcombo" onchange="changeCustomer(this);">
+	{section name=id loop=$customer_select}
+		{if $customer_select[id].code==$currentcustomer}
+			<option value="{$customer_select[id].code}" selected="selected">{$customer_select[id].name}</option>
+		{else}
+			<option value="{$customer_select[id].code}">{$customer_select[id].name}</option>
+		{/if}
+	{/section}
+	</select>
+{/if}
 <select name="lang" class="langcombo" onchange="changeLanguage(this);">
 {section name=id loop=$languages}
 {if $languages[id].code==$currentlang}
