@@ -189,6 +189,11 @@
 	<tr class="contentrow{cycle values="even,odd"}">
 		<td class="contentcell">
 			{$kolabhost[id]|escape:"html"}
+			<br />
+			{tr msg="Relay host"}:
+			<input type="text" name="ecrelayhost" value="{$kolabhostsettings[id].relayhost|escape:"html"}"
+				size="45"/>:<input type="text" name="ecrelayport" value="{$kolabhostsettings[id].relayport}"
+				size="4" />
 		</td>
 	   <td class="actioncell">{strip}
 		<input type="hidden" name="akolabhost" value="{$kolabhost[id]}" />
