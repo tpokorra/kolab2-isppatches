@@ -614,6 +614,22 @@ class KolabLDAP {
 	return true;
   }
 
+  function addToCustomerGroups($member, $customers) {
+    if(empty($customers))
+      return true;
+    foreach($customers as $customer) {
+      $cusgrpdn = 'cn=' . $this->dn_escape($customer) . ',cn=customers,cn=internal,'
+          . $_SESSION['base_dn'];
+      $cus_obj = $this->read($cusgrpdn);
+      if(!$cus_obj)
+        return false;
+      if(!in_array($member, $cus_obj['member']))
+        if(!ldap_mod_add($this->connection, $cusgrpdn, array('member' => $member)))
+          return false;
+    }
+    return true;
+  }
+
   function removeFromDomainGroups( $member, $domains ) {
 	if (empty($domains)) {
 	  return true;
