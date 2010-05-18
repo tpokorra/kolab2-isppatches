@@ -2428,3 +2428,8 @@ msgstr "Passwörter stimmen nicht überein"
 
 #~ msgid "LDAP Error: Could not remove old entry %s,%s: %s"
 #~ msgstr "LDAP-Fehler: Konnte den alten Eintrag %s,%s nicht entfernen: %s"
+
+#: ../../../www/admin/user/user.php.in:154
+#, php-format
+msgid "Never"
+msgstr "Niemals"
