@@ -288,8 +288,8 @@ msgid "User Quota in KB"
 msgstr "Plattenplatz des Benutzers in KBytes"
 
 #: tpl_messages.php:61 ../../../www/admin/user/user.php.in:448
-msgid "Leave blank for unlimited"
-msgstr "Freilassen für unbegrenzten Platz"
+msgid "Leave blank for unlimited or domain default"
+msgstr "Freilassen für unbegrenzten Platz oder Domänenvorgabe"
 
 #: tpl_messages.php:62 ../include/form.class.php:76
 msgid "Submit"
