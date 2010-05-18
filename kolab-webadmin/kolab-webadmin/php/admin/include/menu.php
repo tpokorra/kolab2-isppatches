@@ -41,7 +41,10 @@ if( $auth->group() == "admin" || $auth->group() == "maintainer" || $auth->group(
 												 array( 'name' => _('Vacation'),
 														'url'  => 'vacation.php' )));
 }
-if($auth->group() == "admin" || $auth->group() == "maintainer" || $auth->group() == "domain-maintainer") {
+if(!isset($_SESSION['groupware_disabled']))
+	$_SESSION['groupware_disabled'] = "FALSE";
+if(($auth->group() == "admin" || $auth->group() == "maintainer" || $auth->group() == "domain-maintainer")
+		&& $_SESSION['groupware_disabled'] != "TRUE") {
   $menuitems['addressbook'] = array( 'name' => _('Addressbook'),
 									 'url'  => $topdir.'/addressbook/',
 									 'title' => _('Manage Address Book'),
@@ -50,7 +53,8 @@ if($auth->group() == "admin" || $auth->group() == "maintainer" || $auth->group()
 															   'url' => 'addr.php?action=create' )));
 
 }
-if( $auth->group() == "admin" || $auth->group() == "maintainer" || $auth->group() == 'domain-maintainer') {
+if(($auth->group() == "admin" || $auth->group() == "maintainer" || $auth->group() == 'domain-maintainer')
+		&& $_SESSION['groupware_disabled'] != "TRUE") {
   $menuitems['sf'] = array( 'name' => _('Shared Folder'),
 							'url'  => $topdir.'/sharedfolder/',
 							'title' => _('Manage Shared Folders'),
@@ -58,7 +62,8 @@ if( $auth->group() == "admin" || $auth->group() == "maintainer" || $auth->group(
 											   array( 'name' => _('Add Shared Folder'),
 													  'url' => 'sf.php?action=create' )));  
 }
-if( $auth->group() == 'admin' || $auth->group() == 'maintainer' || $auth->group() == 'domain-maintainer') {
+if(($auth->group() == 'admin' || $auth->group() == 'maintainer' || $auth->group() == 'domain-maintainer')
+		&& $_SESSION['groupware_disabled'] != "TRUE") {
   $menuitems['distlist'] = array( 'name' => _('Distribution Lists'),
 									   'url'  => $topdir.'/distributionlist/',
 									   'title' => _('Manage Distribution Lists'),
