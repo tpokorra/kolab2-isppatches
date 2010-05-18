@@ -74,6 +74,7 @@ class KolabAuth {
 							'dn'          => $_SESSION['base_dn'],
 							'descr'       => _('No customer'),
 							'subtree'     => '',
+							'nogroupware' => 'FALSE',
 							'ignore'      => 0
 						));
 						if(count($customer_dns) > 1)
@@ -81,12 +82,14 @@ class KolabAuth {
 								'dn'          => $_SESSION['base_dn'],
 								'descr'       => _('Everything'),
 								'subtree'     => '',
+								'nogroupware' => 'FALSE',
 								'ignore'      => 1
 							));
 						array_unshift($customer_dns, array(
 							'dn'          => $_SESSION['base_dn'],
 							'descr'       => '----------------',
 							'subtree'     => '',
+							'nogroupware' => 'FALSE',
 							'ignore'      => 2
 						));
 					}
@@ -119,6 +122,11 @@ class KolabAuth {
 						$_SESSION['ignore_customer'] = $auth_group == 'maintainer'
 								|| $auth_group == 'admin';
 						if(isset($_SESSION['customer_dn']) || $auth_group == "user") {
+							if($_SESSION['ignore_customer'])
+								$_SESSION['groupware_disabled'] = 'FALSE';
+							else
+								$_SESSION['groupware_disabled'] = $ldap->groupwareByCustomer(
+										$_SESSION['customer_subtree']);
 							// we sorted stuff, better safe than sorry
 							switchToCustomer(0);
 						}
