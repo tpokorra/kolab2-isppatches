@@ -26,7 +26,7 @@ msgstr "wurde gelöscht"
 
 #: tpl_messages.php:4
 msgid "Back to list of addresses"
-msgstr "Zurück zur Liste der Adressen"
+msgstr "Zurück zur Adressliste"
 
 #: tpl_messages.php:5 tpl_messages.php:10
 msgid "(only external addresses without a kolab user account)"
@@ -50,7 +50,7 @@ msgstr "Aktion"
 #: tpl_messages.php:74 tpl_messages.php:84 tpl_messages.php:137
 #: tpl_messages.php:200 tpl_messages.php:223
 msgid "Modify"
-msgstr "Verändern"
+msgstr "Bearbeiten"
 
 #: tpl_messages.php:9 tpl_messages.php:19 tpl_messages.php:29
 #: tpl_messages.php:75 tpl_messages.php:85 tpl_messages.php:138
