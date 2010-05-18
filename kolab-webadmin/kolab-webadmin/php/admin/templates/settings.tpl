@@ -126,12 +126,18 @@
 <table class="contenttable" cellpadding="0" cellspacing="1px">
 	<tr class="contentrow">
 		<th>{tr msg="Domain"}</th>
+		<th>{tr msg="Account restriction"}</th>
 		<th>{tr msg="Action"}</th>
 	</tr>
 {section name=id loop=$postfixmydestination}
 	<form method="post" action="">
 	<tr class="contentrow{cycle values="even,odd"}">
 		<td class="contentcell">{$postfixmydestination[id]|escape:"html"}</td>
+		<td class="domainquotacell" nowrap>
+			{tr msg="No. of accounts:"}
+			<input type="text" name="maxaccounts" size="4" value="{$domainquotas[id].maxaccounts}" />
+			<input type="submit" name="changequota" value="{tr msg="Change"}" />
+		</td>
 		<td class="actioncell">{strip}
 			<input type="hidden" name="adestination" value="{$postfixmydestination[id]}" />
 			<input type="submit" name="deletedestination" value="{tr msg="Delete"}" />
@@ -143,6 +149,10 @@
 	<tr class="contentrow{cycle values="even,odd"}">
 		<td class="contentcell"> 
 			<input type="text" size="60" name="adestination" />
+		</td>
+		<td class="domainquotacell" nowrap>
+			{tr msg="No. of accounts:"}
+			<input type="text" size="4" name="maxaccounts" value="{$domaindefaults.maxaccounts}" />
 		</td>
 		<td class="actioncell">
 			<input type="submit" name="adddestination" value="{tr msg="Add"}" />
