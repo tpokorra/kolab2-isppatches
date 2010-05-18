@@ -209,6 +209,33 @@ class KolabAuth {
 	var $error_string = false;
 	var $params;
 };
+
+function _customer_less($a, $b) {
+	$head = array(
+		_('Everything'),
+		_('No customer'),
+		'----------------'
+	);
+	$apos = array_search($a['descr'], $head);
+	$bpos = array_search($b['descr'], $head);
+	$found = ($apos === FALSE ? 'n' : 'y') . ($bpos === FALSE ? 'n' : 'y');
+	switch($found) {
+		case 'yy':
+			return ($apos > $bpos ? 1 : 0) - ($bpos > $apos ? 1 : 0);
+		case 'yn':
+			return -1;
+		case 'ny':
+			return 1;
+	}
+	return strcasecmp($a['descr'], $b['descr']);
+}
+
+function sortCustomerList() {
+	$opt = $_SESSION['customer_dn_options'];
+	usort($opt, '_customer_less');
+	$_SESSION['customer_dn_options'] = $opt;
+}
+
 /*
   Local variables:
   mode: php
