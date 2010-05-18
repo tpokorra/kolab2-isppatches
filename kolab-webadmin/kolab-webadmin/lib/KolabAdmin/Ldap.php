@@ -505,6 +505,7 @@ class KolabLDAP {
 		}
 	  }
 	}	
+	return true;
   }
 
   // Set deleflag on object, or if $delete_now is
