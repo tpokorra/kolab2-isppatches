@@ -10,11 +10,14 @@
 
 <table class="contenttable" cellpadding="0" cellspacing="1px">
 	<tr class="contentrow">
-	<th>{tr msg="Listname"}</th><th>{tr msg="Visibility"}</th><th colspan="2">{tr msg="Action"}</th>
+	<th>{tr msg="Listname"}</th>{if $showcustomer == true}<th>{tr msg="Customer"}</th>{/if}<th>{tr msg="Visibility"}</th><th colspan="2">{tr msg="Action"}</th>
 	</tr>
 {section name=id loop=$entries}
 	<tr class="contentrow{cycle values="even,odd"}">
 	   <td class="contentcell">{$entries[id].cn|escape:"html"}</td>
+	{if $showcustomer == true }
+		<td class="actioncell" nowrap>{$entries[id].customer}</td>
+	{/if}
 	{if $entries[id].internal == true }
 	   <td class="actioncell">{tr msg="Internal"}</td>
 	{else}
