@@ -191,24 +191,62 @@
 <h2>{tr msg="Domains"}</h2>
 <table class="contenttable" cellpadding="0" cellspacing="1px">
 	<tr class="contentrow">
-	<th>{tr msg="Domain"}</th><th>{tr msg="Action"}</th>
+		<th>{tr msg="Domain"}</th>
+		<th>{tr msg="Customer"}</th>
+		<th>{tr msg="Action"}</th>
 	</tr>
 {section name=id loop=$postfixmydestination}
 	<form method="post" action="">
 	<tr class="contentrow{cycle values="even,odd"}">
-	   <td class="contentcell">{$postfixmydestination[id]|escape:"html"}</td>
-	   <td class="actioncell">{strip}
-		<input type="hidden" name="adestination" value="{$postfixmydestination[id]}" />
-		<input type="submit" name="deletedestination" value="{tr msg="Delete"}" />
-           {/strip}</td>
+		<td class="contentcell">{$postfixmydestination[id]|escape:"html"}</td>
+		<form method="post" action="">
+		<td>
+			<select name="owner">
+				{if $domainowners[id]==''}
+					<option value="" selected="selected">{tr msg="No customer"}</option>
+				{else}
+					<option value="">{tr msg="No customer"}</option>
+				{/if}
+				{section name=cidx loop=$allcustomers}
+					{if $allcustomers[cidx].cns==$domainowners[id]}
+						<option value="{$allcustomers[cidx].cns}" selected="selected">{$allcustomers[cidx].descriptions|escape:"html"}</option>
+					{else}
+						<option value="{$allcustomers[cidx].cns}">{$allcustomers[cidx].descriptions|escape:"html"}</option>
+					{/if}
+				{/section}
+			</select>
+		</td>
+		<td class="actioncell">{strip}
+<input type="hidden" name="adestination" value="{$postfixmydestination[id]}" />
+<input type="submit" name="deletedestination" value="{tr msg="Delete"}" />
+{/strip}</td>
 	</tr>
 	</form>
 {/section}
 	<form method="post" action="">
 	<tr class="contentrow{cycle values="even,odd"}">
-	   <td class="contentcell"> 
-		<input type="text" size="60" name="adestination" />
-           </td><td class="actioncell"><input type="submit" name="adddestination" value="{tr msg="Add"}" /></td>
+		<td class="contentcell"> 
+			<input type="text" size="60" name="adestination" />
+		</td>
+		<td>
+			<select name="owner">
+				{if $selected_customer_cn==''}
+					<option value="" selected="selected">{tr msg="No customer"}</option>
+				{else}
+					<option value="">{tr msg="No customer"}</option>
+				{/if}
+				{section name=cidx loop=$allcustomers}
+					{if $allcustomers[cidx].cns==$selected_customer_cn}
+						<option value="{$allcustomers[cidx].cns}" selected="selected">{$allcustomers[cidx].descriptions|escape:"html"}</option>
+					{else}
+						<option value="{$allcustomers[cidx].cns}">{$allcustomers[cidx].descriptions|escape:"html"}</option>
+					{/if}
+				{/section}
+			</select>
+		</td>
+		<td class="actioncell">
+			<input type="submit" name="adddestination" value="{tr msg="Add"}" />
+		</td>
 	</tr>
 	</form>
 </table>
