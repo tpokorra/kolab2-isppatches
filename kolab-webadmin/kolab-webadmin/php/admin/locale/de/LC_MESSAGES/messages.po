@@ -2440,3 +2440,23 @@ msgstr "Standard:"
 #: tpl_messages.php:129
 msgid "Change"
 msgstr "Ändern"
+
+#: ../../../www/admin/user/user.php.in:228
+msgid "Domain quota for domain %s requires a default quota"
+msgstr "Domänenkontingent für Domäne %s erfordert einen Wert für Standard-Kontingent"
+
+#: ../../../www/admin/user/user.php.in:230
+msgid "Cannot set Domain quota to %d MBytes for domain %s. %d MBytes already in use"
+msgstr "Domänenkontingent %d MBytes für Domäne %s kann nicht gesetzt werden. %d MBytes sind bereits verwendet."
+
+#: ../../../www/admin/user/user.php.in:232
+msgid "Default Quota for domain %s must be smaller than Domain quota"
+msgstr "Standard-Kontingent für Domäne %s muss kleiner als das Domänenkontingent sein"
+
+#: ../../../www/admin/user/user.php.in:234
+msgid "Domain quota for domain %s must be integer"
+msgstr "Domänenkontingent für Domäne %s muss eine ganze Zahl sein"
+
+#: ../../../www/admin/user/user.php.in:236
+msgid "Default quota for domain %s must be integer"
+msgstr "Standard-Kontingent für Domäne %s muss eine ganze Zahl sein"
