@@ -147,6 +147,32 @@
 	</form>
 </table>
 <br/>
+
+<h2>{tr msg="Domain Default Settings"}</h2>
+<div class="contentform">
+	<div>
+		{tr msg="This settings apply as default values for newly created domains."}
+		<br/><br/>
+		<form method="post" action="">
+			<table>
+				<tr>
+					<td>{tr msg="Quota for Domains"}:</td>
+					<td>
+						<input type="text" name="domaindefault_domainquota" size="20" value="{$domaindefaults.domainquota}" />
+						{tr msg="MBytes"}
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2" align="center">
+						<input type="submit" name="submitdomainsettings" value="{tr msg="Update"}" />
+					</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+</div>
+<br />
+
 <h2>{tr msg="Mail Filter Settings"}</h2>
 <div class="contentform">
 <form id="kolabfilterform" method="post" action="">
