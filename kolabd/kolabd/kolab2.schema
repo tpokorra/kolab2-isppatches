@@ -1088,7 +1088,8 @@ objectclass ( 1.3.6.1.4.1.19414.3.2.5
   DESC 'Kolab group of names (DNs) derived from RFC2256'
   SUP groupOfNames STRUCTURAL
   MAY ( mail $
-        kolabDeleteflag ) )
+        kolabDeleteflag $
+		kolabHomeServer ) )
 
 objectclass ( 1.3.6.1.4.1.19414.3.2.6
   NAME 'kolabExternalPop3Account'
