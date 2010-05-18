@@ -2440,3 +2440,7 @@ msgstr "E-Mail Kontingent für Kunden %s muss eine ganze Zahl sein"
 #: unknown
 msgid "Mail quota for customer %s cannot be set below %d MBytes, as this much is already being used"
 msgstr "E-Mail Kontingent für Kunden %s kann nicht kleiner als %d MBytes sein, da soviel bereits benutzt wird"
+
+#: unknown
+msgid "User quota must be an integer, not %s"
+msgstr "Benutzer-Kontingent muss eine ganze Zahl sein, nicht %s"
