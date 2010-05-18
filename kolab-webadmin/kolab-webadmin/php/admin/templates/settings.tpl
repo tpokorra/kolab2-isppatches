@@ -122,6 +122,49 @@
  </form>
 </div>
 <br />
+
+<h2>{tr msg="Password Security Settings"}</h2>
+<div class="contentform">
+	<div>
+		{tr msg="The safeness of passwords can be be assured and validated by using regular expressions. Users and administrators may have different security level. A checked password must match the regular expression to be found as valid. Password checking is disabled if the field is empty."}
+		<br /><br />
+		<strong>{tr msg="Here are two examples how to set up a password security with regular expressions"}:</strong>
+		<br />
+		{tr msg="Password must have at least 8 characters"}:<br />
+		{$pwdexample[0]}<br />
+		<br />
+		{tr msg="Password must have at least 10 characters with numbers, upper and lower case letters"}:<br />
+		{$pwdexample[1]}<br />
+		<br />
+		<form method="post" action="">
+			<table>
+				<tr>
+					<td>
+						<strong>{tr msg="Regular expression for user passwords"}:</strong>
+					</td>
+					<td>
+						<input type="text" name="passwordsecuserregex" size="60"  value='{$passwordsecuserregex}' />
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<strong>{tr msg="Regular expression for administrator passwords"}:</strong>
+					</td>
+					<td>
+						<input type="text" name="passwordsecadminregex" size="60"  value='{$passwordsecadminregex}' />
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2" align="center">
+						<input type="submit" name="submitpasswordsec" value="{tr msg="Update"}" />
+					</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+</div>
+<br />
+
 <h2>{tr msg="Domains"}</h2>
 <table class="contenttable" cellpadding="0" cellspacing="1px">
 	<tr class="contentrow">
