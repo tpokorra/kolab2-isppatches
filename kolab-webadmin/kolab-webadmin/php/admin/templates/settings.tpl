@@ -208,6 +208,11 @@
 		<td class="contentcell"> 
 			{tr msg="Host"}:
 			<input type="text" size="60" name="akolabhost" />
+			<br />
+			{tr msg="Relayhost"}:
+			<input type="text" size="45" name="customrelayhost" />:<input type="text" size="4" name="customrelayport" />
+			<br />
+			({tr msg="Leave empty for default relayhost"})
 		</td>
 		<td class="actioncell">
 			<input type="submit" name="addkolabhost" value="{tr msg="Add"}" />
