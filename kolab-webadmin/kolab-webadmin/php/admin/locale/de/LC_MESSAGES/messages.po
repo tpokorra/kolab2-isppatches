@@ -2513,3 +2513,7 @@ msgstr "Standard Kontingent für Domäne %s kann %d MBytes nicht überschreiten"
 #: unknown
 msgid "Default quota may not exceed %d MBytes"
 msgstr "Standard Kontingent kann %d MBytes nicht überschreiten"
+
+#: unknown
+msgid "User quota must be an integer, not %s"
+msgstr "Benutzer-Kontingent muss eine ganze Zahl sein, nicht %s"
