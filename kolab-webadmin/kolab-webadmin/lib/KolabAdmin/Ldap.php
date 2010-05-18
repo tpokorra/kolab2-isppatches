@@ -446,8 +446,9 @@ class KolabLDAP {
 	if( $reload || !$this->cached_domains ) {
 	  $kolab_obj = $this->read( 'k=kolab,'.$_SESSION['base_dn'] );
 	  if( !$kolab_obj ) return false;
+	  unset($kolab_obj['postfix-mydestination']['count']);
+	  sort($kolab_obj['postfix-mydestination']);
 	  $this->cached_domains = $kolab_obj['postfix-mydestination'];
-	  unset($this->cached_domains['count']);
 	  debug("loading domains");
 	}
 	debug("ldap->domains() returns ".join(", ", $this->cached_domains));
