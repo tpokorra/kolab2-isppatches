@@ -2464,3 +2464,12 @@ msgstr "Standard-Kontingent für Domäne %s muss eine ganze Zahl sein"
 #: ../../../www/admin/user/user.php.in:257
 msgid "LDAP Error: failed to modify domain quotas: %s"
 msgstr "LDAP Fehler: Konnte die Domänenkontingent nicht verändern: %s"
+
+#: ../../../www/admin/user/user.php.in:563
+msgid "User Quota exceeds maximum size for user (max. %s MBytes)"
+msgstr "Plattenplatz-Kontingent des Benutzers überschreitet maximale Größe (max. %s MBytes)"
+
+#: ../../../www/admin/user/user.php.in:566
+msgid "User Quota exceeds Domain Quota (%s MBytes left out of %s MBytes)"
+msgstr "Plattenplatz-Kontingent des Benutzers überschreitet zulässigen "
+"Plattenplatz für Domäne (%s MBytes von %s MBytes übrig)"
