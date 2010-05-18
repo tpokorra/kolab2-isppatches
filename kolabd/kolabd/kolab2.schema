@@ -1131,3 +1131,13 @@ objectclass ( 1.3.6.1.4.1.19414.3.2.7
   MAY ( kolabGermanBankAccountHolder $
         kolabGermanBankName $
         kolabGermanBankAccountInfo ) )
+
+##################################################
+# TBits.net schema class extensions              #
+# (c) 2010 TBits.net GmbH                        #
+# Author: Simon Bausch <simon@bausch-alfdorf.de> #
+#                                                #
+# OIDs are temporary and may change if classes   #
+# are included in future Kolab Server            #
+# Development releases                           #
+##################################################
