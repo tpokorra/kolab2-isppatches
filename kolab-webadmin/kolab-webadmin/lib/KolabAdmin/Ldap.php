@@ -408,6 +408,21 @@ class KolabLDAP {
 	return $domains;
   }
 
+  function customersForMaintainerDn($dn) {
+    $count = 0;
+    $result = $this->search('cn=customers,cn=internal,' . $_SESSION['base_dn'],
+        '(member=' . $this->escape($dn) . ')', array('cn'));
+    $cns = array();
+    if($result)
+      foreach($this->getEntries() as $entry) {
+        $cn = $entry['cn'];
+        $cn = is_array($cn) ? $cn[0] : $cn;
+        if($cn != '')
+          $cns[] = $cn;
+      }
+    return $cns;
+  }
+
   function domainsForMaintainerUid( $uid ) {
 	debug("domainsForMaintainer( $uid ):");
     $dn = $this->dnForUid($uid);
