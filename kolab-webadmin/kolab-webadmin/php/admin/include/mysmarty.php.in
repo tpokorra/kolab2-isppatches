@@ -22,6 +22,22 @@ require_once('config.php');
 require_once('@kolab_php_smarty_prefix@/Smarty.class.php');
 require_once('locale.php');
 
+function switchToCustomer($idx) {
+	$cus = $_SESSION['customer_dn_options'];
+	if(is_array($cus) && $idx < count($cus)) {
+		$cus = $cus[$idx];
+		$_SESSION['customer_dn'] = $cus['dn'];
+		$_SESSION['customer_descr'] = $cus['descr'];
+		$_SESSION['customer_subtree'] = $cus['subtree'];
+		$_SESSION['ignore_customer'] = $cus['ignore'];
+	}
+}
+
+// Check if customer was changed
+$idx = $_REQUEST['customer_index'];
+if(is_numeric($idx))
+	switchToCustomer($idx);
+
 // PENDING: Remove this before production(!)
 //function count_bytes($tpl_output, &$smarty) {
 //  return $tpl_output.strlen($tpl_output);
