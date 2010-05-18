@@ -259,7 +259,11 @@ class KolabLDAP {
   }
 
   function dnForMail( $mail ) {
-    if( $this->search( $_SESSION['base_dn'],
+    if(isset($_SESSION['customer_dn']))
+      $base_dn = $_SESSION['customer_dn'];
+    else
+      $base_dn = $_SESSION['base_dn'];
+    if( $this->search( $base_dn,
                        '(&(objectclass=kolabInetOrgPerson)(mail='.$this->escape($mail).'))' ) ) {
       $entry = $this->firstEntry();
       if( $entry ) {
@@ -289,7 +293,11 @@ class KolabLDAP {
   }
 
   function dnForAlias( $mail ) {
-    if( $this->search( $_SESSION['base_dn'],
+    if(isset($_SESSION['customer_dn']))
+      $base_dn = $_SESSION['customer_dn'];
+    else
+      $base_dn = $_SESSION['base_dn'];
+    if( $this->search( $base_dn,
                        '(&(objectclass=kolabInetOrgPerson)(alias='.$this->escape($mail).'))' ) ) {
       $entry = $this->firstEntry();
       if( $entry ) {
@@ -335,6 +343,48 @@ class KolabLDAP {
     return $group;
   }
 
+  function dnForCustomer($dn) {
+    if(!$this->is_bound)
+      return false;
+    $result = $this->search('cn=customers,cn=internal,' . $_SESSION['base_dn'],
+        '(&(objectclass=kolabGroupOfNames)(member='. $this->escape($dn). '))');
+    $entries = $this->getEntries();
+    unset($entries['count']);
+    if(count($entries) > 0)
+      foreach($entries as $val) {
+        $cust_dn = str_replace(",cn=customers,cn=internal,"
+            . $_SESSION["base_dn"], "", $val["dn"]);
+        return $cust_dn . "," . $_SESSION['base_dn'];
+      }
+  }
+
+  function dnForCustomers($dn = '', $withDesc = false) {
+	if(!$this->is_bound)
+	  return false;
+	$filter = $dn == '' ? '' : '(member=' . $this->escape($dn) . ')';
+	$result = $this->search('cn=customers,cn=internal,' . $_SESSION['base_dn'],
+	    "(&(objectClass=kolabGroupOfNames)$filter)",
+		array('dn', 'description', 'disableGroupware', 'uidPrefix', 'kolabHomeServer'));
+	if(!$result)
+	  return array();
+	$entries = $this->getEntries();
+	unset($entries['count']);
+	$customers = array();
+	foreach($entries as $val) {
+	  $c_dn = str_replace(',cn=customers,cn=internal,', ',', $val['dn']);
+	  if($withDesc)
+	    $customers[] = array(
+		  'dn'          => $c_dn,
+		  'descr'       => $val['description'][0],
+		  'subtree'     => $val['dn'],
+		  'ignore'      => 0
+		);
+	  else
+	    $customers[] = $c_dn;
+	}
+	return $customers;
+  }
+
   function domainsForMaintainerDn( $dn ) {
     if( !$this->is_bound ) {
       return false;
@@ -353,6 +403,21 @@ class KolabLDAP {
 	  }
 	}
 	return $domains;
+  }
+
+  function customersForMaintainerDn($dn) {
+    $count = 0;
+    $result = $this->search('cn=customers,cn=internal,' . $_SESSION['base_dn'],
+        '(member=' . $this->escape($dn) . ')', array('cn'));
+    $cns = array();
+    if($result)
+      foreach($this->getEntries() as $entry) {
+        $cn = $entry['cn'];
+        $cn = is_array($cn) ? $cn[0] : $cn;
+        if($cn != '')
+          $cns[] = $cn;
+      }
+    return $cns;
   }
 
   function domainsForMaintainerUid( $uid ) {
@@ -453,6 +518,70 @@ class KolabLDAP {
 	return $this->cached_domains;
   }
 
+  function domainsOfSelectedCustomer() {
+    $cdn = $_SESSION['customer_dn'];
+    $base = $_SESSION['base_dn'];
+    if($cdn == $base)
+      if($_SESSION['ignore_customer'])
+        return $this->domains(true);
+      else
+        return $this->domainsOfNoCustomer();
+    $idn = substr($cdn, 0, strlen($cdn) - strlen($base))
+        . 'cn=customers,cn=internal,' . $base;
+    $obj = $this->read($idn);
+    if(!$obj)
+      return array();
+    $obj = $obj['domains'];
+    unset($obj['count']);
+    sort($obj);
+    return $obj;
+  }
+
+  function domainsOfCustomer($customer) {
+    $dn = "cn=$customer,cn=customers,cn=internal," . $_SESSION['base_dn'];
+    $obj = $this->read($dn);
+    if(!$obj)
+      return ldap_error($this->connection);
+    $obj = $obj['domains'];
+    unset($obj['count']);
+    sort($obj);
+    return $obj;
+  }
+
+  function domainsOfNoCustomer() {
+    $all = $this->domains(true);
+    $domains = array();
+    foreach($all as $domain) {
+      $result = ldap_list($this->connection, 'cn=customers,cn=internal,'
+          . $_SESSION['base_dn'], "(&(objectClass=kolabGroupOfNames)"
+          . "(domains=$domain))");
+      if(!$result)
+        continue;
+      $count = ldap_count_entries($this->connection, $result);
+      if($count !== FALSE && !$count)
+        $domains[] = $domain;
+      ldap_free_result($result);
+    }
+    sort($domains);
+    return $domains;
+  }
+
+  function customerOfDomain($domain) {
+    $result = $this->search('cn=customers,cn=internal,' . $_SESSION['base_dn'],
+        "(&(objectClass=kolabGroupOfNames)(domains=$domain))", array('cn'));
+    if(!$result)
+      return '';
+    $result = $this->getEntries();
+    return $result['count'] ? $result[0]['cn'][0] : '';
+  }
+
+  function customerNameOfDomain($domain) {
+    $result = $this->search('cn=customers,cn=internal,' . $_SESSION['base_dn'],
+        "(&(objectClass=kolabGroupOfNames)(domains=$domain))",
+        array('description'));
+    return $result['count'] ? $result[0]['description'][0] : _('No customer');
+  }
+
   function addToDomainGroups( $member, $domains ) {
 	if (empty($domains)) {
 	  return true;
@@ -482,6 +611,22 @@ class KolabLDAP {
 	return true;
   }
 
+  function addToCustomerGroups($member, $customers) {
+    if(empty($customers))
+      return true;
+    foreach($customers as $customer) {
+      $cusgrpdn = 'cn=' . $this->dn_escape($customer) . ',cn=customers,cn=internal,'
+          . $_SESSION['base_dn'];
+      $cus_obj = $this->read($cusgrpdn);
+      if(!$cus_obj)
+        return false;
+      if(!in_array($member, $cus_obj['member']))
+        if(!ldap_mod_add($this->connection, $cusgrpdn, array('member' => $member)))
+          return false;
+    }
+    return true;
+  }
+
   function removeFromDomainGroups( $member, $domains ) {
 	if (empty($domains)) {
 	  return true;
@@ -505,6 +650,53 @@ class KolabLDAP {
 		}
 	  }
 	}	
+  }
+
+  function removeFromCustomerGroups($member, $customers) {
+    if(empty($customers))
+      return true;
+    foreach($customers as $customer) {
+      $cusgrpdn = 'cn=' . $this->dn_escape($customer) . ',cn=customers,cn=internal,'
+          . $_SESSION['base_dn'];
+      $cus_obj = $this->read($cusgrpdn);
+      if($cus_obj)
+        if(!ldap_mod_del($this->connection, $cusgrpdn, array('member' => $member)))
+          return false;
+    }
+    return true;
+  }
+
+  function removeFromCustomerGroup($member) {
+    $custgrpdn = 'cn=customers,cn=internal,' . $_SESSION['base_dn'];
+    $result = $this->search($custgrpdn, "(&(objectClass=kolabGroupOfNames)(member=$member))",
+        array("cn"));
+    if(ldap_count_entries($this->connection,$result) > 0) {
+      $remove_list = $this->getEntries();
+      unset($remove_list["count"]);
+      foreach($remove_list as $v) {
+        $result = ldap_mod_del($this->connection, "cn=" . $v['cn'][0] .
+            ",cn=customers,cn=internal," . $_SESSION['base_dn'],
+            array('member' => $member));
+        if(!$result)
+          return false;
+      }
+    }
+  }
+
+  function addToCustomerGroup($member, $customer_id) {
+    $customer = getCustomerList(true, $customer_id);
+    if(empty($customer_id) || (empty($customer) || is_array($customer)))
+      return true;
+    $custgrpdn = 'cn=' . $customer . ',cn=customers,cn=internal,'
+        . $_SESSION['base_dn'];
+    $result = $this->search($custgrpdn, "(&(objectClass=kolabGroupOfNames)"
+        . "(member=$member))");
+    if(ldap_count_entries($this->connection,$result) <= 0) {
+      if(!ldap_mod_add($this->connection, "cn=" . $customer . ",cn=customers,cn=internal,"
+          . $_SESSION['base_dn'], array('member' => $member)))
+        return false;
+    }
+    return true;
   }
 
   // Set deleflag on object, or if $delete_now is
