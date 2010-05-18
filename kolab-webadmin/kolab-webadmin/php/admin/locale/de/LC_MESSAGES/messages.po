@@ -160,6 +160,10 @@ msgstr "Kommentar"
 msgid "First Name"
 msgstr "Vorname"
 
+#: ../../../www/admin/user/user.php.in:
+msgid "Customer for which this user should be created, non volatile"
+msgstr "Kunde für den dieser Benutzer angelegt wird, unveränderlich"
+
 #: tpl_messages.php:37 tpl_messages.php:39 tpl_messages.php:41
 #: tpl_messages.php:43 ../../../www/admin/addressbook/addr.php.in:90
 #: ../../../www/admin/addressbook/addr.php.in:93
