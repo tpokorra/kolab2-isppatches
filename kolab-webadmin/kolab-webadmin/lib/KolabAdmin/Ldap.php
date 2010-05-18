@@ -388,6 +388,31 @@ class KolabLDAP {
 	return $customers;
   }
 
+  function homeServerByCustomer($cust_dn) {
+    if(!$this->is_bound)
+      return '';
+    $result = ldap_read($this->connection, $cust_dn, '(objectClass=kolabGroupOfNames)',
+        array('kolabHomeServer'));
+    if(!ldap_count_entries($this->connection, $result)) {
+      ldap_free_result($result);
+      return '';
+    }
+    $objs = ldap_get_entries($this->connection, $result)
+    ldap_free_result($result);
+    return $objs[0]['kolabhomeserver'][0];
+  }
+
+  // get name of customer's Kolab home server
+  function kolabHomeServerForCustomer($dn = '') {
+    if(!$this->is_bound)
+      return false;
+    $result = $this->search("cn=customers,cn=internal," . $_SESSION['base_dn'],
+        '(&(objectclass=kolabGroupOfNames)(member=' . $dn . '))',
+        array('kolabHomeServer'));
+    $entries = $this->getEntries();
+    return $entries[0]['kolabhomeserver'][0];
+  }
+
   function domainsForMaintainerDn( $dn ) {
     if( !$this->is_bound ) {
       return false;
