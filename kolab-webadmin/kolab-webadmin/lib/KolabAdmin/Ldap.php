@@ -293,7 +293,11 @@ class KolabLDAP {
   }
 
   function dnForAlias( $mail ) {
-    if( $this->search( $_SESSION['base_dn'],
+    if(isset($_SESSION['customer_dn']))
+      $base_dn = $_SESSION['customer_dn'];
+    else
+      $base_dn = $_SESSION['base_dn'];
+    if( $this->search( $base_dn,
                        '(&(objectclass=kolabInetOrgPerson)(alias='.$this->escape($mail).'))' ) ) {
       $entry = $this->firstEntry();
       if( $entry ) {
