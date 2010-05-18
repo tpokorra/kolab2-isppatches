@@ -23,6 +23,9 @@ $kolab_prefix = '@prefix@';
 $php_dir      = '@phplibdir2@';
 $locale_dir   = "$php_dir/@kolab_php_module_prefix@admin/locale/";
 
+// Hide section administrative email addresses
+define("HIDE_ADMINISTRATIVE_EMAILSETTINGS", "false");
+
 /*
   Local variables:
   mode: php
