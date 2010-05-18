@@ -285,7 +285,7 @@ msgstr ""
 
 #: tpl_messages.php:60
 msgid "User Quota in KB"
-msgstr "Plattenplatz des Benutzers in KBytes"
+msgstr "Kontingent des Benutzers in KBytes"
 
 #: tpl_messages.php:61 ../../../www/admin/user/user.php.in:448
 msgid "Leave blank for unlimited"
