@@ -178,7 +178,7 @@ msgstr "Vorname"
 #: ../../../www/admin/user/user.php.in:386
 #: ../../../www/admin/user/user.php.in:389
 msgid "Required"
-msgstr "Obligatorisch"
+msgstr "Pflichtfeld"
 
 #: tpl_messages.php:38 ../../../www/admin/addressbook/addr.php.in:91
 #: ../../../www/admin/administrator/admin.php.in:142
@@ -200,7 +200,7 @@ msgstr "Passwort"
 #: ../../../www/admin/maintainer/maintainer.php.in:146
 #: ../../../www/admin/user/user.php.in:394
 msgid "Verify Password"
-msgstr "Passwort überprüfen"
+msgstr "Passwort bestätigen"
 
 #: tpl_messages.php:44 ../../../www/admin/user/user.php.in:398
 msgid "Primary Email Address"
@@ -213,7 +213,7 @@ msgstr "Primäre E-Mail-Adresse"
 #: ../../../www/admin/user/user.php.in:375
 #: ../../../www/admin/user/user.php.in:377
 msgid "Required, non volatile"
-msgstr "Obligatorisch, nicht-flüchtig"
+msgstr "Pflichtfeld, unveränderlich"
 
 #: tpl_messages.php:46 ../../../www/admin/addressbook/addr.php.in:94
 #: ../../../www/admin/user/user.php.in:433
