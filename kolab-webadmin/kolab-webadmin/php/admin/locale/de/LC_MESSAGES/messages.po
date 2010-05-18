@@ -2480,3 +2480,11 @@ msgstr "Kunden"
 #: tpl_messages.php
 msgid "Customer ID"
 msgstr "Kunden ID"
+
+#: tpl_messages.php
+msgid "Customer name"
+msgstr "Kundenname"
+
+#: tpl_messages.php
+msgid "Are you really sure to delete this customer?"
+msgstr "Sind Sie wirklich sicher, dass dieser Kunde gelöscht werden soll?"
