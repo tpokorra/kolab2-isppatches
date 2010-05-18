@@ -343,6 +343,51 @@ class KolabLDAP {
     return $group;
   }
 
+  function dnForCustomer($dn) {
+    if(!$this->is_bound)
+      return false;
+    $result = $this->search('cn=customers,cn=internal,' . $_SESSION['base_dn'],
+        '(&(objectclass=kolabGroupOfNames)(member='. $this->escape($dn). '))');
+    $entries = $this->getEntries();
+    unset($entries['count']);
+    if(count($entries) > 0)
+      foreach($entries as $val) {
+        $cust_dn = str_replace(",cn=customers,cn=internal,"
+            . $_SESSION["base_dn"], "", $val["dn"]);
+        return $cust_dn . "," . $_SESSION['base_dn'];
+      }
+  }
+
+  function dnForCustomers($dn = '', $withDesc = false) {
+	if(!$this->is_bound)
+	  return false;
+	$filter = $dn == '' ? '' : '(member=' . $this->escape($dn) . ')';
+	$result = $this->search('cn=customers,cn=internal,' . $_SESSION['base_dn'],
+	    "(&(objectClass=kolabGroupOfNames)$filter)",
+		array('dn', 'description', 'disableGroupware', 'uidPrefix', 'kolabHomeServer'));
+	if(!$result)
+	  return array();
+	$entries = $this->getEntries();
+	unset($entries['count']);
+	$customers = array();
+	foreach($entries as $val) {
+	  $c_dn = str_replace(',cn=customers,cn=internal,', ',', $val['dn']);
+	  if($withDesc)
+	    $customers[] = array(
+		  'dn'          => $c_dn,
+		  'descr'       => $val['description'][0],
+		  'subtree'     => $val['dn'],
+		  'nogroupware' => $val['disablegroupware'][0],
+		  'uidprefix'   => $val['uidprefix'][0],
+		  'homeserver'  => $val['kolabhomeserver'][0],
+		  'ignore'      => 0
+		);
+	  else
+	    $customers[] = $c_dn;
+	}
+	return $customers;
+  }
+
   function domainsForMaintainerDn( $dn ) {
     if( !$this->is_bound ) {
       return false;
