@@ -519,7 +519,7 @@ $entries = array( 'givenname' => array( 'name' => _('First Name'),
 
 $entries['alias'] = array( 'name' => _('Email Aliases'), 
 						   'type' => 'textarea',
-						   'validation' => 'checkuniquealias',
+						   'validation' => 'check_valid_alias',
 						   'comment' => _('One address per line') );
 
 $entries['kolabdelegate'] =array( 'name' => _('Email-Delegates'),
