@@ -471,28 +471,34 @@ function _customerOfDomain($d) {
 
 /**** Insert into template and output ***/
 $smarty = new MySmarty();
-$smarty->assign( 'errors', $errors );
-$smarty->assign( 'uid', $auth->uid() );
-$smarty->assign( 'group', $auth->group() );
-$smarty->assign( 'page_title', $menuitems[$sidx]['title'] );
-$smarty->assign( 'entries', $entries );
-$smarty->assign( 'quotawarn', $quotawarn );
-$smarty->assign( 'httpallowunauthfb', toboolstr($httpallowunauthfb) );
-$smarty->assign( 'freebusypast', $freebusypast );
-$smarty->assign( 'postfixmydestination', $postfixmydestination );
-$smarty->assign( 'postfixmynetworks', $postfixmynetworks );
-$smarty->assign( 'postfixallowunauth', toboolstr($postfixallowunauth) );
-$smarty->assign( 'postfixrelayhost', $postfixrelayhost );
-$smarty->assign( 'postfixrelayport', $postfixrelayport );
-$smarty->assign( 'kolabfilterverifyfrom', toboolstr($kolabfilterverifyfrom) );
-$smarty->assign( 'kolabfilterallowsender', toboolstr($kolabfilterallowsender) );
-$smarty->assign( 'kolabfilterrejectforgedfrom', toboolstr($kolabfilterrejectforgedfrom) );
-$smarty->assign( 'kolabhost', $kolabhost );
-$smarty->assign( 'menuitems', $menuitems );
-$smarty->assign( 'submenuitems', 
-				 array_key_exists('submenu', 
-								  $menuitems[$sidx])?$menuitems[$sidx]['submenu']:array() );
-$smarty->assign( 'maincontent', 'settings.tpl' );
+if(!$access_denied) {
+	$smarty->assign( 'errors', $errors );
+	$smarty->assign( 'uid', $auth->uid() );
+	$smarty->assign( 'group', $auth->group() );
+	$smarty->assign( 'page_title', $menuitems[$sidx]['title'] );
+	$smarty->assign( 'entries', $entries );
+	$smarty->assign( 'quotawarn', $quotawarn );
+	$smarty->assign( 'httpallowunauthfb', toboolstr($httpallowunauthfb) );
+	$smarty->assign( 'freebusypast', $freebusypast );
+	$smarty->assign( 'postfixmydestination', $domains = $ldap->domainsOfSelectedCustomer() );
+	$smarty->assign( 'domainowners', array_map('_customerOfDomain', $domains));
+	$smarty->assign( 'allcustomers', arrayInsideOut(getNamedCustomerList()));
+	$smarty->assign( 'selected_customer_cn', getSelectedCustomerCN());
+	$smarty->assign( 'customers', $customers );
+	$smarty->assign( 'postfixmynetworks', $postfixmynetworks );
+	$smarty->assign( 'postfixallowunauth', toboolstr($postfixallowunauth) );
+	$smarty->assign( 'postfixrelayhost', $postfixrelayhost );
+	$smarty->assign( 'postfixrelayport', $postfixrelayport );
+	$smarty->assign( 'kolabfilterverifyfrom', toboolstr($kolabfilterverifyfrom) );
+	$smarty->assign( 'kolabfilterallowsender', toboolstr($kolabfilterallowsender) );
+	$smarty->assign( 'kolabfilterrejectforgedfrom', toboolstr($kolabfilterrejectforgedfrom) );
+	$smarty->assign( 'kolabhost', $kolabhost );
+	$smarty->assign( 'menuitems', $menuitems );
+	$smarty->assign( 'submenuitems',
+					 array_key_exists('submenu',
+									  $menuitems[$sidx])?$menuitems[$sidx]['submenu']:array() );
+	$smarty->assign( 'maincontent', 'settings.tpl' );
+}
 
 $systemaliasconf = array();
 
