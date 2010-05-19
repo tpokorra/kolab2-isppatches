@@ -489,6 +489,10 @@ function exists_group( $group ) {
   return ( $ldap->count($res) > 0 );
 }
 
+function _customerOfDomain($d) {
+	return $ldap->customerOfDomain($d);
+}
+
 /**** Insert into template and output ***/
 $smarty = new MySmarty();
 $smarty->assign( 'errors', $errors );
