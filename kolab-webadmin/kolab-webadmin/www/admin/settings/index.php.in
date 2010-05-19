@@ -307,14 +307,21 @@ if( $_REQUEST['addkolabhost'] ) {
 	  $errors[] = sprintf(_("LDAP Error: failed to modify kolab configuration object: %s"),
 						  ldap_error($ldap->connection));
 	}
-	if(/*any custom settings given*/) {
+	$arelhost = trim($_REQUEST['customrelayhost']);
+	if($arelhost) {
+		$arelport = trim($_REQUEST['customrelayport']);
+		if($arelport && (!is_numeric($arelport) || $arelport < 1 || $arelport > 65535))
+			$errors[] = _('Not a valid port number') . ': ' . $arelport;
 		if(!$errors) {
 			$chs_dn = 'kolabHostRef=' . $ldap->dn_escape($newKolabHost) . ',k=kolab,'
 					. $_SESSION['base_dn'];
 			$chs_entry = array(
 				'objectClass'			=> 'kolabHostSettings',
 				'kolabHostRef'			=> $newKolabHost,
+				'kolabCustomRelayHost'	=> $arelhost,
 			);
+			if($arelport)
+				$chs_entry['kolabCustomRelayPort'] = $arelport;
 			$result = ldap_add($ldap->connection, $chs_dn, $chs_entry);
 			if($result === FALSE)
 				$errors[] = ldap_error($ldap->connection);
@@ -326,8 +333,12 @@ if( $_REQUEST['addkolabhost'] ) {
 // Save kolabHost
 if($_REQUEST['savekolabhost']) {
 	$khost = $_REQUEST['akolabhost'];
+	$arelhost = trim($_REQUEST['ecrelayhost']);
+	$arelport = trim($_REQUEST['ecrelayport']);
 	$sdn = 'kolabHostRef=' . $ldap->dn_escape($khost) . ',k=kolab,'
 			. $_SESSION['base_dn'];
+	if($arelport && (!is_numeric($arelport) || $arelport < 1 || $arelport > 65535))
+		$errors[] = _('Not a valid port number') . ': ' . $arelport;
 	if(!$errors) {
 		$result = ldap_read($ldap->connection, $sdn,
 				'(objectClass=kolabHostSettings)');
@@ -344,6 +355,14 @@ if($_REQUEST['savekolabhost']) {
 		'objectClass'	=> 'kolabHostSettings',
 		'kolabHostRef'	=> $khost,
 	);
+	$entry['kolabCustomRelayPort'] = array();
+	if($arelhost) {
+		$entry['kolabCustomRelayHost'] = $arelhost;
+		if($arelport)
+			$entry['kolabCustomRelayPort'] = $arelport;
+	}
+	else
+		$entry['kolabCustomRelayHost'] = array();
 	if(!$errors) {
 		if($has_chs)
 			$result = ldap_modify($ldap->connection, $sdn, $entry);
