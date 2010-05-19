@@ -65,9 +65,12 @@ function checkuniquemail( $form, $key, $value ) {
   return '';	  
 }
 
-function domain_dn()
+function domain_dn($customer_dn = '')
 {
-  return $_SESSION['base_dn'];
+	if (isset($_SESSION['customer_dn']))
+		return $_SESSION['customer_dn']
+	else
+		return $customer_dn . $_SESSION['base_dn'];
 }
 
 function fill_form_for_modify( &$form, &$ldap_object ) {
@@ -153,7 +156,10 @@ if( !$errors ) {
 		$form->setValues();
 		$content = $form->outputForm();
 	  } else {
-		$dl_root = domain_dn();
+		if($action == 'firstsave')
+			$dl_root = $_SESSION['customer_dn'];
+		else
+			$dl_root = preg_replace('/^cn=[^,]*,(cn=internal,)?/', '', $_REQUEST['dn']);
 
 		if (!empty($_POST['hidden']) && $_POST['hidden'] == "on") 
 		  $visible = false;
