@@ -41,6 +41,7 @@ function getCustomers() {
 			$_SESSION['base_dn'], "(&(objectClass=kolabGroupOfNames)$filter)",
 			array(
 				'cn',
+				'customerQuota',
 				'description'
 			)))) {
 		ldap_sort($ldap->connection,$result,'cn');
@@ -49,6 +50,8 @@ function getCustomers() {
 				$customer[] = array(
 					"cn" => $v["cn"][0],
 					"description" => $v["description"][0],
+					'customerquota' => $v['customerquota']['count'] ?
+							$v['customerquota'][0] : '',
 				);
 		return $customer;
 	}
