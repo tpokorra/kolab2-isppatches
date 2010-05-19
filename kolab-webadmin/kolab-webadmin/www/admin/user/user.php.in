@@ -148,6 +148,42 @@ function checkdelegate( $form, $key, $value ) {
   return '';
 }
 
+function check_valid_alias($form, $key, $value) {
+	global $ldap;
+	$result = checkuniquealias($form, $key, $value);
+	if($result)
+		return $result;
+	if(!$value)
+		return '';
+	$action = trim($_REQUEST['action']);
+	if($action == 'firstsave')
+		$user_dn = 'cn=doesnt really matter,' . $_SESSION['customer_dn'];
+	else {
+		$domainmail = trim($_POST['domain_mail']);
+		$customer = $ldap->customerOfDomain($domainmail);
+		$user_dn = 'cn=doesnt really matter,';
+		if($customer)
+			$user_dn .= "cn=$customer,";
+		$user_dn .= $_SESSION['base_dn'];
+	}
+	$domains = getValidAliasDomainsForUser($user_dn);
+	$aliases = preg_split('/[\n\r]+/', $value);
+	$errors = '';
+	foreach($aliases as $alias) {
+		$pos = strpos($alias, '@');
+		if($pos === false) {
+			$errors .= '<br />' . sprintf(_('Not a valid e-mail address: %s'),
+					$alias);
+			continue;
+		}
+		$domain = substr($alias, $pos + 1);
+		if(!in_array($domain, $domains))
+			$errors .= '<br />' . sprintf(_('May not have alias in domain %s'),
+					$domain);
+	}
+	return substr($errors, 6);
+}
+
 function checksmtprecipient ( $form, $key, $value ) {
   $lst = array_unique( array_filter( array_map( 'trim', preg_split( '/\n/', $value ) ), 'strlen') );
   $str = '';
