@@ -504,7 +504,7 @@ $systemaliasconf = array();
 
 if( $auth->group() == 'admin' ) {
   $domain_count = 0;
-  foreach( $ldap->domains() as $domain ) {
+  foreach( $ldap->domainsOfSelectedCustomer() as $domain ) {
 	if( !exists_group( 'hostmaster@'.$domain ) ||
 		!exists_group( 'postmaster@'.$domain ) ||
 		!exists_group( 'abuse@'.$domain ) ||
