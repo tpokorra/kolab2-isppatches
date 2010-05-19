@@ -3,6 +3,7 @@ require_once('@kolab_php_module_prefix@admin/include/mysmarty.php');
 require_once('@kolab_php_module_prefix@admin/include/headers.php');
 require_once('@kolab_php_module_prefix@admin/include/locale.php');
 require_once('@kolab_php_module_prefix@admin/include/authenticate.php');
+require_once('@kolab_php_module_prefix@admin/include/domainquota.php');
 
 $errors = array();
 
