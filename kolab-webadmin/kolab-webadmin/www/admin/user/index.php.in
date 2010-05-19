@@ -116,7 +116,7 @@ if( !$errors ) {
   }
   $filter = "(&($userfilter)$domainfilter$alphalimit(objectclass=kolabInetOrgPerson)(uid=*)(mail=*)(sn=*))";
   debug("filter is \"$filter\"");
-  $result = ldap_search($ldap->connection, $base_dn, $filter, array( 'uid', 'mail', 'sn', 'cn', 'kolabDeleteflag' ));
+  $result = ldap_search($ldap->connection, $base_dn, $filter, array( 'uid', 'mail', 'sn', 'cn', 'kolabDeleteflag', 'kolabHomeServer' ));
 
   if( $result ) {
 	$count = ldap_count_entries($ldap->connection, $result);
@@ -137,6 +137,8 @@ if( !$errors ) {
 	  $endtime = getmicrotime();
 	  //print "sorting took ".($endtime-$starttime)."<br/>";
 	  $entry = ldap_first_entry($ldap->connection, $result);
+	  imap_timeout(IMAP_OPENTIMEOUT, IMAP_CONNECT_TIMEOUT);
+	  $dead_servers = array();
 	  while( $entry ) {
 		$attrs = ldap_get_attributes($ldap->connection, $entry);
 		$dn = ldap_get_dn($ldap->connection,$entry);
@@ -145,6 +147,32 @@ if( !$errors ) {
 		$mail = $attrs['mail'][0];
 		$sn = $attrs['sn'][0];
 		$cn = $attrs['cn'][0];
+		$kolabhomeserver = $attrs['kolabHomeServer'][0];
+		if(in_array($kolabhomeserver, $dead_servers))
+			// use 'default' values
+			$quota = array('usage' => 0, 'limit' => '0');
+		else {
+			$mbox = imap_open("{" . $kolabhomeserver . ":" . $imap_port . "/notls}",
+					$imap_manager, $imap_password, OP_HALFOPEN);
+			if($mbox) {
+				$quota = @imap_get_quota($mbox, "user/" . $mail);
+				imap_close($mbox);
+			}
+			else {
+				array_push($dead_servers, $kolabhomeserver);
+				// use 'default' values
+				$quota = array('usage' => 0, 'limit' => '0');
+			}
+		}
+		if(is_array($quota)) {
+			if(isset($quota["limit"]))
+				$cyrus_userquota = sprintf(_('%1.1f out of %d MBytes'),
+						$quota["usage"] / 1024, $quota["limit"] / 1024);
+			else
+				$cyrus_userquota = _("No quota limit");
+		}
+		else
+			$cyrus_userquota = _("Unknown");
 		$fn = KolabLDAP::getGivenName($cn, $sn);
 		$dncomp = split( ',', $dn );
 		if( in_array('cn=groups',$dncomp) ) {
@@ -165,6 +193,7 @@ if( !$errors ) {
 							  'type' => $type,
 							  'mail' => $mail,
 							  'uid' => $uid,
+							  'userquota' => $cyrus_userquota,
 							  'deleted' => $deleted );
 		}
 		$entry = ldap_next_entry( $ldap->connection,$entry );
