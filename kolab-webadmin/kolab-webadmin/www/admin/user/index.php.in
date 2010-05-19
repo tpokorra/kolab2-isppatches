@@ -115,7 +115,7 @@ if( !$errors ) {
   }
   $filter = "(&($userfilter)$domainfilter$alphalimit(objectclass=kolabInetOrgPerson)(uid=*)(mail=*)(sn=*))";
   debug("filter is \"$filter\"");
-  $result = ldap_search($ldap->connection, $base_dn, $filter, array( 'uid', 'mail', 'sn', 'cn', 'kolabDeleteflag' ));
+  $result = ldap_search($ldap->connection, $base_dn, $filter, array( 'uid', 'mail', 'sn', 'cn', 'kolabDeleteflag', 'lastLogin' ));
 
   if( $result ) {
 	$count = ldap_count_entries($ldap->connection, $result);
@@ -144,6 +144,11 @@ if( !$errors ) {
 		$mail = $attrs['mail'][0];
 		$sn = $attrs['sn'][0];
 		$cn = $attrs['cn'][0];
+		if(isset($attrs['lastLogin']))
+			$last_login = $attrs['lastLogin'][0] > 0 ?
+					date("d.m.Y H:i", $attrs['lastLogin'][0]) : _("Never");
+		else
+			$last_login = _("Never");
 		$fn = KolabLDAP::getGivenName($cn, $sn);
 		$dncomp = split( ',', $dn );
 		if( in_array('cn=groups',$dncomp) ) {
@@ -164,6 +169,7 @@ if( !$errors ) {
 							  'type' => $type,
 							  'mail' => $mail,
 							  'uid' => $uid,
+							  'lastlogin' => $last_login,
 							  'deleted' => $deleted );
 		}
 		$entry = ldap_next_entry( $ldap->connection,$entry );
