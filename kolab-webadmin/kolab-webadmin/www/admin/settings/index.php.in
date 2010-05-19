@@ -378,7 +378,7 @@ function exists_group( $group ) {
 }
 
 function _getDomainQuotas($d) {
-	$info = array();
+	$info = getDomainQuotas($d);
 	$info["name"] = $d;
 	return $info;
 }
