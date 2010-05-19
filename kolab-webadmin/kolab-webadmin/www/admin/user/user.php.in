@@ -12,6 +12,7 @@ require_once('@kolab_php_module_prefix@admin/include/locale.php');
 require_once('@kolab_php_module_prefix@admin/include/authenticate.php');
 require_once('@kolab_php_module_prefix@admin/include/form.class.php');
 require_once('@kolab_php_module_prefix@admin/include/passwd.php');
+require_once('@kolab_php_module_prefix@admin/include/customer.php');
 
 /**** Functions ***/
 function comment( $s ) {
@@ -43,7 +44,10 @@ function domain_dn()
   }
   return $domain_dn;
   */
-  return $_SESSION['base_dn'];
+	if(isset($_SESSION['customer_dn']))
+		return $_SESSION['customer_dn'];
+	else
+		return $_SESSION['base_dn'];
 }
 
 // return tru if $str ends with $sub
@@ -110,7 +114,7 @@ function checkuniquemail( $form, $key, $value ) {
   }
   if(!$ok) return sprintf(_("Email address %1\$s not in domains %2\$s"), $value, join(", ", $domain));
 
-  if( $ldap->countMail( $_SESSION['base_dn'], $value ) > 0 ) {	
+  if( $ldap->countMail( $_SESSION['customer_dn'], $value ) > 0 ) {
 	return _('User, vCard or distribution list with this email address already exists');
   } else {
 	return '';
@@ -479,7 +483,7 @@ $entries = array( 'givenname' => array( 'name' => _('First Name'),
 					 'comment' => $comment_password ),
 		  'mail' => array( 'name' => _('Primary Email Address'),
 					 'type'       => 'email',
-					 'domains'    => ($auth->group()=='domain-maintainer')?$ldap->domainsForMaintainerDn($auth->dn()):$ldap->domains(),
+					 'domains'    => $ldap->domainsOfSelectedCustomer(),
 				     'validation' => 'notempty',
 				     'comment'    => $comment_mail ),
 		  'uid'    => array( 'name' => _('Unique Identity (UID)'),
