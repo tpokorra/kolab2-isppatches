@@ -558,6 +558,12 @@ switch( $action ) {
    if( $form->isSubmitted() ) {
 	 $mailaddress = trim(strtolower($_POST['user_mail'])) . '@'
 			. trim(strtolower($_POST['domain_mail']));
+	 // Check if max. accounts is reached
+	 $maxAccounts = getMaxAccounts(trim( strtolower( $_POST['domain_mail'])));
+	 if($maxAccounts != false && (countAccounts(trim($_POST['domain_mail']), $mailaddress)
+			>= $maxAccounts) && $auth->group() != "user")
+		array_push($errors, sprintf(_("You may not create new accounts or domain %s (max. %s allowed)"),
+				$_POST['domain_mail'], $maxAccounts));
      if( !$form->validate() ) {
        $form->setValues();
        $content = $form->outputForm();
