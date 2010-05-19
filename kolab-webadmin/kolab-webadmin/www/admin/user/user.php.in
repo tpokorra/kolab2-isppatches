@@ -484,6 +484,9 @@ $entries = array( 'givenname' => array( 'name' => _('First Name'),
 				     'comment'    => $comment_mail ),
 		  'uid'    => array( 'name' => _('Unique Identity (UID)'),
                                      'validation' => 'checkuid',
+									 'value' => ($auth->group() == 'domain-maintainer' && UID_PREFIX_AUTOSET == "true")
+										? (empty($_SESSION['uid_prefix']) ? _('(will be generated automatically)')
+										: getNextFreeUid()) : "",
                                      'comment' => _('Optional - Defaults to Primary Email Address') ),
 		  'kolabhomeserver' => array( 'name' => _('Mailbox Home Server'),
 									  'validation' => 'notempty',
