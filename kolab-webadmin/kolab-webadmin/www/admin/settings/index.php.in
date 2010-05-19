@@ -340,6 +340,14 @@ if($_REQUEST['deletecustomer']) {
 if($_REQUEST['addcustomer']) {
 	$customer_description = trim( $_REQUEST['description'] );
 	$customer_cn = trim($_REQUEST['customer_cn']);
+	$customer_disablegroupware = trim($_REQUEST['disablegroupware']);
+	// this part may seem nonsensical at first, but
+	// keep in mind that $_REQUEST['disablegroupware']
+	// actually states whether to *enable* groupware :-/
+	if($customer_disablegroupware != 'TRUE')
+		$customer_disablegroupware = "TRUE";
+	else
+		unset($customer_disablegroupware);
 	$attrs = array();
 	$attrs['objectClass'] = array('top', 'kolabNamedObject');
 	$attrs['cn'] = $customer_cn;
@@ -366,6 +374,8 @@ if($_REQUEST['addcustomer']) {
 				// Create internal customer group object
 				$attrs['cn'] = $customer_cn;
 				$attrs['description'] = $customer_description;
+				if(isset($customer_disablegroupware))
+					$attrs['disablegroupware'] = $customer_disablegroupware;
 				$attrs['member'] = "";
 				$attrs['objectClass'] = array('top', 'kolabGroupOfNames');
 				if(!($result = ldap_add($ldap->connection, "cn=" . $customer_cn
@@ -387,10 +397,16 @@ if($_REQUEST['addcustomer']) {
 if($_REQUEST['changecustomer']) {
 	$customer_description = trim($_REQUEST['description']);
 	$customer_cn = trim($_REQUEST['customer_cn']);
+	$customer_disablegroupware = trim($_REQUEST['disablegroupware']);
 	if($customer_description == '')
 		$customer_description = array();
+	if($customer_disablegroupware == 'TRUE')
+		$customer_disablegroupware = array();
+	else
+		$customer_disablegroupware = "TRUE";
 	$attrs = array();
 	$attrs['description'] = $customer_description;
+	$attrs['disablegroupware'] = $customer_disablegroupware;
 	if(empty($errors))
 		if(!($result = ldap_modify($ldap->connection, "cn=" . $customer_cn
 				. ",cn=customers,cn=internal," . $_SESSION['base_dn'], $attrs)))
