@@ -24,6 +24,7 @@ require_once('@kolab_php_module_prefix@admin/include/locale.php');
 require_once('@kolab_php_module_prefix@admin/include/authenticate.php');
 require_once('@kolab_php_module_prefix@admin/include/form.class.php');
 require_once('@kolab_php_module_prefix@admin/include/passwd.php');
+require_once('@kolab_php_module_prefix@admin/include/customer.php');
 
 /**** Functions ***/
 function comment( $s ) {
@@ -75,7 +76,19 @@ function fill_form_for_modify( &$form, &$ldap_object ) {
 	$form->entries['lastname']['attrs'] = 'readonly';
   } else {
     $form->entries['domains']['value'] = $ldap->domainsForMaintainerUid($uid);
+	$form->entries['customer_dn']['value'] =
+			$ldap->customersForMaintainerDn("cn=$cn,cn=internal," . $_SESSION['base_dn']);
   }
+}
+
+function CustomerUidPrefixForId($id) {
+	if ($id > 0) {
+		$customer_dn = "cn=" . getCustomerList(true, $id) .
+				",cn=customers,cn=internal," . $_SESSION['base_dn'];
+		return getPrefixForCustomer($customer_dn);
+	}
+	else
+		return false;
 }
 
 /**** Authentication etc. ***/
@@ -131,6 +144,14 @@ $entries = array( 'firstname' => array( 'name' => _('First Name'),
 );
 
 if( $auth->group() == 'admin' || $auth->group() == 'maintainer' ) {
+  $customer_list = getNamedCustomerList();
+  $entries['customer_dn'] = array(
+		'name' => _('Customer'),
+		'type' => 'checklist',
+		'comment' => _('Customers this domain maintainer sould be able to manage'),
+		'options' => $customer_list['cns'],
+		'names' => $customer_list['descriptions']
+  );
   $entries['domains'] = array( 'name' => _("Domains"),
 							   'type' => "checklist",
 							   'validation' => 'notempty',
@@ -220,6 +241,9 @@ switch( $action ) {
 				   $domains = $ldap->domainsForMaintainerDn($dn);
 				   $ldap->removeFromDomainGroups( $dn, $domains );
 				   $ldap->addToDomainGroups( $newdn, $_POST['domains'] );
+				   $customers = $ldap->customersForMaintainerDn($dn);
+				   $ldap->removeFromCustomerGroups($dn, $customers);
+				   $ldap->addToCustomerGroups($newdn, $_POST['customer_dn']);
 				 }
 			   }			   
 			   $dn = $newdn;
@@ -232,10 +256,16 @@ switch( $action ) {
 			 }
 			 if( $auth->group() == 'admin' || $auth->group() == 'maintainer' ) {
 			   if( !$errors ) {
-				 $domains = $ldap->domainsForMaintainerDn($dn);
-				 $remove_domains = array_diff($domains,$_POST['domains']);			   
-				 $ldap->removeFromDomainGroups( $dn, $remove_domains );
-			   $ldap->addToDomainGroups( $newdn, $_POST['domains'] );
+					$domains = $ldap->domainsForMaintainerDn($newdn);
+					$post_doms = is_array($_POST['domains']) ? $_POST['domains'] : array();
+					$remove_domains = array_diff($domains, $post_doms);
+					$ldap->removeFromDomainGroups( $newdn, $remove_domains );
+					$ldap->addToDomainGroups($newdn, $post_doms);
+					$customers = $ldap->customersForMaintainerDn($newdn);
+					$post_cust = is_array($_POST['customer_dn']) ? $_POST['customer_dn'] : array();
+					$remove_customers = array_diff($customers, $post_cust);
+					$ldap->removeFromCustomerGroups($dn, $remove_customers);
+					$ldap->addToCustomerGroups($newdn, $post_cust);
 			   }
 			 }
 		   }
@@ -267,6 +297,7 @@ switch( $action ) {
 		   }
 		   if( $dn && !$errors ) {
 			   $ldap->addToDomainGroups( $dn, $_POST['domains'] );			 
+			   $ldap->addToCustomerGroups($dn, $_POST['customer_dn']);
 		   }
 		   if( !$errors ) {
 			 $messages[] = _('Domain maintainer ').$ldap_object['dn']._(' successfully created');
