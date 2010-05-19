@@ -394,6 +394,8 @@ $smarty->assign( 'quotawarn', $quotawarn );
 $smarty->assign( 'httpallowunauthfb', toboolstr($httpallowunauthfb) );
 $smarty->assign( 'freebusypast', $freebusypast );
 $smarty->assign( 'postfixmydestination', $postfixmydestination );
+$smarty->assign( 'domaindefaults', $domaindefaults );
+$smarty->assign( 'domainquotas', array_map('_getDomainQuotas', $domains));
 $smarty->assign( 'postfixmynetworks', $postfixmynetworks );
 $smarty->assign( 'postfixallowunauth', toboolstr($postfixallowunauth) );
 $smarty->assign( 'postfixrelayhost', $postfixrelayhost );
