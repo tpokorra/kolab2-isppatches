@@ -73,7 +73,10 @@ function extract_ldap_values()
 	unset($postfixmydestination['count']);
 	foreach($postfixmydestination as $id => $domain) {
 		$domain_obj_quotas[$id]["name"] = $domain;
+		$domain_obj_quotas[$id] = getDomainQuotas($domain);
 	}
+	$domaindefaults['domainquota'] = $attrs['domainQuota'][0];
+	$domaindefaults['domaindefaultquota'] = $attrs['domainDefaultQuota'][0];
 	unset( $attrs['postfix-mynetworks']['count'] );
 	$postfixmynetworks = join(', ',$attrs['postfix-mynetworks']);
 	$postfixallowunauth = $attrs['postfix-allow-unauthenticated'][0];
