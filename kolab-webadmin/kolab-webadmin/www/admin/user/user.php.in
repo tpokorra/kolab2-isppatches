@@ -581,6 +581,12 @@ switch( $action ) {
        if( $action == 'firstsave' ) {
 		 if ($ldap_object['uid'] == "") $ldap_object['uid'] = $ldap_object['mail'];
 		 $ldap_object['kolabHomeServer'] = trim($_POST['kolabhomeserver']);
+		 if($ldap_object['kolabHomeServer'] == "") {
+			if(isset($_SESSION["kolabHomeServer"]))
+				$ldap_object['kolabHomeServer'] = $_SESSION["kolabHomeServer"];
+			else
+				$ldap_object['kolabHomeServer'] = $_SESSION["fqdnhostname"];
+		 }
 	   } else {
 		 unset($ldap_object['kolabHomeServer']);
 	   }
