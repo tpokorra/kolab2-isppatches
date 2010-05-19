@@ -265,6 +265,9 @@ if($_REQUEST['changequota']) {
 				. ",cn=domains,cn=internal," . $_SESSION['base_dn'], $attrs)))
 			$errors[] = sprintf(_("LDAP Error: failed to modify domain quotas: %s"),
 					ldap_error($ldap->connection));
+	if(!$errors)
+		if($result = setDomainOwner($_REQUEST['adestination'], $_REQUEST['owner']))
+			$errors[] = $result;
 }
 
 // Delete domain
