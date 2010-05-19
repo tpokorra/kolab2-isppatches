@@ -179,6 +179,7 @@ switch( $action ) {
    if( $form->isSubmitted() ) {
      if( !$form->validate() ) {
        $form->setValues();
+	   if ($action != "firstsave") fill_form_for_modify( $form, $ldap_object );
        $content = $form->outputForm();
      } else {
        debug("Process...");
@@ -244,6 +245,7 @@ switch( $action ) {
 		 $messages[] = _('Administrator ').$ldap_object['dn']._(' successfully modified');
 		 $form->setValues();
 		 $form->entries['action']['value'] = 'save';
+		 $form->entries['uid']['attrs'] = 'readonly';
 		 $content = $form->outputForm();
 		 break;
        } else {
