@@ -3,14 +3,16 @@ require_once('@kolab_php_module_prefix@admin/include/mysmarty.php');
 require_once('@kolab_php_module_prefix@admin/include/headers.php');
 require_once('@kolab_php_module_prefix@admin/include/locale.php');
 require_once('@kolab_php_module_prefix@admin/include/authenticate.php');
+require_once('@kolab_php_module_prefix@admin/include/customer.php');
 
 $errors = array();
 
 /**** Authentication etc. ***/
 $sidx = 'service';
 
-if( $auth->group() != 'admin') {
+if( $auth->group() != 'admin' && $auth->group() != 'maintainer' ) {
    array_push($errors, _("Error: You don't have Permissions to access this Menu"));
+   $access_denied = true;
 }
 
 require_once('@kolab_php_module_prefix@admin/include/menu.php');
@@ -25,6 +27,49 @@ function postvalue( $varname )
 {
   if( isset($_REQUEST[$varname]) && $_REQUEST[$varname] == true ) return 'TRUE';
   else return 'FALSE';
+}
+
+function getCustomers() {
+	global $ldap;
+	if($_SESSION['customer_dn'] == $_SESSION['base_dn']
+			&& !$_SESSION['ignore_customer'])
+		return array();
+	$filter = '';
+	if($_SESSION['customer_dn'] != $_SESSION['base_dn'])
+		$filter = '(cn=' . canonicalizeEntity($_SESSION['customer_dn']) . ')';
+	if(($result = $ldap->search( "cn=customers,cn=internal," .
+			$_SESSION['base_dn'], "(&(objectClass=kolabGroupOfNames)$filter)",
+			array(
+				'cn',
+				'description'
+			)))) {
+		ldap_sort($ldap->connection,$result,'cn');
+		foreach($ldap->getEntries() as $v)
+			if(is_array($v))
+				$customer[] = array(
+					"cn" => $v["cn"][0],
+					"description" => $v["description"][0],
+				);
+		return $customer;
+	}
+	else
+		return false;
+}
+
+function ldap_delete_recursive($ds, $dn, $recursive = false) {
+	if(!$recursive)
+		return ldap_delete($ds,$dn);
+	//search for sub entries
+	$sr = ldap_list($ds, $dn, "ObjectClass=*", array(""));
+	$info = ldap_get_entries($ds, $sr);
+	for($i = 0; $i < $info['count']; $i++) {
+		// delete sub entries recursively
+		$result = ldap_delete_recursive($ds, $info[$i]['dn'], $recursive);
+		if(!$result)
+			// return result code if delete fails
+			return $result;
+	}
+	return ldap_delete($ds,$dn);
 }
 
 function extract_ldap_values()
