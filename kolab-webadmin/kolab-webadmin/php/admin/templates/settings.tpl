@@ -256,6 +256,7 @@
 <table class="contenttable" cellpadding="0" cellspacing="1px">
 	<tr class="contentrow">
 		<th>{tr msg="Customer ID"}</th>
+		<th>{tr msg="UID Prefix"}</th>
 		<th>{tr msg="Customer name"}</th>
 		<th>{tr msg="Action"}</th>
 	</tr>
@@ -263,6 +264,9 @@
 	<tr class="contentrow{cycle values="even,odd"}">
 		<td class="contentcell">{$customers[id].cn|escape:"html"}</td>
 		<form method="post" action="">
+		<td class="contentcell">
+			<input type="text" name="uidprefix" size="15" value="{$customers[id].uidprefix}" />
+		</td>
 		<td class="contentcell" nowrap>
 			<input type="text" name="description" size="25" value="{$customers[id].description}" />
 			<input type="hidden" name="customer_cn" value="{$customers[id].cn}" />
@@ -283,6 +287,9 @@
 		<tr class="contentrow{cycle values="even,odd"}">
 			<td class="contentcell">
 				<input type="text" size="30" name="customer_cn" />
+			</td>
+			<td class="contentcell">
+				<input type="text" size="15" name="uidprefix" />
 			</td>
 			<td class="contentcell">
 				<input type="text" size="25" name="description" />
