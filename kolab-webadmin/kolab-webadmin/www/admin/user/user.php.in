@@ -872,6 +872,15 @@ switch( $action ) {
 			 $messages[] = _('User ').$ldap_object['dn']._(' successfully created');
 			 $heading = _('Create New User');
 			 $form->entries['action']['value'] = 'firstsave';
+			 // Refresh value and set attributes for UID field for creating next user
+			 if(UID_PREFIX_AUTOSET == "true")
+				if($auth->group() == "domain-maintainer")
+					$form->entries['uid'] = array(
+						'value' => getNextFreeUid(),
+						'attrs' => 'readonly',
+						'comment' => _('Optional - Defaults to Primary Email Address'),
+						'name' => _('Unique Identity (UID)')
+					);
 			 $content = $form->outputForm();
 			 break;
 		   }
