@@ -50,11 +50,12 @@ else $page = "1";
 // Get all entries & dynamically split the letters with growing entries
 $entries = array();
 if( !$errors ) {
-  if (isset($_SESSION['base_dn'])) $base_dn = $_SESSION['base_dn'];
+  if (isset($_SESSION['customer_dn'])) $base_dn = $_SESSION['customer_dn'];
+  elseif (isset($_SESSION['base_dn'])) $base_dn = $_SESSION['base_dn'];
   else $base_dn = 'k=kolab';
 
-  $privmembers = array_merge( (array)$ldap->groupMembers( "cn=internal,$base_dn", 'admin' ),
-							  (array)$ldap->groupMembers( "cn=internal,$base_dn", 'maintainer' ) );
+  $privmembers = array_merge( (array)$ldap->groupMembers( "cn=internal," . $_SESSION['base_dn'], 'admin' ),
+							  (array)$ldap->groupMembers( "cn=internal," . $_SESSION['base_dn'], 'maintainer' ) );
 
   $userfilter = "cn=*";
   $filterattr = KolabForm::getRequestVar('filterattr');
@@ -115,7 +116,17 @@ if( !$errors ) {
   }
   $filter = "(&($userfilter)$domainfilter$alphalimit(objectclass=kolabInetOrgPerson)(uid=*)(mail=*)(sn=*))";
   debug("filter is \"$filter\"");
-  $result = ldap_search($ldap->connection, $base_dn, $filter, array( 'uid', 'mail', 'sn', 'cn', 'kolabDeleteflag' ));
+  $attribs = array(
+	'uid',
+	'mail',
+	'sn',
+	'cn',
+	'kolabDeleteflag',
+  );
+  if($_SESSION['ignore_customer'])
+	$result = ldap_search($ldap->connection, $_SESSION['base_dn'], $filter, $attribs);
+  else
+	$result = ldap_list($ldap->connection, $base_dn, $filter, $attribs);
 
   if( $result ) {
 	$count = ldap_count_entries($ldap->connection, $result);
