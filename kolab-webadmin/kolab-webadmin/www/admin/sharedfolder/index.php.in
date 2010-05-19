@@ -37,7 +37,8 @@ function prepare_domain_filter_component($str) {
 // Get all entries & dynamically split the letters with growing entries
 $entries = array();
 if( !$errors ) {
-  if (isset($_SESSION['base_dn'])) $base_dn = $_SESSION['base_dn'];
+  if (isset($_SESSION['customer_dn'])) $base_dn = $_SESSION['customer_dn'];
+  elseif (isset($_SESSION['base_dn'])) $base_dn = $_SESSION['base_dn'];
   else $base_dn = 'k=kolab';
   if( $group == 'domain-maintainer' ) {
 	$domainfilter = '(|'.join('', array_map( 'prepare_domain_filter_component', 
@@ -48,7 +49,10 @@ if( !$errors ) {
   }
   debug("domainfilter=$domainfilter");
   $filter = "(&$domainfilter(objectclass=kolabSharedFolder))";
-  $result = ldap_search($ldap->connection, $base_dn, $filter);
+  if($_SESSION['ignore_customer'])
+	$result = ldap_search($ldap->connection, $_SESSION['base_dn'], $filter);
+  else
+	$result = ldap_list($ldap->connection, $base_dn, $filter);
   if( $result ) {
 	$count = ldap_count_entries($ldap->connection, $result);
 	$title = sprintf(_("Manage Shared Folders (%d Folders)"), $count);
@@ -58,6 +62,14 @@ if( !$errors ) {
 	  while( $entry ) {
 		$attrs = ldap_get_attributes($ldap->connection, $entry);
 		$dn = ldap_get_dn($ldap->connection,$entry);
+		$df_dn = str_replace("," . $_SESSION['base_dn'], "", $dn);
+		if($auth->group() == "manager" || $auth->group() == "admin")
+			if(preg_match("/,/", $df_dn)) {
+				$df_customer = explode(",", $df_dn);
+				$customer = customerDnToDescription($df_customer[1]);
+			}
+			else
+				$customer = _("No customer");
 		$deleted = array_key_exists('kolabDeleteflag',$attrs)?$attrs['kolabDeleteflag'][0]:"FALSE";
 		$cn = $attrs['cn'][0];
 		$kolabhomeserver = $attrs['kolabHomeServer'][0];
@@ -75,6 +87,7 @@ if( !$errors ) {
 							  'cn' => $cn,
 							  'kolabhomeserver' => $kolabhomeserver,
 							  'foldertype' => $folderType,
+							  'customer' => $customer,
 							  'deleted' => $deleted );
 		$entry = ldap_next_entry( $ldap->connection,$entry );
 	}
@@ -93,6 +106,8 @@ $smarty->assign( 'submenuitems',
 				 array_key_exists('submenu', 
 								  $menuitems[$sidx])?$menuitems[$sidx]['submenu']:array() );
 $smarty->assign( 'maincontent', $template );
+if($auth->group() == "manager" || $auth->group() == "admin")
+	$smarty->assign('showcustomer', "true");
 $smarty->display('page.tpl');
 
 /*
