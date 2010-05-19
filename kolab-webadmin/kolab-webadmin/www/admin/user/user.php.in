@@ -609,10 +609,45 @@ switch( $action ) {
 		   $auth->setPassword($_POST['password_0']);
 		 }
        }
-       $ldap_object['mail'] = trim( strtolower( $_POST['user_mail'] ) ).'@'.trim( strtolower( $_POST['domain_mail'] ) );
-       $ldap_object['uid'] = trim( strtolower( $_POST['uid'] ) );
+	   $mailaddress = trim(strtolower($_POST['user_mail'])) . '@'
+			. trim(strtolower($_POST['domain_mail']));
+       $ldap_object['mail'] = $mailaddress;
+	   if(UID_PREFIX_AUTOSET != "true")
+			$ldap_object['uid'] = $_SESSION["uid_prefix"] . trim(strtolower($_POST['uid']));
+	   else {
+			if(isset($_SESSION["uid_prefix"]) && trim($_GET['action']) == "create") {
+				if($auth->group() == "admin" && $_POST['uid'] != "")
+					$ldap_object['uid'] = trim(strtolower($_POST['uid']));
+				else
+					$ldap_object['uid'] = getNextFreeUid();
+			}
+			else
+				$ldap_object['uid'] = trim(strtolower($_POST['uid']));
+	   }
        if( $action == 'firstsave' ) {
-		 if ($ldap_object['uid'] == "") $ldap_object['uid'] = $ldap_object['mail'];
+		 // Check UID with auto value
+		 if(UID_PREFIX_AUTOSET == "true" && !empty($_SESSION['customer_subtree'])) {
+			if($auth->group() == "admin" && $_POST['uid'] != "")
+				$ldap_object['uid'] = trim( strtolower( $_POST['uid'] ) );
+			else {
+				$customer_prefix = getPrefixForCustomer($_SESSION['customer_subtree']);
+				$ldap_object['uid'] = getNextFreeUid($customer_prefix);
+			}
+			if ($ldap_object['uid']=="")
+				$ldap_object['uid'] = $_SESSION["uid_prefix"].trim( strtolower( $_POST['uid'] ) );
+		 }
+		 else if(UID_PREFIX_AUTOSET == "true" && empty($_SESSION['customer_subtree'])
+				&& ($auth->group() == 'domain-maintainer' || ($auth->group() == 'admin'
+				|| $auth->group() == 'maintainer') && empty($_POST['uid'])))
+			$ldap_object['uid'] = $mailaddress;
+		 else
+			// Check UID
+			if(preg_match("/^$|^" . $_SESSION["uid_prefix"] . "$/", $ldap_object['uid']))
+				// Set e-mail = uid if empty or same as prefix
+				$ldap_object['uid'] .= $ldap_object['mail'];
+			else
+				// Set manual typed uid
+				$ldap_object['uid'] = trim(strtolower($_POST['uid']));
 		 $ldap_object['kolabHomeServer'] = trim($_POST['kolabhomeserver']);
 	   } else {
 		 unset($ldap_object['kolabHomeServer']);
