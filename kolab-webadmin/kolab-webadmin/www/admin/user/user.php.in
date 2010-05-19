@@ -550,6 +550,11 @@ if( $auth->group() == 'admin' || $auth->group() == 'maintainer' || $auth->group(
   $entries['accttype']['attrs'] = 'readonly';
   $entries['uid']['attrs'] = 'readonly';
 }
+if($auth->group() == 'domain-maintainer') {
+	$entries['uid']['type'] = 'uid';
+	if(UID_PREFIX_AUTOSET == "true")
+		$entries['uid']['attrs'] = 'readonly';
+}
 $entries['kolabFreeBusyFuture_0'] = array( 'name' => _('Free/Busy interval in days'),
 					   'comment' => _('Leave blank for default (60 days)'),
 					   'validation' => 'checkfreebusyfuture' );
@@ -569,6 +574,11 @@ if( $dn ) {
 
 if( $auth->group() == 'user' ) {
   apply_attributeaccess( $entries );
+}
+elseif($auth->group() == 'domain-maintainer') {
+	if(UID_PREFIX_AUTOSET != "true")
+		// Remove uid prefix in form for domain-maintainer
+		$ldap_object["uid"][0] = str_replace($_SESSION["uid_prefix"], "", $ldap_object["uid"][0]);
 }
 $form =& new KolabForm( 'user', 'createuser.tpl', $entries );
 /***************** Main action swicth **********************/
