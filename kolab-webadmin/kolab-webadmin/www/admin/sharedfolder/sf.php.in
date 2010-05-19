@@ -164,6 +164,8 @@ if( !$errors ) {
   case 'save':	
 	if( $form->isSubmitted() ) {
 	  if( !$form->validate() ) {
+		if($action != "firstsave")
+			fill_form_for_modify($form, $ldap_object);
 		$form->setValues();
 		$content = $form->outputForm();
 	  } else {
