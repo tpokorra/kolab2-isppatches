@@ -12,6 +12,7 @@ require_once('@kolab_php_module_prefix@admin/include/headers.php');
 require_once('@kolab_php_module_prefix@admin/include/locale.php');
 require_once('@kolab_php_module_prefix@admin/include/authenticate.php');
 require_once('@kolab_php_module_prefix@admin/include/form.class.php');
+require_once('@kolab_php_module_prefix@admin/include/customer.php');
 
 /**** Authentication etc. ***/
 $errors = array();
@@ -81,7 +82,11 @@ function process_acl( $uid, $perm )
 	// Special users allowed
 	return "$uid $perm";
   }
-  $res = $ldap->search( $_SESSION['base_dn'], '(&(|(uid='.$ldap->escape($uid).')(mail='.$ldap->escape($uid).')(alias='.$ldap->escape($uid).'))(objectClass=kolabInetOrgPerson))', 
+  if(isset($_SESSION['customer_dn']))
+	$base_dn = $_SESSION['customer_dn'];
+  else
+	$base_dn = $_SESSION['base_dn'];
+  $res = $ldap->search( $base_dn, '(&(|(uid='.$ldap->escape($uid).')(mail='.$ldap->escape($uid).')(alias='.$ldap->escape($uid).'))(objectClass=kolabInetOrgPerson))'
 						array('dn', 'mail' ) );
   if( $ldap->count($res) == 1 ) {
 	// Ok, we have a regular user
@@ -91,7 +96,7 @@ function process_acl( $uid, $perm )
 	return "$mail $perm";
   }
   
-  $res = $ldap->search( $_SESSION['base_dn'], '(&(cn='.$ldap->escape($uid).')(objectClass=kolabGroupOfNames))',
+  $res = $ldap->search( $base_dn, '(&(cn='.$ldap->escape($uid).')(objectClass=kolabGroupOfNames))',
 						array('dn') );
   if( $ldap->count($res) == 1 ) {
 	// Ok, we have a group
@@ -165,7 +170,10 @@ if( !$errors ) {
 		$form->setValues();
 		$content = $form->outputForm();
 	  } else {
-		$sf_root = $_SESSION['base_dn'];   
+		if($action == 'firstsave')
+			$sf_root = $_SESSION['customer_dn'];
+		else
+			$sf_root = preg_replace('/^cn=[^,]*,/', '', $_REQUEST['dn']);
 		$ldap_object = array('objectClass' => 'kolabSharedFolder');
 		// OK, we need to get the name down to lowercase ascii only
 		// we handle a few common cases here
