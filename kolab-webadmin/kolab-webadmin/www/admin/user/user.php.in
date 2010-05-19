@@ -44,7 +44,10 @@ function domain_dn()
   }
   return $domain_dn;
   */
-  return $_SESSION['base_dn'];
+	if(isset($_SESSION['customer_dn']))
+		return $_SESSION['customer_dn'];
+	else
+		return $_SESSION['base_dn'];
 }
 
 // return tru if $str ends with $sub
