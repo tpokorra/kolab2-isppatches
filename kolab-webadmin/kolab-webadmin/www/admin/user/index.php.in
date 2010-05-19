@@ -25,6 +25,7 @@ require_once('@kolab_php_module_prefix@admin/include/authenticate.php');
 require_once('@kolab_php_module_prefix@admin/include/form.class.php');
 
 $errors = array();
+$errsrv = array();
 
 /**** Authentication etc. ***/
 $sidx = 'user';
