@@ -294,6 +294,8 @@ if( $_REQUEST['deletedestination'] ) {
 	$errors[] = sprintf(_("LDAP Error: Failed to delete domain object %s: %s"), $domain_obj_dn,
 						ldap_error($ldap->connection));
   }
+  if($result = removeDomainFromAllCustomers($_REQUEST['adestination']))
+	$errors[] = $result;
 }
 // Add domain
 if( $_REQUEST['adddestination'] ) {
