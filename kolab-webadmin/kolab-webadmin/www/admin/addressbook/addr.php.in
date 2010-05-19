@@ -14,7 +14,8 @@ $contenttemplate = 'formcontainer.tpl';
 $valid_actions = array('firstsave','save','modify','create','delete','kill');
 
 if( $auth->group() != 'maintainer' && $auth->group() != 'admin'
-		&& $auth->group() != 'domain-maintainer') {
+		&& $auth->group() != 'domain-maintainer'
+		|| $_SESSION['groupware_disabled'] == "TRUE") {
    array_push($errors, _("Error: You don't have Permissions to access this Menu") );
 }
 
