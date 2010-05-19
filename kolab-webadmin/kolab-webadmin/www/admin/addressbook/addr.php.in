@@ -13,7 +13,8 @@ $sidx = 'addressbook';
 $contenttemplate = 'formcontainer.tpl';
 $valid_actions = array('firstsave','save','modify','create','delete','kill');
 
-if( $auth->group() != 'maintainer' && $auth->group() != 'admin') {
+if( $auth->group() != 'maintainer' && $auth->group() != 'admin'
+		&& $auth->group() != 'domain-maintainer') {
    array_push($errors, _("Error: You don't have Permissions to access this Menu") );
 }
 
@@ -77,7 +78,8 @@ if (!empty($_REQUEST['action']) &&
     in_array($_REQUEST['action'],$valid_actions)) $action = trim($_REQUEST['action']);
 else array_push($errors, _("Error: need valid action to proceed") );
 
-if (!$errors && $auth->group() != 'maintainer' && $auth->group() != 'admin') 
+if (!$errors && $auth->group() != 'maintainer' && $auth->group() != 'admin'
+		&& $auth->group() != 'domain-maintainer') 
 	 array_push($errors, _("Error: You don't have the required Permissions") );
 
 $attributes = array( 'title', 'cn', 'sn', 'mail', 'alias', 'o',
@@ -133,13 +135,20 @@ if( !$errors ) {
 	break;
   case 'firstsave':
 		$ldap_object = array('objectClass' => array( 'top', 'inetOrgPerson', 'kolabInetOrgPerson' ) );
+		if(!empty($_SESSION['customer_subtree'])) {
+			$customer_dn = $_SESSION['customer_dn'];
+			$customer_dn = substr($customer_dn, strlen($customer_dn) - strlen($_SESSION['base_dn']));
+		}
   case 'save':	
 	if( $form->isSubmitted() ) {
 	  if( !$form->validate() ) {
 		$form->setValues();
 		$content = $form->outputForm();
 	  } else {
-		$addressbook_root = "cn=external,".$_SESSION['base_dn'];   
+		if($action == 'firstsave')
+			$addressbook_root = 'cn=external,' . $_SESSION['customer_dn'];
+		else
+			$addressbook_root = preg_replace('/^cn=[^,]*,/', '', $_REQUEST['dn']);
 		$firstname = trim($_POST['firstname']);
 		$lastname = trim($_POST['lastname']);
 		$ldap_object['sn'] = trim($lastname);
@@ -308,7 +317,7 @@ if( !$errors ) {
 	}
 	
 	if (!$errors) {    
-	  if (!($ldap->deleteObject($dn))) {
+	  if (!($ldap->deleteObject($dn, false, false))) {
 		array_push($errors, sprintf(_("LDAP Error: could not delete %s: %s"),$dn,
 									ldap_error($ldap->connection)));
 	  } else {
