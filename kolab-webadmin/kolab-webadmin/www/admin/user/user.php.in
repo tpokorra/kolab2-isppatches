@@ -514,7 +514,7 @@ $entries['facsimileTelephoneNumber_0'] = array( 'name' => _('Fax Number'),
 						'validation' => 'checkphone' );
 if( $auth->group() == 'admin' || $auth->group() == 'maintainer' || $auth->group() == 'domain-maintainer' ) {
   $entries['cyrus-userquota'] = array( 'name' => _('User Quota in MBytes'),
-				       'comment' => _('Leave blank for unlimited'),
+				       'comment' => _('Leave blank for unlimited or domain default'),
 				       'validation' => 'checkquota');
 } else {
   $entries['givenname']['attrs'] = 'readonly';
