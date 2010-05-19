@@ -809,7 +809,7 @@ switch( $action ) {
 		   $heading = _('Create New User');
 		   $blacklist = array('mail');
 		   $form->entries['action']['value'] = 'firstsave';
-		   $form->outputForm();
+		   $content = $form->outputForm();
 		   break;
 		 }
        }
