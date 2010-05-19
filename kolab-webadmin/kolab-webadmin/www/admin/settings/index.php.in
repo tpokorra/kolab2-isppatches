@@ -306,6 +306,9 @@ if( $_REQUEST['adddestination'] ) {
 	  $errors[] = sprintf(_("LDAP Error: failed to modify kolab configuration object: %s"),
 						  ldap_error($ldap->connection));
 	}
+	if(empty($errors))
+		if($result = addDomainToCustomer($_REQUEST['adestination'], $_REQUEST['owner']))
+			$errors[] = $result;
   }
 }
 
