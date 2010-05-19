@@ -701,8 +701,8 @@ class KolabLDAP {
 
   // Set deleflag on object, or if $delete_now is
   // true, just delete it
-  function deleteObject( $dn, $delete_now = false ) {
-	return $this->_doDeleteObject( $dn, $delete_now, true );
+  function deleteObject( $dn, $delete_now = false, $nukepw = true ) {
+	return $this->_doDeleteObject( $dn, $delete_now, $nukepw );
   }
 
   function deleteSharedFolder( $dn, $delete_now = false ) {
