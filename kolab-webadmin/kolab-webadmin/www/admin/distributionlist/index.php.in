@@ -32,7 +32,8 @@ $errors = array();
 $sidx = 'distlist';
 
 $group = $auth->group();
-if( $group != 'maintainer' && $group != 'admin' && $group != 'domain-maintainer' ) {
+if( $group != 'maintainer' && $group != 'admin' && $group != 'domain-maintainer'
+		|| $_SESSION['groupware_disabled'] == "TRUE" ) {
    array_push($errors, _("Error: You don't have Permissions to access this Menu") );
 }
 
