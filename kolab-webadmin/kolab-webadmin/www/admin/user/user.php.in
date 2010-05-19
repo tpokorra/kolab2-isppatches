@@ -548,6 +548,32 @@ if( $auth->group() == 'user' ) {
   apply_attributeaccess( $entries );
 }
 $form =& new KolabForm( 'user', 'createuser.tpl', $entries );
+
+// Hide koalbhomeserver for Domain-Maintainer and Users
+if($auth->group() == "domain-maintainer" || $auth->group() == "user")
+	unset($form->entries['kolabhomeserver']);
+
+function hideGroupwareFields($fields) {
+	global $form;
+	if(is_array($fields))
+		foreach($fields as $field)
+			unset($form->entries[$field]);
+	else
+		unset($form->entries[$fields]);
+}
+
+// Check disabled groupware if admin edits user
+if($auth->group() == "manager" || $auth->group() == "admin")
+	$groupware_disabled =  $ldap->groupwareForCustomer($dn);
+// If Groupware is disabled hide the following fields
+if($_SESSION['groupware_disabled'] == "TRUE" || $groupware_disabled == "TRUE") {
+	$fields = array("accttype", "kolabinvitationpolicy", "title_0", "o_0", "ou_0",
+			"street_0", "postOfficeBox_0", "postalCode_0", "l_0", "c_0",
+			"telephoneNumber_0", "facsimileTelephoneNumber_0", "kolabFreeBusyFuture_0");
+	hideGroupwareFields($fields);
+	unset($groupware_disabled);
+}
+
 /***************** Main action swicth **********************/
 switch( $action ) {
  case 'firstsave':
