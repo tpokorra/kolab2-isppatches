@@ -393,6 +393,26 @@ function fill_form_for_modify( &$form, $dn, &$ldap_object ) {
   }
 }
 
+function getNextFreeUid($prefix="") {
+	global $ldap;
+	if(!empty($prefix))
+		$uids = $ldap->getUidsForPrefix($_SESSION["base_dn"], $prefix);
+	elseif(isset($_SESSION["customer_dn"]))
+		$uids = $ldap->getUidsForPrefix($_SESSION["customer_dn"]);
+	else
+		$uids = $ldap->getUidsForPrefix($_SESSION["base_dn"]);
+	foreach($uids as $uid)
+		if(preg_match("/^[0-9]+$/", $uid)) {
+			$tmp_uid = $uid;
+			$tmp_uid++;
+			$highest_uid = str_pad($tmp_uid, strlen($uid),"0", STR_PAD_LEFT);
+			unset($tmp_uid);
+		}
+	if(!is_numeric($highest_uid))
+		$highest_uid = UID_PREFIX_START;
+	return ($prefix == '' ? $_SESSION['uid_prefix'] : $prefix) . $highest_uid;
+}
+
 /**** Authentication etc. ***/
 $sidx = 'user';
 
