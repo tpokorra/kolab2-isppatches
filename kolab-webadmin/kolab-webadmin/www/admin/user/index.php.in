@@ -23,8 +23,10 @@ require_once('@kolab_php_module_prefix@admin/include/headers.php');
 require_once('@kolab_php_module_prefix@admin/include/locale.php');
 require_once('@kolab_php_module_prefix@admin/include/authenticate.php');
 require_once('@kolab_php_module_prefix@admin/include/form.class.php');
+require_once('@kolab_php_module_prefix@admin/include/sieveutils.class.php');
 
 $errors = array();
+$errsrv = array();
 
 /**** Authentication etc. ***/
 $sidx = 'user';
@@ -38,6 +40,14 @@ require_once('@kolab_php_module_prefix@admin/include/menu.php');
 
 /**** Submenu for current page ***/
 $menuitems[$sidx]['selected'] = 'selected';
+
+/**** Include Sieve to show forwarding adresses ***/
+if((@include_once '@kolab_php_module_prefix@admin/include/Sieve.php') === false ) {
+	$errors[] = _('Net/Sieve.php is missing. Without that, vacation '
+			. 'settings are not available');
+	$errors[] = _("Suggest your system administrator to run \"pear "
+			. "install http://pear.php.net/get/Net_Sieve\" on the server");
+}
 
 /**** Extract data from LDAP ***/
 
