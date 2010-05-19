@@ -6,6 +6,9 @@ require_once('@kolab_php_module_prefix@admin/include/authenticate.php');
 
 $errors = array();
 
+/**** Examples for password security regular expression ***/
+$pwdexample = array('/(?=.{8})/','/(?=.{10})(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])/');
+
 /**** Authentication etc. ***/
 $sidx = 'service';
 
