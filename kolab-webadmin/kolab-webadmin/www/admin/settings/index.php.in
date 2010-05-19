@@ -89,6 +89,7 @@ function extract_ldap_values()
   global $freebusypast;
   global $postfixmydomain;
   global $postfixmydestination;
+  global $customers;
   global $postfixmynetworks;
   global $postfixallowunauth;
   global $postfixrelayhost;
@@ -115,6 +116,7 @@ function extract_ldap_values()
 	$postfixmydomain = $attrs['postfix-mydomain'][0];
 	$postfixmydestination = $attrs['postfix-mydestination'];
 	unset($postfixmydestination['count']);
+	$customers = getCustomers();
 	unset( $attrs['postfix-mynetworks']['count'] );
 	$postfixmynetworks = join(', ',$attrs['postfix-mynetworks']);
 	$postfixallowunauth = $attrs['postfix-allow-unauthenticated'][0];
