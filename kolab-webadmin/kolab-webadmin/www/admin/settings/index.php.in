@@ -94,6 +94,14 @@ function extract_ldap_values()
 		}
 		else {
 			$entry = ldap_first_entry($ldap->connection, $result);
+			$values = ldap_get_values($ldap->connection, $entry,
+					'kolabCustomRelayHost');
+			if($values['count']) {
+				$kset['relayhost'] = $values[0];
+				$values = ldap_get_values($ldap->connection, $entry,
+						'kolabCustomRelayPort');
+				$kset['relayport'] = $values[0];
+			}
 		}
 		$kolabhostsettings[] = $kset;
 	}
