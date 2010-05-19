@@ -340,6 +340,7 @@ if($_REQUEST['deletecustomer']) {
 if($_REQUEST['addcustomer']) {
 	$customer_description = trim( $_REQUEST['description'] );
 	$customer_cn = trim($_REQUEST['customer_cn']);
+	$customer_kolabhomeserver = trim($_REQUEST['kolabhomeserver']);
 	$attrs = array();
 	$attrs['objectClass'] = array('top', 'kolabNamedObject');
 	$attrs['cn'] = $customer_cn;
@@ -366,6 +367,7 @@ if($_REQUEST['addcustomer']) {
 				// Create internal customer group object
 				$attrs['cn'] = $customer_cn;
 				$attrs['description'] = $customer_description;
+				$attrs['kolabHomeServer'] = $customer_kolabhomeserver;
 				$attrs['member'] = "";
 				$attrs['objectClass'] = array('top', 'kolabGroupOfNames');
 				if(!($result = ldap_add($ldap->connection, "cn=" . $customer_cn
