@@ -114,7 +114,7 @@ function checkuniquemail( $form, $key, $value ) {
   }
   if(!$ok) return sprintf(_("Email address %1\$s not in domains %2\$s"), $value, join(", ", $domain));
 
-  if( $ldap->countMail( $_SESSION['base_dn'], $value ) > 0 ) {	
+  if( $ldap->countMail( $_SESSION['customer_dn'], $value ) > 0 ) {
 	return _('User, vCard or distribution list with this email address already exists');
   } else {
 	return '';
