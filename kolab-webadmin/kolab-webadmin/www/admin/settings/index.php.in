@@ -358,6 +358,9 @@ if($_REQUEST['deletecustomer']) {
 if($_REQUEST['addcustomer']) {
 	$customer_description = trim( $_REQUEST['description'] );
 	$customer_cn = trim($_REQUEST['customer_cn']);
+	$customer_quota = trim($_REQUEST['customerquota']);
+	if(!$customer_quota || !is_numeric($customer_quota))
+		$customer_quota = 0;
 	$attrs = array();
 	$attrs['objectClass'] = array('top', 'kolabNamedObject');
 	$attrs['cn'] = $customer_cn;
@@ -386,6 +389,7 @@ if($_REQUEST['addcustomer']) {
 				$attrs['description'] = $customer_description;
 				$attrs['member'] = "";
 				$attrs['objectClass'] = array('top', 'kolabGroupOfNames');
+				$attrs['customerQuota'] = $customer_quota;
 				if(!($result = ldap_add($ldap->connection, "cn=" . $customer_cn
 						. ",cn=customers,cn=internal," . $_SESSION['base_dn'],
 						$attrs)))
@@ -405,10 +409,28 @@ if($_REQUEST['addcustomer']) {
 if($_REQUEST['changecustomer']) {
 	$customer_description = trim($_REQUEST['description']);
 	$customer_cn = trim($_REQUEST['customer_cn']);
+	$customer_quota = trim($_REQUEST['customerquota']);
+	if(!is_numeric($already_used = getCustomerQuotaUsed($customer_cn))) {
+		$errors[] = $already_used;
+		$already_used = 0;
+	}
+	$customer_min_quota = getCustomerUsedDomainQuota($customer_cn);
 	if($customer_description == '')
 		$customer_description = array();
 	$attrs = array();
 	$attrs['description'] = $customer_description;
+	if(!preg_match('/^\d*$/', $customer_quota))
+		$errors[] = sprintf(_('Mail quota for customer %s must be an integer'),
+				$customer_description);
+	else if($customer_quota && $customer_quota < $already_used)
+		$errors[] = sprintf(_('Mail quota for customer %s cannot be set below '
+				. '%d MBytes, as this much is already being used'),
+				$customer_description, $already_used);
+	else if($customer_quota && $customer_quota < $customer_min_quota)
+		$errors[] = sprintf(_('Mail quota for customer %s cannot be set below '
+				. '%d MBytes, as this much is already being used'),
+				$customer_description, $customer_min_quota);
+	$attrs['customerQuota'] = $customer_quota ? $customer_quota : 0;
 	if(empty($errors))
 		if(!($result = ldap_modify($ldap->connection, "cn=" . $customer_cn
 				. ",cn=customers,cn=internal," . $_SESSION['base_dn'], $attrs)))
