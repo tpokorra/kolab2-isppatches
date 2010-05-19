@@ -137,7 +137,7 @@ function toboolstr( $b ) { return ( $b == 'TRUE' )?'true':'false'; }
 
 extract_ldap_values();
 
-$domains = $ldap->domains();
+$domains = $ldap->domainsOfSelectedCustomer();
 $domain_count = 0;
 foreach( $domains as $domain ) {
   // Write back to LDAP
@@ -153,7 +153,12 @@ foreach( $domains as $domain ) {
 						'cn' => $gadr,
 						'mail' => $gadr,
 						'member' => $dn );
-		if( !ldap_add( $ldap->connection, "cn=$gadr,".$_SESSION['base_dn'], $attrs ) ) {
+		$domainOwner = $ldap->customerOfDomain($domain);
+		if($domainOwner)
+			$aliasSubtree = "cn=$domainOwner," . $_SESSION['base_dn'];
+		else
+			$aliasSubtree = $_SESSION['base_dn'];
+		if(!ldap_add($ldap->connection, "cn=$gadr," . $aliasSubtree, $attrs)) {
 		  $errors[] = sprintf(_("LDAP Error: Failed to add distribution list %s: %s"), $gadr, $ldap->error());
 		} else {
 		  $messages[] = sprintf( _("Successfully created distribution list %s"), $gadr);
