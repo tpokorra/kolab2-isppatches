@@ -560,6 +560,8 @@ switch( $action ) {
    $form->entries['mail']['validation'] = array( $form->entries['mail']['validation'], 'checkuniquemail');
  case 'save':
    if( $form->isSubmitted() ) {
+	 $mailaddress = trim(strtolower($_POST['user_mail'])) . '@'
+			. trim(strtolower($_POST['domain_mail']));
      if( !$form->validate() ) {
        $form->setValues();
        $content = $form->outputForm();
