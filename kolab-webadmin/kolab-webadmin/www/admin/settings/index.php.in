@@ -47,6 +47,7 @@ function extract_ldap_values()
   global $postfixrelayhost;
   global $postfixrelayport;
   global $kolabhost;
+  global $kolabhostsettings;
   global $kolabfilterverifyfrom;
   global $kolabfilterallowsender;
   global $kolabfilterrejectforgedfrom;
@@ -79,6 +80,23 @@ function extract_ldap_values()
 	$kolabfilterallowsender = $attrs['kolabfilter-allow-sender-header'][0];
 	$kolabfilterrejectforgedfrom = $attrs['kolabfilter-reject-forged-from-header'][0];
 	ldap_free_result($result);
+	// custom per-host settings
+	$kolabhostsettings = array();
+	foreach($kolabhost as $khost) {
+		$kset = array();
+		$sdn = 'kolabHostRef=' . $ldap->dn_escape($khost) . ',k=kolab,'
+				. $_SESSION['base_dn'];
+		$result = ldap_read($ldap->connection, $sdn,
+				'(objectClass=kolabHostSettings)');
+		if($result === FALSE) {
+			if(ldap_errno($ldap->connection) != 32)
+				$errors[] = ldap_error($ldap->connection);
+		}
+		else {
+			$entry = ldap_first_entry($ldap->connection, $result);
+		}
+		$kolabhostsettings[] = $kset;
+	}
   }
 }
 
