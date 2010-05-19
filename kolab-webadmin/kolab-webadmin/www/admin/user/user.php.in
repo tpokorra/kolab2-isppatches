@@ -559,6 +559,35 @@ switch( $action ) {
    if( $form->isSubmitted() ) {
 	 $mailaddress = trim(strtolower($_POST['user_mail'])) . '@'
 			. trim(strtolower($_POST['domain_mail']));
+	 // Check domain default quota
+	 $domainquota = getDomainQuotas($domainmail = trim($_POST['domain_mail']));
+	 $user = trim($_POST['cyrus-userquota']);
+	 $user_prev = $dn ? getUserQuotaByDN($dn) : 0;
+	 $domain = $domainquota["domainquota"];
+	 $default = $domainquota["domaindefaultquota"];
+	 $used = $domain ? $domainquota["quotainuse"] : getDomainQuotaInUse($domainmail);
+	 if(!preg_match('/^\d*$/', $user))
+		$errors[] = sprintf(_('User quota must be an integer, not %s'), $user);
+	 else if($user) {
+		// user provided quota, need to check it
+		if($default && $user > $default)
+			$errors[] = sprintf(_('User Quota exceeds maximum size for user (max. %s MBytes)'),
+					$default);
+		else if($domain && $user + $used > $domain)
+			$errors[] = sprintf(_('User Quota exceeds Domain Quota (%s MBytes left out of %s MBytes)'),
+					$domain - $used, $domain);
+	 }
+	 else
+		// find our own quota
+		if($default) {
+			$user = min($default, $domain ? $domain - $used : $default);
+			if($user <= 0)
+				$errors[] = sprintf(_('No Quota left to create another user for domain %s'),
+						$domainmail);
+		}
+		else
+			$user = '';
+	 $_POST['cyrus-userquota'] = $user;
      if( !$form->validate() ) {
        $form->setValues();
        $content = $form->outputForm();
