@@ -18,7 +18,8 @@ $errors = array();
 /**** Authentication etc. ***/
 $sidx = 'addressbook';
 
-if( $auth->group() != 'maintainer' && $auth->group() != 'admin') {
+if( $auth->group() != 'maintainer' && $auth->group() != 'admin'
+		&& $auth->group() != 'domain-maintainer') {
   debug("auth->group=".$auth->group());
   array_push($errors, _("Error: You don't have Permissions to access this Menu"));
 }
@@ -39,7 +40,8 @@ else $page = "1";
 // Get all entries & dynamically split the letters with growing entries
 $entries = array();
 if( !$errors ) {
-  if (isset($_SESSION['base_dn'])) $base_dn = $_SESSION['base_dn'];
+  if (isset($_SESSION['customer_dn'])) $base_dn = $_SESSION['customer_dn'];
+  elseif (isset($_SESSION['base_dn'])) $base_dn = $_SESSION['base_dn'];
   else $base_dn = 'k=kolab';
   $userfilter = "cn=*";
   $filterattr = KolabForm::getRequestVar('filterattr');
@@ -75,7 +77,10 @@ if( !$errors ) {
 	}
   }
   $filter = "(&($userfilter)$alphalimit(objectclass=inetOrgPerson)(!(uid=*))(sn=*))";
-  $result = ldap_search($ldap->connection, $base_dn, $filter);
+  if($_SESSION['ignore_customer'])
+	$result = ldap_search($ldap->connection, $_SESSION['base_dn'], $filter);
+  else
+	$result = ldap_list($ldap->connection, 'cn=external,' . $base_dn, $filter);
   if( $result ) {
 	$count = ldap_count_entries($ldap->connection, $result);
 	$title = "Manage Address Book ($count Addresses)";
