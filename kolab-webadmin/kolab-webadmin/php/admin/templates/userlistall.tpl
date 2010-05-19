@@ -58,7 +58,25 @@
 	   <td class="contentcell" title="Unknown Account Type" align="center">?</td>
 	{/if}
 	   <td class="contentcell">{$entries[id].sn|escape:"html"}, {$entries[id].fn|escape:"html"}</td>
-	   <td class="contentcell"><a href="mailto:{$entries[id].mail|escape:"html"}">{$entries[id].mail|escape:"html"}</a></td>
+		<td class="contentcell">
+			<a href="mailto:{$entries[id].mail|escape:"html"}">{$entries[id].mail|escape:"html"}</a>
+			{if $entries[id].alias != ''}
+				<br />
+				{tr msg="Alias"}
+			{/if}
+			{section name=aid loop=$entries[id].alias}
+				<br />
+				<a href="mailto:{$entries[id].alias[aid]}">{$entries[id].alias[aid]}</a>
+			{/section}
+			{if $entries[id].forward != ''}
+				<br />
+				{tr msg="Forwarding"}
+			{/if}
+			{section name=fwd loop=$entries[id].forward}
+				<br />
+				<a href="mailto:{$entries[id].forward[fwd]}">{$entries[id].forward[fwd]}</a>
+			{/section}
+		</td>
 	   <td class="contentcell">{$entries[id].uid|escape:"html"}</td>
 	{if $entries[id].deleted neq "FALSE"}
 	   <td class="actioncell" colspan="2">{tr msg="User Deleted, awaiting cleanup..."}</td>
