@@ -125,7 +125,7 @@ if( !$errors ) {
   }
   $filter = "(&($userfilter)$domainfilter$alphalimit(objectclass=kolabInetOrgPerson)(uid=*)(mail=*)(sn=*))";
   debug("filter is \"$filter\"");
-  $result = ldap_search($ldap->connection, $base_dn, $filter, array( 'uid', 'mail', 'sn', 'cn', 'kolabDeleteflag' ));
+  $result = ldap_search($ldap->connection, $base_dn, $filter, array( 'uid', 'mail', 'sn', 'cn', 'kolabDeleteflag', 'kolabHomeServer', 'alias' ));
 
   if( $result ) {
 	$count = ldap_count_entries($ldap->connection, $result);
@@ -152,6 +152,11 @@ if( !$errors ) {
 		$deleted = array_key_exists('kolabDeleteflag',$attrs)?$attrs['kolabDeleteflag'][0]:"FALSE";
 		$uid = $attrs['uid'][0];
 		$mail = $attrs['mail'][0];
+		if(isset($attrs['alias']))
+			$alias = $attrs['alias'];
+		else
+			$alias = "";
+		$kolabhomeserver = $attrs['kolabHomeServer'][0];
 		$sn = $attrs['sn'][0];
 		$cn = $attrs['cn'][0];
 		$fn = KolabLDAP::getGivenName($cn, $sn);
@@ -168,12 +173,30 @@ if( !$errors ) {
 
 		// skip admins and maintainers
 		if( !array_key_exists( $dn, $privmembers ) ) {
+		  // Check sieve for forwarding address
+		  if(HIDE_FORWARD_IN_USER_LIST != 'true' && !in_array($kolabhomeserver, $errsrv)) {
+			$sieve =& new Net_Sieve( "nobody", $_SESSION["php_pw"], $kolabhomeserver,
+					"2000", "", $uid);
+			if($sieve->getError() == "") {
+				$activescript = $sieve->getActive();
+				$script = $sieve->getScript($activescript);
+				$forward = explode(",", SieveUtils::getForwardAddress($script));
+				if(empty($forward[0]))
+					$forward = "";
+				$sieve->disconnect();
+			}
+			else
+				// Add server to error list and skip furter connections
+				$errsrv[] = $kolabhomeserver;
+		  }
 		  $entries[] = array( 'dn' => $dn,
 							  'sn' => $sn,
 							  'fn' => $fn,
 							  'type' => $type,
 							  'mail' => $mail,
 							  'uid' => $uid,
+							  'forward' => $forward,
+							  'alias' => $alias,
 							  'deleted' => $deleted );
 		}
 		$entry = ldap_next_entry( $ldap->connection,$entry );
