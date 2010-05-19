@@ -30,6 +30,15 @@ function postvalue( $varname )
   else return 'FALSE';
 }
 
+function checkPasswordRegEx($regex) {
+	$password_regex = trim($regex);
+	if(empty($regex))
+		return array();
+	if(substr($password_regex, 0, 1) != substr(strrev($password_regex), 0, 1))
+		$password_regex = "/" . $password_regex . "/";
+	return stripslashes($password_regex);
+}
+
 function extract_ldap_values()
 {
   global $ldap;
