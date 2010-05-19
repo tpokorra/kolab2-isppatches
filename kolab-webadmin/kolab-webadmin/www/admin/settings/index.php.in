@@ -338,6 +338,12 @@ function exists_group( $group ) {
   return ( $ldap->count($res) > 0 );
 }
 
+function _getDomainQuotas($d) {
+	$info = array();
+	$info["name"] = $d;
+	return $info;
+}
+
 /**** Insert into template and output ***/
 $smarty = new MySmarty();
 $smarty->assign( 'errors', $errors );
