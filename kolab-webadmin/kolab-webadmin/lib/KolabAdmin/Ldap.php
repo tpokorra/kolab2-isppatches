@@ -563,6 +563,15 @@ class KolabLDAP {
     return $obj;
   }
 
+	function accessibleDomainsOfSelectedCustomer() {
+		global $auth;
+		$cust = $this->domainsOfSelectedCustomer();
+		if($auth->group() != 'domain-maintainer')
+			return $cust;
+		$main = domainsForMaintainerDn($auth->dn());
+		return array_intersect($cust, $main);
+	}
+
   function domainsOfCustomer($customer) {
     $dn = "cn=$customer,cn=customers,cn=internal," . $_SESSION['base_dn'];
     $obj = $this->read($dn);
