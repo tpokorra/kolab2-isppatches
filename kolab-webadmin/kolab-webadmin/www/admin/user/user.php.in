@@ -596,6 +596,8 @@ switch( $action ) {
    $form->entries['mail']['validation'] = array( $form->entries['mail']['validation'], 'checkuniquemail');
  case 'save':
    if( $form->isSubmitted() ) {
+	 $mailaddress = trim(strtolower($_POST['user_mail'])) . '@'
+			. trim(strtolower($_POST['domain_mail']));
      if( !$form->validate() ) {
        $form->setValues();
        $content = $form->outputForm();
@@ -656,7 +658,10 @@ switch( $action ) {
 		   }
 		 }		 
 	   }
-	   $dn_add = "";
+	   if(isset($_SESSION["customer_dn"]))
+			$dn_add = $_SESSION["customer_dn"];
+	   else
+			$dn_add = "";
 
 	   // kolabdelegate
 	   $ldap_object['kolabDelegate'] = array_unique( array_filter( array_map( 'trim', 
@@ -669,7 +674,8 @@ switch( $action ) {
 	   if( !$ldap_object['kolabAllowSMTPRecipient'] && $action == 'firstsave' ) unset($ldap_object['kolabAllowSMTPRecipient']);
 
 
-       if ($auth->group() == "maintainer" || $auth->group() == "admin") {
+       if ($auth->group() == "maintainer" || $auth->group() == "admin"
+			|| $auth->group() == "domain-maintainer") {
 		 // alias
 		 $ldap_object['alias'] = array_unique( array_filter( array_map( 'trim', preg_split( '/\n/', $_POST['alias'] ) ), 'strlen') );	   
 		 if( !$ldap_object['alias'] && $action == 'firstsave' ) unset($ldap_object['alias']);
@@ -687,6 +693,9 @@ switch( $action ) {
 	   else if( $_POST['accttype'] == 2 ) $dn_accttype='cn=groups,';
 	   else if( $_POST['accttype'] == 3 ) $dn_accttype='cn=resources,';
        $domain_dn = $dn_accttype.domain_dn();
+	   // Save correct subtree dsn in case of administrators edit
+	   if(preg_match("/,cn=(.)+" . $_SESSION['base_dn'] . "$/", $dn))
+			$domain_dn = "cn=" . preg_replace("/^cn=(.)+,cn=/", "", $dn);
 	   
        if ($action == "save") {
 		 if (!$errors) {
@@ -788,6 +797,8 @@ switch( $action ) {
 		 if( !$errors ) $messages[] = sprintf(_("User '%s' successfully modified"), $dn);
 		 $form->setValues();
 		 $form->entries['mail']['attrs'] = 'readonly';
+		 if($auth->group() != "domain-maintainer" && $auth->group() != "user")
+			$form->entries['kolabhomeserver']['attrs'] = 'readonly';
 		 $form->entries['kolabhomeserver']['attrs'] = 'readonly';
 		 $form->entries['action']['value'] = 'save';
 		 $form->entries['dn'] = array( 'name' => 'dn',
@@ -797,14 +808,28 @@ switch( $action ) {
        } else {
 		 // firstsave
 		 if (!$errors) {
-		   $dn = "cn=".$ldap->dn_escape($ldap_object['cn']).$dn_add.",".$domain_dn;
+		   if($dn_add == "")
+				$dn_add = $domain_dn;
+		   $dn = "cn=" . $ldap->dn_escape($ldap_object['cn']) . "," . $dn_add;
 		   foreach( $ldap_object as $k => $v ) {
 			 if( $v == array() ) unset($ldap_object[$k]);
 		   }
 		   debug("Calling ldap_add with dn=$dn");
-		   if ($dn && !ldap_add($ldap->connection, $dn, $ldap_object)) 
+		   // If a customer was selected change DN
+		   if ($dn && !ldap_add($ldap->connection, $dn, $ldap_object))
 			 array_push($errors, sprintf(_("LDAP Error: could not add object %s: %s"), $dn,
 										 ldap_error($ldap->connection)));
+		   elseif(!empty($_SESSION['customer_subtree']))
+			// Add user to selected customer group
+			$group_dn = $_SESSION['customer_subtree'];
+		   elseif(isset($_SESSION['customer_dn']))
+			// Add user to domain-maintainers customer group
+			$group_dn = $_SESSION['customer_subtree'];
+		   if(!empty($group_dn))
+			if($group_dn && !ldap_mod_add($ldap->connection, $group_dn, array('member' => $dn)))
+				array_push($errors,
+					sprintf(_("LDAP Error: could not add object %s to customer group: %s"),
+							$dn, ldap_error($ldap->connection)));
 
 		   // Check for mid-air collisions on mail
 		   if( $ldap->countMail( $_SESSION['base_dn'], $ldap_object['mail'], $dn ) > 0 ) {
