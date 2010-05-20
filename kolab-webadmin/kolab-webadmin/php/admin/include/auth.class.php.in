@@ -85,13 +85,13 @@ class KolabAuth {
 								'homeserver'  => '',
 								'ignore'      => 1
 							));
-						array_unshift($customer_dns, array(
-							'dn'          => $_SESSION['base_dn'],
-							'descr'       => '----------------',
-							'subtree'     => '',
-							'homeserver'  => '',
-							'ignore'      => 2
-						));
+						if(count($customer_dns) > 1)
+							array_unshift($customer_dns, array(
+								'dn'          => $_SESSION['base_dn'],
+								'descr'       => '----------------',
+								'subtree'     => '',
+								'ignore'      => 2
+							));
 					}
 					else
 						$customer_dns = array();
