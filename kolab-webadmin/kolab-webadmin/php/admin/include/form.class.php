@@ -216,12 +216,15 @@ class KolabForm {
 	  $str .= '<td><span class="ctrl">'.(join('<br/>',$value['options'])).'</span></td>';
 	} else {
 	  $str .= '<td><table class="contentform">';
+	  $opt_index = 0;
 	  foreach( $value['options'] as $opt ) {
 	    if( is_array( $value['value'] ) ) $checked = ( in_array($opt ,$value['value'] ))?"checked":"";
 	    else $checked = "";
 	    //debug("Checking if $opt is in ".join(",",$value['value'])." :$checked");
 	    $str .= '<tr><td><input name="'.$key.'[]" type="checkbox" value="'.MySmarty::htmlentities($opt).'" '.$value['attrs']." $checked /></td><td>"
-	      .MySmarty::htmlentities($opt).'</td></tr>';
+	      . MySmarty::htmlentities($value['names'] ? $value['names'][$opt_index] : $opt)
+	      . '</td></tr>';
+	    ++$opt_index;
 	  }
 	  $str .= '</table></td>';
 	}
