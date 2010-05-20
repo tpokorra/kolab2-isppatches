@@ -483,7 +483,7 @@ $entries = array( 'givenname' => array( 'name' => _('First Name'),
 					 'comment' => $comment_password ),
 		  'mail' => array( 'name' => _('Primary Email Address'),
 					 'type'       => 'email',
-					 'domains'    => $ldap->domainsOfSelectedCustomer(),
+					 'domains'    => $ldap->accessibleDomainsOfSelectedCustomer(),
 				     'validation' => 'notempty',
 				     'comment'    => $comment_mail ),
 		  'uid'    => array( 'name' => _('Unique Identity (UID)'),
@@ -611,6 +611,8 @@ switch( $action ) {
 		   $auth->setPassword($_POST['password_0']);
 		 }
        }
+       if(!in_array($_POST['domain_mail'], $ldap->accessibleDomainsOfSelectedCustomer()))
+			$errors[] = _('Error: You don\'t have the required Permissions');
 	   $mailaddress = trim(strtolower($_POST['user_mail'])) . '@'
 			. trim(strtolower($_POST['domain_mail']));
        $ldap_object['mail'] = $mailaddress;

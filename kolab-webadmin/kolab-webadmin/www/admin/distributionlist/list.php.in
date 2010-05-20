@@ -68,7 +68,7 @@ function checkuniquemail( $form, $key, $value ) {
 function domain_dn($customer_dn = '')
 {
 	if (isset($_SESSION['customer_dn']))
-		return $_SESSION['customer_dn']
+		return $_SESSION['customer_dn'];
 	else
 		return $customer_dn . $_SESSION['base_dn'];
 }
