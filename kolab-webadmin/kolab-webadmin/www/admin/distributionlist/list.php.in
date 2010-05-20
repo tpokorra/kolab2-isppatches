@@ -113,9 +113,7 @@ if (!empty($_REQUEST['dn'])) $dn = trim($_REQUEST['dn']);
 
 $entries = array( 'cn' => array( 'name' => _('List Name'),
 								 'type' => 'email',
-								 'domains' => ($auth->group()=='domain-maintainer')
-								 ?$ldap->domainsForMaintainerDn($auth->dn())
-								 :$ldap->domains(),
+								 'domains' => $ldap->accessibleDomainsOfSelectedCustomer(),
 								 'validation' => 'notempty',
 								 'comment' => _('Required') ),
 				  'members' => array( 'name' => _('Members'),
@@ -167,6 +165,8 @@ if( !$errors ) {
 		if (!$visible) $dl_root = "cn=internal,".$dl_root;
 
 		$ldap_object = array('objectClass' => 'kolabGroupOfNames');
+		if(!in_array($_POST['domain_cn'], $ldap->accessibleDomainsOfSelectedCustomer()))
+			$errors[] = _('Error: You don\'t have the required Permissions');
 		$cn = strtolower(trim( trim($_POST['user_cn']).'@'.$_POST['domain_cn']));
 
 		// Keep cn and mail in sync
