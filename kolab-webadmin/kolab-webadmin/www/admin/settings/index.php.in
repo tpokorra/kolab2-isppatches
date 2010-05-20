@@ -276,8 +276,7 @@ if( $_REQUEST['adddestination'] ) {
 	$maxAccounts = trim($_REQUEST['maxaccounts']);
 	if(!preg_match("/^(\d)*$/", $maxAccounts))
 		$errors[] = sprintf(_("No. of accounts for domain %s must be integer"), $domainname);
-	if($maxAccounts)
-		$domainquotas['maxAccounts'] = $maxAccounts;
+	$domainquotas['maxAccounts'] = $maxAccounts ? $maxAccounts : array();
 	$attrs = array();
 	$attrs['postfix-mydestination'] = $postfixmydestination;
 	if(!$errors)
