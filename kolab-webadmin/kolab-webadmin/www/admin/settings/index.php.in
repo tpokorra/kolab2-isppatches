@@ -235,7 +235,7 @@ if($_REQUEST['changequota']) {
 				$domainname, $domainaccountsinuse);
 	if($maxaccounts)
 		$attrs['maxAccounts'] = $maxaccounts;
-	else if(isset($domain_obj_quotas["maxaccounts"]))
+	else
 		$attrs['maxAccounts'] = array();
 	// Update LDAP
 	if(!$errors && is_array($attrs))
