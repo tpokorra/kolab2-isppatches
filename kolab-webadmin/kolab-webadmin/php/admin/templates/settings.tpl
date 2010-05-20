@@ -215,6 +215,7 @@
 					{/if}
 				{/section}
 			</select>
+			<input type="submit" name="changequota" value="{tr msg="Change"}" />
 		</td>
 		<td class="actioncell">{strip}
 <input type="hidden" name="adestination" value="{$postfixmydestination[id]}" />
