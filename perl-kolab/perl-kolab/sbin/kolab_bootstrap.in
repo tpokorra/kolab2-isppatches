@@ -607,6 +607,14 @@ if ( $is_master eq "true" ) {
       $mesg && $mesg->code && warn "failed to write entry: ", $mesg->error;
       undef $ldapobject;
 
+      # create customer topnode
+      $ldapobject = newOrExistingLDAPEntry( $ldap, "cn=customers,cn=internal,$base_dn" );
+      $ldapobject->replace('cn' => 'customers', 'objectclass' => ['top','kolabnamedobject']);
+      $ldapobject->dn("cn=customers,cn=internal,$base_dn");
+      $mesg = $ldapobject->update($ldap);
+      $mesg && $mesg->code && warn "failed to write entry: ", $mesg->error;
+      undef $ldapobject;
+
       # create admin group
       newkolabgroupofnames( $ldap, "cn=internal,$base_dn", 'admin', $bind_dn );
 
