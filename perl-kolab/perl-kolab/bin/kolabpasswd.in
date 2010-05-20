@@ -223,7 +223,7 @@ while(<>) {
 	print;
 }
 unlink "$php_cfg.bak";
-chown getpwnam('kolab'), getgrnam('kolab'), $php_cfg;
+chown getpwnam($Kolab::config{'ldapserver_usr'}), getgrnam($Kolab::config{'ldapserver_usr'}), $php_cfg;
 chmod 0644, $php_cfg;
 
 print "Password changed successfully, please be patient...\n";
