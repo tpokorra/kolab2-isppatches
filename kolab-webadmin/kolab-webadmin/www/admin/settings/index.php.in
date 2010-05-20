@@ -452,6 +452,7 @@ function exists_group( $group ) {
 }
 
 function _customerOfDomain($d) {
+	global $ldap;
 	return $ldap->customerOfDomain($d);
 }
 
