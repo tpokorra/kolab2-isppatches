@@ -612,6 +612,17 @@ sub mergeCustomHostSettings {
 	);
 	if($mesg && !$mesg->code()) {
 		my $entry = $mesg->entry(0);
+		my $customRelayHost = $entry->get_value('kolabCustomRelayHost');
+		my $customRelayPort = $entry->get_value('kolabCustomRelayPort');
+		if($customRelayHost) {
+			$Kolab::config{'postfix-relayhost'} = $customRelayHost;
+			if($customRelayPort) {
+				$Kolab::config{'postfix-relayport'} = $customRelayPort;
+			}
+			else {
+				delete $Kolab::config{'postfix-relayport'};
+			}
+		}
 	}
 	Kolab::LDAP::destroy($ldap);
 }
