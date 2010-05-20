@@ -69,7 +69,7 @@ class KolabAuth {
 					if($auth_group == 'domain-maintainer')
 						$customer_dns = $ldap->dnForCustomers($dn, true);
 					else if($auth_group == 'maintainer' || $auth_group == 'admin') {
-						$customer_dns = $ldap->dnForCustomers('', true)
+						$customer_dns = $ldap->dnForCustomers('', true);
 						array_unshift($customer_dns, array(
 							'dn'          => $_SESSION['base_dn'],
 							'descr'       => _('No customer'),
