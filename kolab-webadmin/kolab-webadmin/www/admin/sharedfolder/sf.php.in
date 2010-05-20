@@ -122,9 +122,7 @@ if (!empty($_REQUEST['dn'])) $dn = trim($_REQUEST['dn']);
 
 $entries = array( 'cn' => array( 'name' => _('Folder Name'),
 								 'type' => 'email',
-								 'domains' => ($auth->group()=='domain-maintainer')
-								 ?$ldap->domainsForMaintainerDn($auth->dn())
-								 :$ldap->domains(),
+								 'domains' => $ldap->accessibleDomainsOfSelectedCustomer(),
 								 'validation' => 'notempty',
 								 'comment' => _('Required') ),
 				  'kolabhomeserver' => array( 'name' => _('Folder Location'),
@@ -176,6 +174,10 @@ if( !$errors ) {
 		else
 			$sf_root = preg_replace('/^cn=[^,]*,/', '', $_REQUEST['dn']);
 		$ldap_object = array('objectClass' => 'kolabSharedFolder');
+		// wtf? you don't check this? you don't check this...
+		// omg. i thought this was all for the BSI?
+		if(!in_array($_POST['domain_cn'], $ldap->accessibleDomainsOfSelectedCustomer()))
+			$errors[] = _('Error: You don\'t have the required Permissions');
 		// OK, we need to get the name down to lowercase ascii only
 		// we handle a few common cases here
 		// Really cheesy, but strtolower is latin1 only :-(
