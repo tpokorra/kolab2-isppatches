@@ -595,6 +595,27 @@ sub loadMetaTemplates
 
 }
 
+sub mergeCustomHostSettings {
+	my $key;
+	my $self = $Kolab::config{'fqdnhostname'};
+	my $ldap = Kolab::LDAP::create(
+		$Kolab::config{'ldap_ip'},
+		$Kolab::config{'ldap_port'},
+		$Kolab::config{'bind_dn'},
+		$Kolab::config{'bind_pw'}
+	);
+	my $mesg = $ldap->search(
+		base	=> 'kolabHostRef=' . escape_dn_value($self)
+					. ',k=kolab,' . $Kolab::config{'base_dn'},
+		scope	=> 'base',
+		filter	=> '(objectClass=kolabHostSettings)'
+	);
+	if($mesg && !$mesg->code()) {
+		my $entry = $mesg->entry(0);
+	}
+	Kolab::LDAP::destroy($ldap);
+}
+
 sub rebuildTemplates
 {
     my %args = @_;
@@ -608,6 +629,8 @@ sub rebuildTemplates
     my %runonchange;
 
     my $templatedir = $Kolab::config{"templatedir"};
+
+    mergeCustomHostSettings()
 
     Kolab::log('T', 'Regenerating configuration files', KOLAB_DEBUG );
 
