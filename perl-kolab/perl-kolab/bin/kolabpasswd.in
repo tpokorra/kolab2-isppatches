@@ -214,6 +214,18 @@ undef $ldap;
 rename($tmpfilename,$kolabconfname) || die "Error: could not install new $kolabconfname";
 system("chown $Kolab::config{'ldapserver_usr'}:$Kolab::config{'ldapserver_grp'} $kolabconfname");
 
+# magic kablooie to update webadmin config
+my ($php_pw, $php_cfg) = ($new_password, '@kolab_php_module_prefix@admin/include/config.php');
+$php_pw =~ s/('|\\)/\\$1/g;
+local($^I, @ARGV) = ('.bak', ($php_cfg));
+while(<>) {
+	s/^(\W*\$imap_password\W*=\W*')[^']*/$1$php_pw/;
+	print;
+}
+unlink "$php_cfg.bak";
+chown getpwnam('kolab'), getgrnam('kolab'), $php_cfg;
+chmod 0644, $php_cfg;
+
 print "Password changed successfully, please be patient...\n";
 
 # trigger kolabd to run update
