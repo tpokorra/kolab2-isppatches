@@ -111,6 +111,7 @@ PHP_INCLUDES = php/admin/include/menu.php \
 	php/admin/include/authenticate.php \
 	php/admin/include/locale.php \
 	php/admin/include/Sieve.php \
+	php/admin/include/customer.php \
 	php/admin/include/passwd.php
 
 phpincludesdir = $(phpkolabdir)/include
