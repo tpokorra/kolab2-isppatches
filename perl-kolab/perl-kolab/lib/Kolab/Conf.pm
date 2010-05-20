@@ -415,7 +415,7 @@ access to filter=(&(objectClass=kolabSharedFolder)(cn=*@@@@domain@@@))
 
 EOS
 
-my $dom_acl1 = << 'EOS';
+my $dom_acl1a = << 'EOS';
 # Access to domain groups
 access to dn.children="cn=domains,cn=internal,@@@base_dn@@@"
         by group/kolabGroupOfNames="cn=admin,cn=internal,@@@base_dn@@@" write
@@ -423,11 +423,24 @@ access to dn.children="cn=domains,cn=internal,@@@base_dn@@@"
         by dn="cn=nobody,cn=internal,@@@base_dn@@@" read
 EOS
 
+my $dom_acl1b = << 'EOS';
+# Access to domain groups continue
+access to dn.children="cn=domains,cn=internal,@@@base_dn@@@"
+EOS
+
+my $dom_acl1c = << 'EOS';
+        by * break
+
+EOS
+
 my $dom_acl2 = << 'EOS';
         by group/kolabGroupOfNames="cn=@@@domain@@@,cn=domains,cn=internal,@@@base_dn@@@" read
 EOS
 
 my $dom_acl3 = << 'EOS';
+# Access to domain groups end
+access to dn.subtree="cn=domains,cn=internal,@@@base_dn@@@"
+         by * read
          by * search stop
 EOS
 
@@ -440,12 +453,16 @@ EOS
         @domains =( $Kolab::config{'postfix-mydestination'} );
     }
 
-    ($str = $dom_acl1) =~ s/\@{3}base_dn\@{3}/$Kolab::config{'base_dn'}/g;
+    ($str = $dom_acl1a) =~ s/\@{3}base_dn\@{3}/$Kolab::config{'base_dn'}/g;
     $ret .= $str;
 
     foreach $domain (@domains) {
+        ($str = $dom_acl1b) =~ s/\@{3}base_dn\@{3}/$Kolab::config{'base_dn'}/g;
+        $ret .= $str;
         ($str = $dom_acl2) =~ s/\@{3}domain\@{3}/$domain/g;
         $str =~ s/\@{3}base_dn\@{3}/$Kolab::config{'base_dn'}/g;
+        $ret .= $str;
+        ($str = $dom_acl1c) =~ s/\@{3}base_dn\@{3}/$Kolab::config{'base_dn'}/g;
         $ret .= $str;
     }
 
@@ -458,6 +475,97 @@ EOS
         $ret .= $str;
         Kolab::log('T', "Adding acl for domain '$str'");
     }
+
+my $cust_acl1 = << 'EOS';
+# Access to customer subtree
+access to filter=(disableGroupware=*)
+        by group/kolabGroupOfNames="cn=admin,cn=internal,@@@base_dn@@@" write
+        by group/kolabGroupOfNames="cn=maintainer,cn=internal,@@@base_dn@@@" write
+        by group/kolabGroupOfNames="cn=domain-maintainer,cn=internal,@@@base_dn@@@" write
+        by * read
+
+access to dn.children="cn=customers,cn=internal,@@@base_dn@@@"
+        by group/kolabGroupOfNames="cn=admin,cn=internal,@@@base_dn@@@" write
+        by group/kolabGroupOfNames="cn=maintainer,cn=internal,@@@base_dn@@@" write
+        by group/kolabGroupOfNames="cn=domain-maintainer,cn=internal,@@@base_dn@@@" write
+        by dn="cn=nobody,cn=internal,@@@base_dn@@@" read
+        by anonymous stop
+
+EOS
+
+my $cust_acl2 = << 'EOS';
+# Customer specific access
+access to dn="cn=internal,cn=@@@customer_dn@@@,@@@base_dn@@@" attrs=children
+        by group/kolabGroupOfNames="cn=admin,cn=internal,@@@base_dn@@@" write
+        by group/kolabGroupOfNames="cn=maintainer,cn=internal,@@@base_dn@@@" write
+        by group/kolabGroupOfNames="cn=domain-maintainer,cn=internal,@@@base_dn@@@" write
+
+access to attrs=userPassword
+        by group/kolabGroupOfNames="cn=admin,cn=internal,@@@base_dn@@@" =wx
+        by group/kolabGroupOfNames="cn=maintainer,cn=internal,@@@base_dn@@@" =wx
+        by self =wx
+        by anonymous =x
+        by * none stop
+
+access to dn="cn=internal,cn=@@@customer_dn@@@,@@@base_dn@@@"
+        by dn="cn=nobody,cn=internal,@@@base_dn@@@" read
+        by * search stop
+
+access to dn.subtree="cn=@@@customer_dn@@@,@@@base_dn@@@"
+        by group/kolabGroupOfNames="cn=admin,cn=internal,@@@base_dn@@@" write
+        by group/kolabGroupOfNames="cn=maintainer,cn=internal,@@@base_dn@@@" write
+        by group/kolabGroupOfNames="cn=@@@customer_dn@@@,cn=customers,cn=internal,@@@base_dn@@@" write
+        by dn="cn=nobody,cn=internal,@@@base_dn@@@" read
+        by * none stop
+
+access to dn="cn=@@@customer_dn@@@,@@@base_dn@@@"
+        by group/kolabGroupOfNames="cn=admin,cn=internal,@@@base_dn@@@" write
+        by group/kolabGroupOfNames="cn=maintainer,cn=internal,@@@base_dn@@@" write
+        by group/kolabGroupOfNames="cn=@@@customer_dn@@@,cn=customers,cn=internal,@@@base_dn@@@" write
+        by dn="cn=nobody,cn=internal,@@@base_dn@@@" read
+        by anonymous stop
+
+access to dn="cn=external,cn=@@@customer_dn@@@,@@@base_dn@@@"
+        by group/kolabGroupOfNames="cn=admin,cn=internal,@@@base_dn@@@" write
+        by group/kolabGroupOfNames="cn=maintainer,cn=internal,@@@base_dn@@@" write
+        by group/kolabGroupOfNames="cn=@@@customer_dn@@@,cn=customers,cn=internal,@@@base_dn@@@" write
+        by dn="cn=nobody,cn=internal,@@@base_dn@@@" read
+        by anonymous stop
+
+access to dn.regex="(.*,)?cn=external,cn=@@@customer_dn@@@,@@@base_dn@@@"
+        by group/kolabGroupOfNames="cn=admin,cn=internal,@@@base_dn@@@" write
+        by group/kolabGroupOfNames="cn=maintainer,cn=internal,@@@base_dn@@@" write
+        by group/kolabGroupOfNames="cn=@@@customer_dn@@@,cn=customers,cn=internal,@@@base_dn@@@" write
+        by anonymous stop
+
+EOS
+
+    ($str = $cust_acl1) =~ s/\@{3}base_dn\@{3}/$Kolab::config{'base_dn'}/g;
+    $ret .= $str;
+    my $ldap = Kolab::LDAP::create(
+        $Kolab::config{'ldap_ip'},
+        $Kolab::config{'ldap_port'},
+        $Kolab::config{'bind_dn'},
+        $Kolab::config{'bind_pw'}
+    );
+    my $mesg = $ldap->search(
+        base    => "cn=customers,cn=internal,".$Kolab::config{'base_dn'},
+        scope   => 'sub',
+        filter  => '(&(member=*)(objectclass=kolabgroupofnames))'
+    );
+    my $ldapobject;
+    if ($mesg->code <= 0) {
+        foreach $ldapobject ($mesg->entries) {
+            my $routes = $ldapobject->get_value("cn", asref => 1);
+            foreach (@$routes) {
+                $_ = trim($_);
+                ($str = $cust_acl2) =~ s/\@{3}base_dn\@{3}/$Kolab::config{'base_dn'}/g;
+                $str =~ s/\@{3}customer_dn\@{3}/$_/g;
+                $ret .= $str;
+            }
+        }
+    }
+
     return $ret;
 }
 
