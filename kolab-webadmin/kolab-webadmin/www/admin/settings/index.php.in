@@ -411,6 +411,7 @@ $smarty->assign( 'kolabfilterverifyfrom', toboolstr($kolabfilterverifyfrom) );
 $smarty->assign( 'kolabfilterallowsender', toboolstr($kolabfilterallowsender) );
 $smarty->assign( 'kolabfilterrejectforgedfrom', toboolstr($kolabfilterrejectforgedfrom) );
 $smarty->assign( 'kolabhost', $kolabhost );
+$smarty->assign( 'kolabhostsettings', $kolabhostsettings );
 $smarty->assign( 'menuitems', $menuitems );
 $smarty->assign( 'submenuitems', 
 				 array_key_exists('submenu', 
