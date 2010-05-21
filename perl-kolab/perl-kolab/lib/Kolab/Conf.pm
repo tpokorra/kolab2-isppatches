@@ -641,7 +641,7 @@ sub rebuildTemplates
 
     my $templatedir = $Kolab::config{"templatedir"};
 
-    mergeCustomHostSettings()
+    mergeCustomHostSettings();
 
     Kolab::log('T', 'Regenerating configuration files', KOLAB_DEBUG );
 
