@@ -337,6 +337,7 @@ $smarty->assign( 'menuitems', $menuitems );
 $smarty->assign( 'submenuitems', 
 				 array_key_exists('submenu', 
 								  $menuitems[$sidx])?$menuitems[$sidx]['submenu']:array() );
+$smarty->assign( 'pwdexample', $pwdexample );
 $smarty->assign( 'maincontent', 'settings.tpl' );
 
 $systemaliasconf = array();
