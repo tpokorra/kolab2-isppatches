@@ -253,11 +253,11 @@ if($_REQUEST['changequota']) {
 				$domainname);
 	if($domainquota)
 		$attrs['domainQuota'] = $domainquota;
-	else if(isset($domain_obj_quotas["domainquota"]))
+	else
 		$attrs['domainQuota'] = array();
 	if($domaindefaultquota)
 		$attrs['domainDefaultQuota'] = $domaindefaultquota;
-	else if(isset($domain_obj_quotas["domaindefaultquota"]))
+	else
 		$attrs['domainDefaultQuota'] = array();
 	// Update LDAP
 	if(!$errors && is_array($attrs))
