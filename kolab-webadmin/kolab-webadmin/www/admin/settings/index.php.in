@@ -299,7 +299,7 @@ if( $_REQUEST['addkolabhost'] ) {
 	  $errors[] = sprintf(_("LDAP Error: failed to modify kolab configuration object: %s"),
 						  ldap_error($ldap->connection));
 	}
-	if(/*any custom settings given*/) {
+	if(/*any custom settings given*/false) {
 		if(!$errors) {
 			$chs_dn = 'kolabHostRef=' . $ldap->dn_escape($newKolabHost) . ',k=kolab,'
 					. $_SESSION['base_dn'];
