@@ -563,6 +563,8 @@ switch( $action ) {
    if( $form->isSubmitted() ) {
 	 $mailaddress = trim(strtolower($_POST['user_mail'])) . '@'
 			. trim(strtolower($_POST['domain_mail']));
+	 $owner = getCustomerQuota($custom = $ldap->customerOfDomain($domainmail));
+	 $ownerUsed = getCustomerQuotaUsed($custom);
 	 $user = trim($_POST['cyrus-userquota']);
 	 if(!preg_match('/^\d*$/', $user))
 		$errors[] = sprintf(_('User quota must be an integer, not %s'), $user);
@@ -576,8 +578,6 @@ switch( $action ) {
 		// find our own quota
 		$user = $owner ? $owner - $ownerUsed : '';
 	 $_POST['cyrus-userquota'] = $user;
-	 $owner = getCustomerQuota($custom = $ldap->customerOfDomain($domainmail));
-	 $ownerUsed = getCustomerQuotaUsed($custom);
      if( !$form->validate() ) {
        $form->setValues();
        $content = $form->outputForm();
