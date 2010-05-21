@@ -570,7 +570,7 @@ class KolabLDAP {
 		$cust = $this->domainsOfSelectedCustomer();
 		if($auth->group() != 'domain-maintainer')
 			return $cust;
-		$main = domainsForMaintainerDn($auth->dn());
+		$main = $this->domainsForMaintainerDn($auth->dn());
 		return array_intersect($cust, $main);
 	}
 
