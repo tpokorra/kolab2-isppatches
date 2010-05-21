@@ -298,7 +298,7 @@ class KolabLDAP {
     if(count($entries) > 0) {
       foreach($entries as $val)
         $uids[] = str_replace($prefix, "", $val['uid'][0]);
-      return $uids
+      return $uids;
     }
     else
       return false;
