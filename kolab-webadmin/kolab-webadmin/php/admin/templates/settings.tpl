@@ -138,10 +138,10 @@
 			<input type="text" name="domainquota" size="4" value="{if $domainquotas[id].domainquota!='0'}{$domainquotas[id].domainquota}{/if}" />
 			{tr msg="Default:"}
 			<input type="text" name="domaindefaultquota" size="4" value="{if $domainquotas[id].domaindefaultquota!='0'}{$domainquotas[id].domaindefaultquota}{/if}" />
+			<input type="submit" name="changequota" value="{tr msg="Change"}" />
 		</td>
 		<td class="actioncell">{strip}
 			<input type="hidden" name="adestination" value="{$postfixmydestination[id]}" />
-			<input type="submit" name="changequota" value="{tr msg="Change"}" />
 			<input type="submit" name="deletedestination" value="{tr msg="Delete"}" />
 		{/strip}</td>
 	</tr>
