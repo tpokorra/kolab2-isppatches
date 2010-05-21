@@ -367,7 +367,7 @@ if($_REQUEST['addcustomer']) {
 				// Create internal customer group object
 				$attrs['cn'] = $customer_cn;
 				$attrs['description'] = $customer_description;
-				$attrs['uidPrefix'] = $customer_uidprefix;
+				$attrs['uidPrefix'] = $customer_uidprefix ? $customer_uidprefix : array();
 				$attrs['member'] = "";
 				$attrs['objectClass'] = array('top', 'kolabGroupOfNames');
 				if(!($result = ldap_add($ldap->connection, "cn=" . $customer_cn
@@ -396,7 +396,7 @@ if($_REQUEST['changecustomer']) {
 		$customer_uidprefix = array();
 	$attrs = array();
 	$attrs['description'] = $customer_description;
-	$attrs['uidprefix'] = $customer_uidprefix;
+	$attrs['uidprefix'] = $customer_uidprefix ? $customer_uidprefix : array();
 	if(empty($errors))
 		if(!($result = ldap_modify($ldap->connection, "cn=" . $customer_cn
 				. ",cn=customers,cn=internal," . $_SESSION['base_dn'], $attrs)))
