@@ -579,7 +579,7 @@ switch( $action ) {
 		// find our own quota
 		$user = $owner ? $owner - $ownerUsed : '';
 	 if($owner && $ownerUsed == $owner)
-		$error[] = sprintf(_('No Quota left to create another user for domain %s'), $domainmail);
+		$errors[] = sprintf(_('No Quota left to create another user for domain %s'), $domainmail);
 	 $_POST['cyrus-userquota'] = $user;
      if( !$form->validate() ) {
        $form->setValues();
