@@ -395,7 +395,7 @@ class KolabLDAP {
       ldap_free_result($result);
       return '';
     }
-    $objs = ldap_get_entries($this->connection, $result)
+    $objs = ldap_get_entries($this->connection, $result);
     ldap_free_result($result);
     return $objs[0]['kolabhomeserver'][0];
   }
