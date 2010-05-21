@@ -562,6 +562,21 @@ switch( $action ) {
    if( $form->isSubmitted() ) {
 	 $mailaddress = trim(strtolower($_POST['user_mail'])) . '@'
 			. trim(strtolower($_POST['domain_mail']));
+	 $user = trim($_POST['cyrus-userquota']);
+	 if(!preg_match('/^\d*$/', $user))
+		$errors[] = sprintf(_('User quota must be an integer, not %s'), $user);
+	 else if($user) {
+		// user provided quota, need to check it
+		if($owner && $user + $ownerUsed > $owner)
+			$errors[] = sprintf(_('User Quota exceeds Customer Quota (%d MBytes left out of %d MBytes)'),
+					$owner - $ownerUsed, $owner);
+	 }
+	 else
+		// find our own quota
+		$user = $owner ? $owner - $ownerUsed : '';
+	 $_POST['cyrus-userquota'] = $user;
+	 $owner = getCustomerQuota($custom = $ldap->customerOfDomain($domainmail));
+	 $ownerUsed = getCustomerQuotaUsed($custom);
      if( !$form->validate() ) {
        $form->setValues();
        $content = $form->outputForm();
