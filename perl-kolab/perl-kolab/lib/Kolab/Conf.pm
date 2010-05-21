@@ -35,6 +35,7 @@ use File::stat;
 use Kolab;
 use Kolab::Util;
 use Kolab::LDAP;
+use Net::LDAP::Util qw(escape_dn_value);
 
 require Exporter;
 
