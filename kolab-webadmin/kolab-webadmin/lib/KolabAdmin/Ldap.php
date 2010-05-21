@@ -520,6 +520,10 @@ class KolabLDAP {
 		debug("found ".$entries[$i]['dn'] );
 		$count++;
 	  } 
+	  // you forgot that you counted $entries['count']
+	  // as well; how the fsck(8) did nobody notice
+	  // that until now?
+	  --$count;
 	} else $count += $entries['count'];
 	
 	/* Distribution lists have a mail attr now too,
