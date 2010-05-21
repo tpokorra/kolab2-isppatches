@@ -13,6 +13,7 @@ require_once('@kolab_php_module_prefix@admin/include/authenticate.php');
 require_once('@kolab_php_module_prefix@admin/include/form.class.php');
 require_once('@kolab_php_module_prefix@admin/include/passwd.php');
 require_once('@kolab_php_module_prefix@admin/include/customer.php');
+require_once('@kolab_php_module_prefix@admin/include/domainquota.php');
 
 /**** Functions ***/
 function comment( $s ) {
