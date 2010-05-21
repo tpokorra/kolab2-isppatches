@@ -141,6 +141,7 @@
 		</td>
 		<td class="actioncell">{strip}
 			<input type="hidden" name="adestination" value="{$postfixmydestination[id]}" />
+			<input type="submit" name="changequota" value="{tr msg="Change"}" />
 			<input type="submit" name="deletedestination" value="{tr msg="Delete"}" />
 		{/strip}</td>
 	</tr>
