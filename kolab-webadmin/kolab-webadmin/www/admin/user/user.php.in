@@ -563,6 +563,7 @@ switch( $action ) {
    if( $form->isSubmitted() ) {
 	 $mailaddress = trim(strtolower($_POST['user_mail'])) . '@'
 			. trim(strtolower($_POST['domain_mail']));
+	 $domainmail = trim($_POST['domain_mail']);
 	 $owner = getCustomerQuota($custom = $ldap->customerOfDomain($domainmail));
 	 $ownerUsed = getCustomerQuotaUsed($custom);
 	 $user = trim($_POST['cyrus-userquota']);
