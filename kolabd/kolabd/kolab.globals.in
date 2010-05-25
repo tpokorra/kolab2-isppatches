@@ -90,3 +90,10 @@ kolab_wui : @kolab_wui@
 syncrepl_cookie_file : @kolab_statedir@/syncrepl_cookie
 imap_confdir : @imap_confdir@
 imappartitions_script : @sbindir@/kolab_imappartitions
+freebusy_confdir: @freebusy_confdir@
+freebusy_usr: @freebusy_usr@
+freebusy_grp: @freebusy_grp@
+freebusy_log_type: @freebusy_log_type@
+freebusy_log_name: @freebusy_log_name@
+freebusy_logdir: @freebusy_logdir@
+freebusy_cachedir: @freebusy_cachedir@
