@@ -37,6 +37,18 @@ function getServiceName() {
 	# Perhaps better use:
 	# lsb_release -i | cut -f2
 	case $system in
+	redhat)
+		case $sname in
+			apache) SERVICE="httpd" ;;
+			openldap) SERVICE="@LDAPD@" ;;
+			sasl) SERVICE="saslauthd" ;;
+			imapd) SERVICE="cyrus-imapd" ;;
+			amavisd) SERVICE="amavisd" ;;
+			clamav) SERVICE="clamd.amavisd" ;;
+			*) SERVICE=$sname
+		esac
+		;;
+
 	opensuse)
 		case $sname in
 			apache) SERVICE="apache2" ;;
