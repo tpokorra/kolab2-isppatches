@@ -1683,8 +1683,8 @@ msgid "IMAP/SSL Service (TCP port 993)"
 msgstr "IMAP/SSL-Dienst (TCP-Port 993)"
 
 #: ../../../www/admin/settings/index.php.in:277
-msgid "Sieve service (TCP port 2000)"
-msgstr "Sieve-Dienst (TCP-Port 2000)"
+msgid "Sieve service (TCP port %s)"
+msgstr "Sieve-Dienst (TCP-Port %s)"
 
 #: ../../../www/admin/settings/index.php.in:278
 msgid "FreeBusy Service via HTTP (in addition to HTTPS)"

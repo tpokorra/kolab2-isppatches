@@ -1,0 +1,79 @@
+From: Gunnar Wrobel <p@rdus.de>
+Subject: [PATCH] t/turba/HK/GW/ZpushAnnotations
+
+Allows to modify the Zpush configuration.
+
+Signed-off-by: Gunnar Wrobel <p@rdus.de>
+
+diff -Naur a/addressbooks/edit.php b/addressbooks/edit.php
+--- a/addressbooks/edit.php	2010-05-10 08:30:03.000000000 +0200
++++ b/addressbooks/edit.php	2010-05-10 08:31:19.000000000 +0200
+@@ -53,6 +53,26 @@
+ 
+ $vars->set('name', $addressbook->get('name'));
+ $vars->set('description', $addressbook->get('desc'));
++
++$params = @unserialize($addressbook->get('params'));
++if (isset($params['activesync'])) {
++    if ($params['activesync']['NAMESPACE'] == Horde_Kolab_Storage_Namespace::PERSONAL) {
++        $default = 1;
++    } else {
++        $default = 0;
++    }
++    $devices = $params['activesync']['DEVICE'];
++    if (!empty($devices)) {
++        $folders = $params['activesync']['FOLDER'];
++        $vars->set('activesync_devices', implode('|', array_keys($devices)));
++        foreach ($devices as $id => $config) {
++            $vars->set('activesync_' . $id . '_sync', isset($folders[$id]['SYNC']) ? $folders[$id]['SYNC'] : $default);
++            $vars->set('activesync_' . $id . '_alarm', isset($folders[$id]['ALARM']) ? $folders[$id]['ALARM'] : $default);
++        }
++        $form->activeSyncSegment($devices, $default);
++    }
++}
++
+ $title = $form->getTitle();
+ require TURBA_TEMPLATES . '/common-header.inc';
+ require TURBA_TEMPLATES . '/menu.inc';
+diff -Naur a/lib/Forms/EditAddressBook.php b/lib/Forms/EditAddressBook.php
+--- a/lib/Forms/EditAddressBook.php	2010-05-10 08:30:05.000000000 +0200
++++ b/lib/Forms/EditAddressBook.php	2010-05-10 08:32:28.000000000 +0200
+@@ -46,10 +46,38 @@
+         $this->setButtons(array(_("Save")));
+     }
+ 
++    function activeSyncSegment($devices, $default)
++    {
++        $this->addHidden('', 'activesync_devices', 'text');
++        $this->addVariable('', '', 'spacer');
++        $this->addVariable(_("Synchronize this calendar with the following ActiveSync devices"), '', 'header');
++        foreach ($devices as $id => $config) {
++            $this->addVariable($id, 'activesync_' . $id . '_sync', 'boolean', false);
++        }
++        $this->addVariable('', '', 'spacer');
++        $this->addVariable(_("Activate alarms for this calendar on the following ActiveSync devices"), '', 'header');
++        foreach ($devices as $id => $config) {
++            $this->addVariable($id, 'activesync_' . $id . '_alarm', 'boolean', false);
++        }
++    }
++
+     function execute()
+     {
+         $this->_addressbook->set('name', $this->_vars->get('name'));
+         $this->_addressbook->set('desc', $this->_vars->get('description'));
++
++        if ($this->_vars->get('activesync_devices', '')) {
++            $params = array();
++            $ids = explode('|', $this->_vars->get('activesync_devices', ''));
++            foreach ($ids as $id) {
++                $sync = $this->_vars->get('activesync_' . $id . '_sync');
++                $alarm = $this->_vars->get('activesync_' . $id . '_alarm');
++                $params['activesync']['FOLDER'][$id]['SYNC'] = empty($sync) ? 0 : 1;
++                $params['activesync']['FOLDER'][$id]['ALARM'] = empty($alarm) ? 0 : 1;
++            }
++            $this->_addressbook->set('params', serialize($params));
++        }
++
+         $result = $this->_addressbook->save();
+         if (is_a($result, 'PEAR_Error')) {
+             return PEAR::raiseError(sprintf(_("Unable to save address book \"%s\": %s"), $id, $result->getMessage()));

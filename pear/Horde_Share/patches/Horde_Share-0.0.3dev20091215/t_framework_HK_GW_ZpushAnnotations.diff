@@ -1,0 +1,13 @@
+diff -Naur a/a/a/Share/kolab.php b/a/a/Share/kolab.php
+--- a/a/a/Share/kolab.php	2010-05-05 07:51:03.742452620 +0200
++++ b/a/a/Share/kolab.php	2010-05-06 07:46:45.088087728 +0200
+@@ -524,7 +524,8 @@
+             $params = @unserialize($this->_folder->getAttribute('params'));
+             $default = array('source' => 'kolab',
+                              'default' => $this->get('default'),
+-                             'name' => $this->get('name'));
++                             'name' => $this->get('name'),
++                             'activesync'  => $this->_folder->getActiveSync());
+             $type = $this->get('type');
+             if (!is_a($type, 'PEAR_Error') && $type == 'event') {
+                 $default = array_merge($default, array(
