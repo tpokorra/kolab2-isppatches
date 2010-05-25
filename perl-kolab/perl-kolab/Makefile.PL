@@ -77,7 +77,7 @@ bin/%: bin/%.in
 	cat \$< | sed -e 's#\@CONFIG_DIR@#$CONFIG#g' > \$@
 
 sbin/%: sbin/%.in
-	cat \$< | sed -e 's#\@CONFIG_DIR@#$CONFIG#g;s/\@ADMINPHP@/$ADMINPHP/g' > \$@.tmp
+	cat \$< | sed -e 's#\@CONFIG_DIR@#$CONFIG#g;s#\@ADMINPHP@#$ADMINPHP#g' > \$@.tmp
 	cat \$@.tmp | sed -e 's#\@VERSION@#\$(VERSION)#g' > \$@
 	rm \$@.tmp
 	\$(FIXIN) \$@
