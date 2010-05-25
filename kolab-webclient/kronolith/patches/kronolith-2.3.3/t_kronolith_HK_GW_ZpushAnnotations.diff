@@ -1,0 +1,87 @@
+From: Gunnar Wrobel <p@rdus.de>
+Subject: [PATCH] t/kronolith/HK/GW/ZpushAnnotations
+
+Allows to modify the Zpush configuration.
+
+Signed-off-by: Gunnar Wrobel <p@rdus.de>
+
+diff -Naur a/calendars/edit.php b/calendars/edit.php
+--- a/calendars/edit.php	2010-05-04 22:00:35.670897983 +0200
++++ b/calendars/edit.php	2010-05-06 07:45:36.406431213 +0200
+@@ -46,7 +46,6 @@
+             $notification->push(sprintf(_("The calendar \"%s\" has been saved."), $original_name), 'horde.success');
+         }
+     }
+-
+     header('Location: ' . Horde::applicationUrl('calendars/', true));
+     exit;
+ }
+@@ -57,6 +56,23 @@
+ if (isset($params['fbrelevance'])) {
+     $vars->set('fbrelevance', $params['fbrelevance']);
+ }
++if (isset($params['activesync'])) {
++    if ($params['activesync']['NAMESPACE'] == Horde_Kolab_Storage_Namespace::PERSONAL) {
++        $default = 1;
++    } else {
++        $default = 0;
++    }
++    $devices = $params['activesync']['DEVICE'];
++    if (!empty($devices)) {
++        $folders = $params['activesync']['FOLDER'];
++        $vars->set('activesync_devices', implode('|', array_keys($devices)));
++        foreach ($devices as $id => $config) {
++            $vars->set('activesync_' . $id . '_sync', isset($folders[$id]['SYNC']) ? $folders[$id]['SYNC'] : $default);
++            $vars->set('activesync_' . $id . '_alarm', isset($folders[$id]['ALARM']) ? $folders[$id]['ALARM'] : $default);
++        }
++        $form->activeSyncSegment($devices, $default);
++    }
++}
+ $title = $form->getTitle();
+ require KRONOLITH_TEMPLATES . '/common-header.inc';
+ require KRONOLITH_TEMPLATES . '/menu.inc';
+diff -Naur a/lib/Forms/EditCalendar.php b/lib/Forms/EditCalendar.php
+--- a/lib/Forms/EditCalendar.php	2010-05-04 22:00:36.210910903 +0200
++++ b/lib/Forms/EditCalendar.php	2010-05-05 10:30:48.073386331 +0200
+@@ -49,13 +49,40 @@
+         $this->setButtons(array(_("Save")));
+     }
+ 
++    function activeSyncSegment($devices, $default)
++    {
++        $this->addHidden('', 'activesync_devices', 'text');
++        $this->addVariable('', '', 'spacer');
++        $this->addVariable(_("Synchronize this calendar with the following ActiveSync devices"), '', 'header');
++        foreach ($devices as $id => $config) {
++            $this->addVariable($id, 'activesync_' . $id . '_sync', 'boolean', false);
++        }
++        $this->addVariable('', '', 'spacer');
++        $this->addVariable(_("Activate alarms for this calendar on the following ActiveSync devices"), '', 'header');
++        foreach ($devices as $id => $config) {
++            $this->addVariable($id, 'activesync_' . $id . '_alarm', 'boolean', false);
++        }
++    }
++
+     function execute()
+     {
+         $original_name = $this->_calendar->get('name');
+         $new_name = $this->_vars->get('name');
+         $this->_calendar->set('name', $new_name);
+         $this->_calendar->set('desc', $this->_vars->get('description'));
+-        $this->_calendar->set('params', serialize(array('fbrelevance' => (int) $this->_vars->get('fbrelevance', 0))));
++        $params = array('fbrelevance' => (int) $this->_vars->get('fbrelevance', 0));
++
++        if ($this->_vars->get('activesync_devices', '')) {
++            $ids = explode('|', $this->_vars->get('activesync_devices', ''));
++            foreach ($ids as $id) {
++                $sync = $this->_vars->get('activesync_' . $id . '_sync');
++                $alarm = $this->_vars->get('activesync_' . $id . '_alarm');
++                $params['activesync']['FOLDER'][$id]['SYNC'] = empty($sync) ? 0 : 1;
++                $params['activesync']['FOLDER'][$id]['ALARM'] = empty($alarm) ? 0 : 1;
++            }
++        }
++
++        $this->_calendar->set('params', serialize($params));
+ 
+         if ($original_name != $new_name) {
+             $result = $GLOBALS['kronolith_driver']->rename($original_name, $new_name);

@@ -1,0 +1,6 @@
+2010-05-10  Gunnar Wrobel  <p@rdus.de>
+
+	* patches/mnemo-2.2.3/t_mnemo_HK_GW_ZpushAnnotations.diff:
+
+	Support setting Zpush configuration values.
+
