@@ -149,8 +149,8 @@ if( !$errors ) {
 		$cn = $attrs['cn'][0];
 		$kolabhomeserver = $attrs['kolabHomeServer'][0];
 		if(in_array($kolabhomeserver, $dead_servers))
-			// use 'default' values
-			$quota = array('usage' => 0, 'limit' => '0');
+			// use 'unknown' value
+			$quota = 0;
 		else {
 			$mbox = imap_open("{" . $kolabhomeserver . ":" . $imap_port . "/notls}",
 					$imap_manager, $imap_password, OP_HALFOPEN);
@@ -160,8 +160,8 @@ if( !$errors ) {
 			}
 			else {
 				array_push($dead_servers, $kolabhomeserver);
-				// use 'default' values
-				$quota = array('usage' => 0, 'limit' => '0');
+				// use 'unknown' value
+				$quota = 0;
 			}
 		}
 		if(is_array($quota)) {
