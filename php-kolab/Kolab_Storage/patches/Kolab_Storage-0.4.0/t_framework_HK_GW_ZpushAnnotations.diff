@@ -1,0 +1,160 @@
+diff -Naur a/framework/Kolab_Storage/lib/Horde/Kolab/Storage.orig/Folder.php b/framework/Kolab_Storage/lib/Horde/Kolab/Storage/Folder.php
+--- a/framework/Kolab_Storage/lib/Horde/Kolab/Storage/Folder.php	2010-05-04 23:44:49.522328256 +0200
++++ b/framework/Kolab_Storage/lib/Horde/Kolab/Storage/Folder.php	2010-05-06 07:46:01.507036608 +0200
+@@ -412,13 +412,23 @@
+                         if (is_a($result, 'PEAR_Error')) {
+                             return $result;
+                         }
++                        unset($params['xfbaccess']);
+                     }
+                     if (isset($params['fbrelevance'])) {
+                         $result = $this->setFbrelevance($params['fbrelevance']);
+                         if (is_a($result, 'PEAR_Error')) {
+                             return $result;
+                         }
++                        unset($params['fbrelevance']);
+                     }
++                    if (isset($params['activesync'])) {
++                        $result = $this->setActiveSyncDeviceData($params['activesync'], 'FOLDER');
++                        if (is_a($result, 'PEAR_Error')) {
++                            return $result;
++                        }
++                        unset($params['activesync']);
++                    }
++                    $value = serialize($params);
+                 }
+ 
+                 // setAnnotation apparently does not suppoort UTF-8 nor any special characters
+@@ -1645,6 +1655,132 @@
+         return $this->_setAnnotation(KOLAB_ANNOT_ROOT . 'pxfb-readable-for',
+                                      $value);
+     }
++
++    /**
++     * Get the active sync settings for this folder.
++     *
++     * @return array  Array containing the active sync information.
++     */
++    function getActiveSync()
++    {
++        $imap = Horde_Kolab_Session::singleton()->getImap();
++        if (is_a($imap, 'PEAR_Error')) {
++            return $imap;
++        }
++        $raw = $imap->getAnnotation(
++            KOLAB_ANNOT_ROOT . 'activesync', 'value.priv', $this->name
++        );
++        $local = json_decode(base64_decode($raw), true);
++        if (!$this->name != 'INBOX') {
++            $raw = $imap->getAnnotation(
++                KOLAB_ANNOT_ROOT . 'activesync', 'value.priv', 'INBOX'
++            );
++            $global = json_decode(base64_decode($raw), true);
++            if (!is_array($local)) {
++                $result = array(
++                    'DEVICE' => isset($global['DEVICE']) ? $global['DEVICE'] : array(),
++                    'FOLDER' => array()
++                );
++            } elseif (is_array($global)) {
++                $result = array(
++                    'DEVICE' => isset($global['DEVICE']) ? $global['DEVICE'] : array(),
++                    'FOLDER' => isset($local['FOLDER']) ? $local['FOLDER'] : array(),
++                );
++            } else {
++                $result = array(
++                    'DEVICE' => array(),
++                    'FOLDER' => isset($local['FOLDER']) ? $local['FOLDER'] : array(),
++                );
++            }
++        } else {
++            $result = array(
++                'DEVICE' => isset($global['DEVICE']) ? $global['DEVICE'] : array(),
++                'FOLDER' => array()
++            );
++        }
++        $result['NAMESPACE'] = $this->_list->namespace->matchNamespace($this->name)->getType();
++        return $result;
++    }
++
++    /**
++     * Delete an active sync device for this folder.
++     *
++     * @param string $id The id of the device.
++     *
++     * @return mixed  True on success or a PEAR_Error.
++     */
++    function deleteActiveSyncDevice($id)
++    {
++        $imap = Horde_Kolab_Session::singleton()->getImap();
++        if (is_a($imap, 'PEAR_Error')) {
++            return $imap;
++        }
++        $raw = $imap->getAnnotation(
++            KOLAB_ANNOT_ROOT . 'activesync', 'value.priv', $this->name
++        );
++        $result = json_decode(base64_decode($raw), true);
++        if (is_a($result, 'PEAR_Error')) {
++            return $result;
++        }
++        if (!is_array($result)) {
++            return true;
++        }
++        unset($result['DEVICE'][$id]);
++        $result = $imap->setAnnotation(
++            KOLAB_ANNOT_ROOT . 'activesync',
++            array('value.priv' => base64_encode(json_encode($result))),
++            $this->name
++        );
++        if (is_a($result, 'PEAR_Error')) {
++            return $result;
++        }
++        return true;
++    }
++
++    /**
++     * Set the active sync annotation.
++     *
++     * @param string $data  The data to store in the annotation.
++     * @param string $type  The type of the data (DEVICE|FOLDER).
++     *
++     * @return mixed  True on success or a PEAR_Error.
++     */
++    function setActiveSyncDeviceData($data, $type = 'DEVICE')
++    {
++        $imap = Horde_Kolab_Session::singleton()->getImap();
++        if (is_a($imap, 'PEAR_Error')) {
++            return $imap;
++        }
++        $raw = $imap->getAnnotation(
++            KOLAB_ANNOT_ROOT . 'activesync', 'value.priv', $this->name
++        );
++        $old = json_decode(base64_decode($raw), true);
++        if (is_a($old, 'PEAR_Error')) {
++            return $data;
++        }
++        if (!is_array($old)) {
++            $old = array();
++        }
++
++        $new_type = isset($old[$type]) ? $old[$type] : array();
++        $data_type = isset($data[$type]) ? $data[$type] : array();
++        foreach ($data_type as $id => $settings) {
++            foreach ($settings as $key => $value) {
++                $new_type[$id][$key] = $value;
++            }
++        }
++        $new = array($type => $new_type);
++        $result = $imap->setAnnotation(
++            KOLAB_ANNOT_ROOT . 'activesync',
++            array('value.priv' => base64_encode(json_encode($new))),
++            $this->name
++        );
++
++        if (is_a($result, 'PEAR_Error')) {
++            return $result;
++        }
++        return true;
++    }
+ }
+ 
+ class HTTP_Request_NonBlocking extends HTTP_Request
