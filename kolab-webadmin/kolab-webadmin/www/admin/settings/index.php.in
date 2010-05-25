@@ -276,7 +276,7 @@ $entries = array( array( 'service' => 'pop3', 'name'  => _('POP3 Service'), 'ena
 				  array( 'service' => 'pop3s', 'name' => _('POP3/SSL service (TCP port 995)'), 'enabled' => toboolstr( $pop3s ) ),
 				  array( 'service' => 'imap', 'name'  => _('IMAP Service'), 'enabled' => toboolstr( $imap ) ),
 				  array( 'service' => 'imaps', 'name' => _('IMAP/SSL Service (TCP port 993)'), 'enabled' => toboolstr( $imaps ) ),
-				  array( 'service' => 'sieve', 'name' => _('Sieve service (TCP port 2000)'), 'enabled' => toboolstr( $sieve ) ),
+				  array( 'service' => 'sieve', 'name' => sprintf(_('Sieve service (TCP port %s)'), 2000), 'enabled' => toboolstr( $sieve ) ),
 				  array( 'service' => 'http', 'name'  => _('FreeBusy Service via HTTP (in addition to HTTPS)'), 'enabled' => toboolstr( $http ) ),
 				  array( 'service' => 'amavis', 'name' => _('Amavis Email Scanning (Virus/Spam)'), 
 						 'enabled' => toboolstr( $amavis ) ) );
