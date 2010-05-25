@@ -42,7 +42,7 @@ $conf['cache']['params']['sub'] = 0;
 $conf['cache']['driver'] = 'file';
 
 $conf['mailer']['params']['host'] = 'localhost';
-$conf['mailer']['params']['port'] = 25;
+$conf['mailer']['params']['port'] = 587;
 $conf['mailer']['params']['auth'] = true;
 $conf['mailer']['type'] = 'smtp';
 
