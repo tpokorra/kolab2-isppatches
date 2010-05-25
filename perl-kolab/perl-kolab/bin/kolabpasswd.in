@@ -215,7 +215,7 @@ rename($tmpfilename,$kolabconfname) || die "Error: could not install new $kolabc
 system("chown $Kolab::config{'ldapserver_usr'}:$Kolab::config{'ldapserver_grp'} $kolabconfname");
 
 # magic kablooie to update webadmin config
-my ($php_pw, $php_cfg) = ($new_password, '@kolab_php_module_prefix@admin/include/config.php');
+my ($php_pw, $php_cfg) = ($new_password, '@ADMINPHP@/config.php');
 $php_pw =~ s/('|\\)/\\$1/g;
 local($^I, @ARGV) = ('.bak', ($php_cfg));
 while(<>) {

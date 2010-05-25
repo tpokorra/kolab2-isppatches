@@ -11,18 +11,20 @@ my $CONFIG = '/kolab/etc/kolab';
 my $INSTALLSCRIPT = '/kolab/bin';
 my $INSTALLSBIN = '/kolab/sbin';
 my $INSTALLETC = '/kolab/etc/kolab';
+my $ADMINPHP = '/kolab/var/kolab/php/admin/include';
 
 GetOptions(
     "config=s" => \$CONFIG,
     "bin=s" => \$INSTALLSCRIPT,
     "sbin=s" => \$INSTALLSBIN,
     "etc=s" => \$INSTALLETC,
+	'adminphp=s' => \$ADMINPHP,
     "help" => \$HELP
     );
 
 if ($HELP) {
   print <<'EOH';
-Usage: perl Makefile.PL [--config CONFIG_DIR] [--bin BIN_DIR] [--sbin SBIN_DIR]  [--etc ETC_DIR] --help
+Usage: perl Makefile.PL [--config CONFIG_DIR] [--bin BIN_DIR] [--sbin SBIN_DIR] [--etc ETC_DIR] [--adminphp PHP_DIR] --help
 
 Option config
 
@@ -41,6 +43,10 @@ Option sbin
 Option etc
 
   to specify the path to the configuration directory.
+
+Option adminphp
+
+  to specify the path to the webadmin PHP include directory
 
 Option help
 
@@ -71,7 +77,7 @@ bin/%: bin/%.in
 	cat \$< | sed -e 's#\@CONFIG_DIR@#$CONFIG#g' > \$@
 
 sbin/%: sbin/%.in
-	cat \$< | sed -e 's#\@CONFIG_DIR@#$CONFIG#g' > \$@.tmp
+	cat \$< | sed -e 's#\@CONFIG_DIR@#$CONFIG#g;s/\@ADMINPHP@/$ADMINPHP/g' > \$@.tmp
 	cat \$@.tmp | sed -e 's#\@VERSION@#\$(VERSION)#g' > \$@
 	rm \$@.tmp
 	\$(FIXIN) \$@
