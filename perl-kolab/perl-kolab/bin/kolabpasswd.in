@@ -220,6 +220,7 @@ $php_pw =~ s/('|\\)/\\$1/g;
 local($^I, @ARGV) = ('.bak', ($php_cfg));
 while(<>) {
 	s/^(\W*\$imap_password\W*=\W*')[^']*/$1$php_pw/;
+	s/^(\W*\$imap_password\W*=\W*")[^"]*/$1$php_pw/;
 	print;
 }
 unlink "$php_cfg.bak";
