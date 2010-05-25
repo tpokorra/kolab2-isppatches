@@ -36,7 +36,6 @@ kolabtemplate_DATA = templates/access.template \
 	templates/clamd.conf.template \
 	templates/cyrus.conf.template \
 	templates/DB_CONFIG.slapd.template \
-	templates/freebusy.conf.template \
 	templates/freshclam.conf.template \
 	templates/header_checks.template \
 	templates/httpd.conf.template \
