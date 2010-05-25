@@ -1,3 +1,28 @@
+2010-05-16 Richard Bos <richard@radoeka.nl>
+
+	* dist_conf/kolabsrv.in: Added redhat services, on request of Jeroen v. M.
+
+2010-05-16  Gunnar Wrobel  <p@rdus.de>
+
+	* templates/master.cf.template.in, templates/main.cf.template.in:
+	Adapt port policy.
+	kolab/issue4311 (Activate port 587 for email submission)
+
+	* Makefile.am (kolabtemplate_DATA): freebusy.conf.template.in
+	moved to the Kolab_FreeBusy package.
+
+	* kolab.globals.in (freebusy_*): Add the freebusy variables into
+	the global parameter list so that the freebusy.conf.template.in
+	can be removed.
+
+	* templates/freebusy.conf.template.in: Moved to the Kolab_FreeBusy
+	package.
+	
+2010-05-04  Thomas Arendsen Hein  <thomas@intevation.de>
+
+	* templates/imapd.annotation_definitions.template.in:
+	Added annotation for activesync configuration (z-push).
+
 2010-04-27  Thomas Arendsen Hein  <thomas@intevation.de>
 
 	* templates/master.cf.template.in: Added submission port, solving
