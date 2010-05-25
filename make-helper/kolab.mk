@@ -1,12 +1,12 @@
 KOLAB_VERSION = 2.2.3
 
 # Check if we are in a test environment
-TEST_ENVIRONMENT=$(shell test -e test_environment && echo YES)
+TEST_ENVIRONMENT=$(test -e test_environment && echo YES)
 ifeq "x$(TEST_ENVIRONMENT)" "xYES"
-    BINARY_PKGS_DIR=$(shell source test_environment && echo $$BINARY_PKGS_DIR)
-    SOURCE_PKGS_DIR=$(shell source test_environment && echo $$SOURCE_PKGS_DIR)
-    KOLABDIR=$(shell source test_environment && echo $$KOLABDIR)
-    KOLABUID=$(shell source test_environment && echo $$KOLABUID)
+    BINARY_PKGS_DIR=$(. test_environment && echo $$BINARY_PKGS_DIR)
+    SOURCE_PKGS_DIR=$(.  test_environment && echo $$SOURCE_PKGS_DIR)
+    KOLABDIR=$(. test_environment && echo $$KOLABDIR)
+    KOLABUID=$(. test_environment && echo $$KOLABUID)
     OPENPKG=$(KOLABDIR)/bin/openpkg
 else
     BINARY_PKGS_DIR=/root/kolab-server-$(KOLAB_VERSION)/ix86-debian5.0 

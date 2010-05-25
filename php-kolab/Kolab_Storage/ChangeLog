@@ -1,3 +1,9 @@
+2010-05-06  Gunnar Wrobel  <p@rdus.de>
+
+	* patches/Kolab_Storage-0.4.0/t_framework_HK_GW_ZpushAnnotations.diff:
+
+	Support setting Zpush configuration values.
+
 2010-04-28  Gunnar Wrobel  <p@rdus.de>
 
 	* patches/Kolab_Storage-0.4.0/issue3416.patch:

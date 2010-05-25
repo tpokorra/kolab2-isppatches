@@ -1,3 +1,12 @@
+2010-05-16  Gunnar Wrobel  <p@rdus.de>
+
+	* Kolab_FreeBusy.spec: Update to 0.1.6
+
+	freebusy.conf.template.in moved to the Kolab_FreeBusy package.
+
+	kolab/issue3544 (Cached xfb access not up to date for changed
+	distribution lists)
+
 2010-03-25  Gunnar Wrobel  <p@rdus.de>
 
 	* patches/Kolab_FreeBusy-0.1.5/issue3983.patch:

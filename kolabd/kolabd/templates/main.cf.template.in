@@ -161,6 +161,7 @@ smtpd_recipient_restrictions = permit_mynetworks, permit_sasl_authenticated,
 	check_policy_service unix:private/kolabpolicy
 smtpd_sender_restrictions = permit_mynetworks,
 	check_policy_service unix:private/kolabpolicy
+submission_sender_restrictions = check_policy_service unix:private/kolabpolicy
 kolabpolicy_time_limit = 3600
 kolabpolicy_max_idle = 20
 
