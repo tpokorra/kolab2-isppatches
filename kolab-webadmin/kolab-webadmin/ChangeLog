@@ -1,3 +1,8 @@
+2010-05-21  Mathieu Parent  <math.parent@gmail.com>
+
+	* php/admin/locale/*/LC_MESSAGES/messages.po, www/admin/settings/index.php.in:
+	Configurable sieve port (l10n part of issue4373)
+
 2010-04-07  Gunnar Wrobel  <p@rdus.de>
 
 	* php/*:

@@ -228,7 +228,7 @@ package.patch: $(PATCHES)
 ifneq ($(SPEC_PRESENT),)
 else
 $(PACKAGE).spec: ../../pear/pear.spec.template package.info
-	source ./package.info &&                               \
+	. ./package.info &&                                    \
 	  cat ../../pear/pear.spec.template |                  \
 	  sed -e "s#[@]pear_pkgdir[@]#$${pear_pkgdir}#g"       \
 	      -e "s#[@]pear_package[@]#$${pear_package}#g"     \
