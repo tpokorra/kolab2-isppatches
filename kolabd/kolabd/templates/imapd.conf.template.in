@@ -18,6 +18,7 @@ partition-default:      @imap_spool@
 
 allowusermoves:         0
 admins:                 @@@cyrus-admins|join( )@@@
+sieve_admins:           @@@cyrus-admins|join( )@@@ nobody
 sasl_pwcheck_method:    saslauthd
 sasl_mech_list: 	plain
 sendmail:               @sbindir@/sendmail
