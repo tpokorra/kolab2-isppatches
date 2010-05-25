@@ -1,7 +1,7 @@
 # Macros
 %define         V_package kronolith
 %define         V_version 2.3.3
-%define         V_release 20100309
+%define         V_release 20100516
 
 # Package Information
 Name:		%{V_package}
