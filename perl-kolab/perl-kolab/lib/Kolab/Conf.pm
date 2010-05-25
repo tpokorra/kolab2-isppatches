@@ -415,20 +415,14 @@ access to filter=(&(objectClass=kolabSharedFolder)(cn=*@@@@domain@@@))
 
 EOS
 
-my $dom_acl1 = << 'EOS';
+my $dom_acl = << 'EOS';
 # Access to domain groups
 access to dn.children="cn=domains,cn=internal,@@@base_dn@@@"
         by group/kolabGroupOfNames="cn=admin,cn=internal,@@@base_dn@@@" write
         by group/kolabGroupOfNames="cn=maintainer,cn=internal,@@@base_dn@@@" write
+        by group/kolabGroupOfNames="cn=domain-maintainer,cn=internal,@@@base_dn@@@" read
         by dn="cn=nobody,cn=internal,@@@base_dn@@@" read
-EOS
-
-my $dom_acl2 = << 'EOS';
-        by group/kolabGroupOfNames="cn=@@@domain@@@,cn=domains,cn=internal,@@@base_dn@@@" read
-EOS
-
-my $dom_acl3 = << 'EOS';
-         by * search stop
+        by * search stop
 EOS
 
     my $str;
@@ -440,16 +434,7 @@ EOS
         @domains =( $Kolab::config{'postfix-mydestination'} );
     }
 
-    ($str = $dom_acl1) =~ s/\@{3}base_dn\@{3}/$Kolab::config{'base_dn'}/g;
-    $ret .= $str;
-
-    foreach $domain (@domains) {
-        ($str = $dom_acl2) =~ s/\@{3}domain\@{3}/$domain/g;
-        $str =~ s/\@{3}base_dn\@{3}/$Kolab::config{'base_dn'}/g;
-        $ret .= $str;
-    }
-
-    ($str = $dom_acl3) =~ s/\@{3}base_dn\@{3}/$Kolab::config{'base_dn'}/g;
+    ($str = $dom_acl) =~ s/\@{3}base_dn\@{3}/$Kolab::config{'base_dn'}/g;
     $ret .= $str;
 
     foreach $domain (@domains) {
