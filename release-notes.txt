@@ -20,9 +20,19 @@ Changes between 2.2.3 and 2.???:
 
 	kolab/issue3555 (unable to save filter settings more than once)
 
+    - Horde_Share-0.0.3dev20091215-2010????
+
+	Support setting Zpush configuration values.
+
     - dimp-1.1.4-2010????
 
 	kolab/issue4080 (DIMP: Mails can not be copied to other folders) 
+
+    - horde-3.3.6-2010????
+
+	Support setting Zpush configuration values.
+
+	kolab/issue2991 (The Kolab web client is always in the privileged networks) 
 
     - imp-4.3.6-2010????
 
@@ -67,10 +77,12 @@ Changes between 2.2.3 and 2.???:
 	kolab/issue3525 (free/busy regeneration aborts for unparsable events)
 	kolab/issue3528 (Events with broken encoding should work)
 
-    - Kolab_FreeBusy-0.1.5-2009????
+    - Kolab_FreeBusy-0.1.6-2009????
 
 	Improved handling of dba access.
 	Extended support for more complex scenario testing.
+
+	freebusy.conf.template.in moved to the Kolab_FreeBusy package.
 
 	kolab/issue3415 (freebusy cache regeneration on the command line looks
 	                 confusing)
@@ -80,6 +92,8 @@ Changes between 2.2.3 and 2.???:
 	kolab/issue3527 (no immediately printing of folders during
 	                 freebusy cache regeneration)
 	kolab/issue3537 (Allowing xfb access to groups does not work)
+	kolab/issue3544 (Cached xfb access not up to date for changed
+	                 distribution lists)
 	kolab/issue3983 (Phpunit testsuite fails on OpenPKG Kolab 2.2.2) 
 
     - Kolab_Server-0.5.0-2010????
@@ -90,6 +104,8 @@ Changes between 2.2.3 and 2.???:
 	kolab/issue3983 (Phpunit testsuite fails on OpenPKG Kolab 2.2.2) 
 
     - Kolab_Storage-0.4.0-2010????
+
+	Support setting Zpush configuration values.
 
 	kolab/issue3416 (webclient hangs if freebusy triggering/retrieving hangs)
 	kolab/issue3983 (Phpunit testsuite fails on OpenPKG Kolab 2.2.2)
@@ -113,6 +129,8 @@ Changes between 2.2.3 and 2.???:
 	End with slash as recommended in http://php.net/ini.sect.safe-mode
 
 	Support configurable attribute mapping.
+
+	freebusy.conf.template.in moved to the Kolab_FreeBusy package.
 
 	kolab/issue1382 (resmgr accepts concurrent overlapping invitations)
 	kolab/issue1671 (Improving the warning about kolab templates within
@@ -155,13 +173,23 @@ Changes between 2.2.3 and 2.???:
 
     - kronolith-2.2.3-2010????
 
+	Support setting Zpush configuration values.
+
+	kolab/issue2966 (A created/edited event doesn't send mails to all
+	                 attendee as default.)
 	kolab/issue3848 (display "Basic Search" and "Advanced Search"
 	                 as tabs in place of a small table header.)
 	kolab/issue3885 (Modifying start date of recurring events does not
 	                 update recurrance dates)
 	kolab/issue4048 (Some German translations missing in kronolith)
 
+    - mnemo-2.2.3-2010????
+
+	Support setting Zpush configuration values.
+
     - nag-2.3.4-2010????
+
+	Support setting Zpush configuration values.
 
 	kolab/issue3888 (Organizer field not saved in Tasks written by
 	                 kolab-webclient)
@@ -220,6 +248,8 @@ Changes between 2.2.3 and 2.???:
 
     - turba-2.3.3-2010????
 
+	Support setting Zpush configuration values.
+
 	kolab/issue3859 ([turba] optimized formatName function and
 	                 fallback to company attribute)
 
@@ -236,6 +266,8 @@ Changes between 2.2.3 and 2.2.x:
 
 	Disable FH_DATE_PAST_20XX spamassassin test, which is broken
 	for 2010 and later...
+
+	Added annotation for activesync configuration (z-push).
 
 	kolab/issue2244 (SpamAssassin uses DNS blacklists)
 	kolab/issue4176 (Adding RSS feed to Horde breaks portal screen) 
@@ -3538,4 +3570,4 @@ Changes between 2.1-beta-1 and 2.1-beta-2:
 	kolab/issue1245 (rewriting problems on folded Header "From:"-line)
 
 
-$Id: release-notes.txt,v 1.542 2010/04/28 16:14:42 gunnar Exp $
+$Id: release-notes.txt,v 1.549 2010/05/16 09:39:43 gunnar Exp $
