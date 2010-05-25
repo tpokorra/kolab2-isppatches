@@ -74,7 +74,7 @@ sub MY::install {
 sub MY::postamble {
     my $add = "
 bin/%: bin/%.in
-	cat \$< | sed -e 's#\@CONFIG_DIR@#$CONFIG#g' > \$@
+	cat \$< | sed -e 's#\@CONFIG_DIR@#$CONFIG#g;s#\@ADMINPHP@#$ADMINPHP#g' > \$@
 
 sbin/%: sbin/%.in
 	cat \$< | sed -e 's#\@CONFIG_DIR@#$CONFIG#g;s#\@ADMINPHP@#$ADMINPHP#g' > \$@.tmp
