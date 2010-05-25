@@ -152,8 +152,10 @@ if( !$errors ) {
 		$deleted = array_key_exists('kolabDeleteflag',$attrs)?$attrs['kolabDeleteflag'][0]:"FALSE";
 		$uid = $attrs['uid'][0];
 		$mail = $attrs['mail'][0];
-		if(isset($attrs['alias']))
+		if(isset($attrs['alias'])) {
 			$alias = $attrs['alias'];
+			unset($alias['count']);
+		}
 		else
 			$alias = "";
 		$kolabhomeserver = $attrs['kolabHomeServer'][0];
