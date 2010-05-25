@@ -1,7 +1,7 @@
 # Macros
 %define         V_package nag
 %define         V_version 2.3.4
-%define         V_release 20100305
+%define         V_release 20100510
 
 # Package Information
 Name:		%{V_package}
