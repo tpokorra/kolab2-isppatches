@@ -1,3 +1,9 @@
+2010-05-10  Gunnar Wrobel  <p@rdus.de>
+
+	* patches/turba-2.3.3/t_turba_HK_GW_ZpushAnnotations.diff:
+
+	Support setting Zpush configuration values.
+
 2010-03-09  Gunnar Wrobel  <p@rdus.de>
 
 	* patches/turba-2.3.3/t_turba_HK_GW_ConfigurationOverride.php:
