@@ -182,9 +182,8 @@ if( !$errors ) {
 			if($sieve->getError() == "") {
 				$activescript = $sieve->getActive();
 				$script = $sieve->getScript($activescript);
-				$forward = explode(",", SieveUtils::getForwardAddress($script));
-				if(empty($forward[0]))
-					$forward = "";
+				$forward = preg_match_all('/redirect\W*"([^"]*)"/', $script, $mtch)
+						? $mtch[1] : '';
 				$sieve->disconnect();
 			}
 			else
