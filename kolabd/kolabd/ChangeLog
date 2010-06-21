@@ -1,3 +1,14 @@
+2010-06-17  Mathieu Parent <math.parent@gmail.com>
+
+	* dist_conf/debian: Cyrus user and group is cyrus:mail on Debian
+	(http://bugs.debian.org/581757).
+
+2010-06-03  Gunnar Wrobel  <p@rdus.de>
+
+	* Makefile.am: Better file modes during
+	installation (http://kolab.org/pipermail/kolab-devel/2010-May/011850.html,
+	Jeroen van Meeuwen (Kolab Systems) <vanmeeuwen@kolabsys.com>)
+
 2010-05-16 Richard Bos <richard@radoeka.nl>
 
 	* dist_conf/kolabsrv.in: Added redhat services, on request of Jeroen v. M.

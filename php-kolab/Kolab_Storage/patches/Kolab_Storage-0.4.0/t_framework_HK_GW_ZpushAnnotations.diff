@@ -1,7 +1,16 @@
 diff -Naur a/framework/Kolab_Storage/lib/Horde/Kolab/Storage.orig/Folder.php b/framework/Kolab_Storage/lib/Horde/Kolab/Storage/Folder.php
 --- a/framework/Kolab_Storage/lib/Horde/Kolab/Storage/Folder.php	2010-05-04 23:44:49.522328256 +0200
 +++ b/framework/Kolab_Storage/lib/Horde/Kolab/Storage/Folder.php	2010-05-06 07:46:01.507036608 +0200
-@@ -412,13 +412,23 @@
+@@ -390,7 +390,7 @@
+ 
+         /** Handle the folder type */
+         $folder_type = $this->_type . ($this->_default ? '.default' : '');
+-        if ($this->_type_annotation != $folder_type) {
++        if ($this->_owner == Auth::getAuth() && $this->_type_annotation != $folder_type) {
+             $result = $this->_setAnnotation(KOLAB_ANNOT_FOLDER_TYPE, $folder_type);
+             if (is_a($result, 'PEAR_Error')) {
+                 $this->_type = null;
+@@ -412,19 +412,38 @@
                          if (is_a($result, 'PEAR_Error')) {
                              return $result;
                          }
@@ -21,10 +30,35 @@ diff -Naur a/framework/Kolab_Storage/lib/Horde/Kolab/Storage.orig/Folder.php b/f
 +                        }
 +                        unset($params['activesync']);
 +                    }
++                    if (empty($params)) {
++                        continue;
++                    }
 +                    $value = serialize($params);
                  }
  
                  // setAnnotation apparently does not suppoort UTF-8 nor any special characters
+                 $store = base64_encode($value);
+                 if ($key == 'desc') {
+-                    $entry = '/comment';
++                    if ($this->_owner == Auth::getAuth()) {
++                        $entry = '/comment';
++                    } else {
++                        continue;
++                    }
++                } else if ($key == 'params' && $this->_owner != Auth::getAuth()) {
++                    continue;
+                 } else {
+                     $entry = HORDE_ANNOT_SHARE_ATTR . $key;
+                 }
+@@ -447,7 +450,7 @@
+         }
+ 
+         /** Now save the folder permissions */
+-        if (isset($this->_perms)) {
++        if ($this->_owner == Auth::getAuth() && isset($this->_perms)) {
+             $result = $this->_perms->save();
+             if (is_a($result, 'PEAR_Error')) {
+                 return $result;
 @@ -1645,6 +1655,132 @@
          return $this->_setAnnotation(KOLAB_ANNOT_ROOT . 'pxfb-readable-for',
                                       $value);
