@@ -29,8 +29,8 @@ Vendor:       Tomasz Kojm
 Packager:     Intevation GmbH
 Group:        AntiVirus
 License:      GPL
-Version:      0.96
-Release:      20100421
+Version:      0.96.1
+Release:      20100607
 
 #   package options
 %option       with_milter  no
