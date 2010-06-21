@@ -132,6 +132,9 @@ Changes between 2.2.3 and 2.???:
 
 	freebusy.conf.template.in moved to the Kolab_FreeBusy package.
 
+	Cyrus user and group is cyrus:mail on Debian
+	(http://bugs.debian.org/581757).
+
 	kolab/issue1382 (resmgr accepts concurrent overlapping invitations)
 	kolab/issue1671 (Improving the warning about kolab templates within
 	                 configuration files)
@@ -3570,4 +3573,4 @@ Changes between 2.1-beta-1 and 2.1-beta-2:
 	kolab/issue1245 (rewriting problems on folded Header "From:"-line)
 
 
-$Id: release-notes.txt,v 1.549 2010/05/16 09:39:43 gunnar Exp $
+$Id: release-notes.txt,v 1.550 2010/06/17 18:48:58 mathieu Exp $
