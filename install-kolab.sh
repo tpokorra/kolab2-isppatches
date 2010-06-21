@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $Id: install-kolab.sh,v 1.64 2009/12/17 10:15:12 thomas Exp $
+# $Id: install-kolab.sh,v 1.66 2010/06/08 08:21:41 gunnar Exp $
 #
 # Copyright (C) 2007, 2008, 2009 by Intevation GmbH
 # Copyright (C) 2007 by Gunnar Wrobel
@@ -201,13 +201,6 @@ if [ "$FLAG_CLEAN" -o "$FLAG_INDEX" ]; then
     fi
 fi
 
-umask 022
-SRCDIR=`pwd`
-WORKDIR=`mktmpdir`
-echo "Changing to temporary working directory $WORKDIR ..."
-cd "$WORKDIR"
-populate_workdir
-
 echo
 echo "Kolab installation tag (TAG):       $TAG"
 echo "Kolab installation prefix (PREFIX): $PREFIX"
@@ -219,62 +212,73 @@ echo "Kolab non-priviledged UID (KID):    $N_KID"
 echo "Exclude following Kolab packages:   $EXCLUDEPKGS"
 echo
 
-echo "Received no instructions. Trying to determine required action..."
-if [ -d "$PREFIX/etc/openpkg" -a -z "$FLAG_BOOTSTRAP" ]; then
-    # Assume an upgrade based on the current directory
-    INSTALL=`pwd`
-    if [ "$FLAG_ENV" ]; then
-        echo "The OpenPKG environment already exists!"
-        exit 1
-    fi
-    echo "Found an OpenPKG environment. Assuming upgrade..."
-else
-    INSTALLER=`find . $FIND1 -name "openpkg-*.src.sh" -print`
-    BINARY=`find . $FIND1 -name "openpkg-*.sh" \! -name "openpkg-*.src.sh" -print`
-    if [ -z "$INSTALLER" ]; then
-        # No install script? Determine if there is a binary script
-        if [ -z "$BINARY" ]; then
-            echo "Sorry there is no OpenPKG installation script in the current directory!"
-            usage
-            exit 0
-        else
-            # Looks like we only have a binary. Hope that it matches the plattform and install it
-            INSTALL="$BINARY"
-            echo "Found a binary OpenPKG package. This will be installed now."
-        fi
-    else
-        # We have a source package. Check for a matching binary
-        PLATTAG=`shtool_get_plattag`
-        BIN=`basename "$INSTALLER" .src.sh`.$PLATTAG.sh
-        if [ "$BINARY" = "$BIN" ]; then
-            # There is a binary with the correct tag. Install it
-            INSTALL=$BIN
-            echo "Found a binary OpenPKG package with a correct tag. This will be installed now."
-        else
-            # Install from source
-            INSTALL=$INSTALLER
-            echo "Found a source based OpenPKG installer. Trying to install Kolab from source."
-        fi
-    fi
-fi
+prefix_openpkg_determine_action() {
+    umask 022
+    SRCDIR=`pwd`
+    WORKDIR=`mktmpdir`
+    echo "Changing to temporary working directory $WORKDIR ..."
+    cd "$WORKDIR"
+    populate_workdir
 
-if echo "$INSTALL" | grep '\.src\.sh$' >/dev/null; then
+    echo "Received no instructions. Trying to determine required action..."
+    if [ -d "$PREFIX/etc/openpkg" -a -z "$FLAG_BOOTSTRAP" ]; then
+    # Assume an upgrade based on the current directory
+	INSTALL=`pwd`
+	if [ "$FLAG_ENV" ]; then
+            echo "The OpenPKG environment already exists!"
+            exit 1
+	fi
+	echo "Found an OpenPKG environment. Assuming upgrade..."
+    else
+	INSTALLER=`find . $FIND1 -name "openpkg-*.src.sh" -print`
+	BINARY=`find . $FIND1 -name "openpkg-*.sh" \! -name "openpkg-*.src.sh" -print`
+	if [ -z "$INSTALLER" ]; then
+        # No install script? Determine if there is a binary script
+            if [ -z "$BINARY" ]; then
+		echo "Sorry there is no OpenPKG installation script in the current directory!"
+		usage
+		exit 0
+            else
+            # Looks like we only have a binary. Hope that it matches the plattform and install it
+		INSTALL="$BINARY"
+		echo "Found a binary OpenPKG package. This will be installed now."
+            fi
+	else
+        # We have a source package. Check for a matching binary
+            PLATTAG=`shtool_get_plattag`
+            BIN=`basename "$INSTALLER" .src.sh`.$PLATTAG.sh
+            if [ "$BINARY" = "$BIN" ]; then
+            # There is a binary with the correct tag. Install it
+		INSTALL=$BIN
+		echo "Found a binary OpenPKG package with a correct tag. This will be installed now."
+            else
+            # Install from source
+		INSTALL=$INSTALLER
+		echo "Found a source based OpenPKG installer. Trying to install Kolab from source."
+            fi
+	fi
+    fi
+
+    if echo "$INSTALL" | grep '\.src\.sh$' >/dev/null; then
     # install from source
-    SRC="$INSTALL"
-    PLATTAG=`shtool_get_plattag`
-    BIN=`basename "$INSTALL" .src.sh`.$PLATTAG.sh
-    DIR=`dirname "$SRC"`
-elif echo "$INSTALL" | grep 'openpkg-.*\.sh$' >/dev/null; then
+	SRC="$INSTALL"
+	PLATTAG=`shtool_get_plattag`
+	BIN=`basename "$INSTALL" .src.sh`.$PLATTAG.sh
+	DIR=`dirname "$SRC"`
+    elif echo "$INSTALL" | grep 'openpkg-.*\.sh$' >/dev/null; then
     # install from binary
-    SRC=""
-    BIN="$INSTALL"
-    DIR=`dirname "$BIN"`
-elif [ -d "$PREFIX/etc/openpkg" ]; then
+	SRC=""
+	BIN="$INSTALL"
+	DIR=`dirname "$BIN"`
+    elif [ -d "$PREFIX/etc/openpkg" ]; then
     # upgrade
-    SRC=""
-    BIN=""
-    DIR="$INSTALL"
-fi
+	SRC=""
+	BIN=""
+	DIR="$INSTALL"
+    fi
+}
+
+prefix_openpkg_determine_action
 
 DIR=`cd $DIR; pwd`
 
