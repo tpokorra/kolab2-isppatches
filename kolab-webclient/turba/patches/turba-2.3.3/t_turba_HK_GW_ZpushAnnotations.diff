@@ -8,7 +8,18 @@ Signed-off-by: Gunnar Wrobel <p@rdus.de>
 diff -Naur a/addressbooks/edit.php b/addressbooks/edit.php
 --- a/addressbooks/edit.php	2010-05-10 08:30:03.000000000 +0200
 +++ b/addressbooks/edit.php	2010-05-10 08:31:19.000000000 +0200
-@@ -53,6 +53,26 @@
+@@ -24,10 +24,6 @@
+     $notification->push($addressbook, 'horde.error');
+     header('Location: ' . Horde::applicationUrl('addressbooks/', true));
+     exit;
+-} elseif ($addressbook->get('owner') != Auth::getAuth()) {
+-    $notification->push(_("You are not allowed to change this addressbook."), 'horde.error');
+-    header('Location: ' . Horde::applicationUrl('addressbooks/', true));
+-    exit;
+ }
+ $form = new Mnemo_EditAddressbookForm($vars, $addressbook);
+ 
+@@ -53,6 +53,28 @@
  
  $vars->set('name', $addressbook->get('name'));
  $vars->set('description', $addressbook->get('desc'));
@@ -20,15 +31,17 @@ diff -Naur a/addressbooks/edit.php b/addressbooks/edit.php
 +    } else {
 +        $default = 0;
 +    }
-+    $devices = $params['activesync']['DEVICE'];
++    require_once 'Horde/Kolab/Storage.php';
++    $folder = Kolab_Storage::getFolder('INBOX');
++    $result = $folder->getActiveSync();
++    $devices = isset($result['DEVICE']) ? $result['DEVICE'] : null;
 +    if (!empty($devices)) {
 +        $folders = $params['activesync']['FOLDER'];
 +        $vars->set('activesync_devices', implode('|', array_keys($devices)));
 +        foreach ($devices as $id => $config) {
-+            $vars->set('activesync_' . $id . '_sync', isset($folders[$id]['SYNC']) ? $folders[$id]['SYNC'] : $default);
-+            $vars->set('activesync_' . $id . '_alarm', isset($folders[$id]['ALARM']) ? $folders[$id]['ALARM'] : $default);
++            $vars->set('activesync_' . $id, isset($folders[$id]['S']) ? $folders[$id]['S'] : $default);
 +        }
-+        $form->activeSyncSegment($devices, $default);
++        $form->activeSyncSegment($devices);
 +    }
 +}
 +
@@ -38,38 +51,53 @@ diff -Naur a/addressbooks/edit.php b/addressbooks/edit.php
 diff -Naur a/lib/Forms/EditAddressBook.php b/lib/Forms/EditAddressBook.php
 --- a/lib/Forms/EditAddressBook.php	2010-05-10 08:30:05.000000000 +0200
 +++ b/lib/Forms/EditAddressBook.php	2010-05-10 08:32:28.000000000 +0200
-@@ -46,10 +46,38 @@
+@@ -40,16 +40,50 @@
+         parent::Horde_Form($vars, sprintf(_("Edit %s"), $addressbook->get('name')));
+ 
+         $this->addHidden('', 'a', 'text', true);
+-        $this->addVariable(_("Name"), 'name', 'text', true);
++        if ($this->_addressbook->get('owner') != Auth::getAuth()) {
++            $this->addVariable(_("Name"), 'name', 'text', false, true);
++            $this->addVariable(_("Description"), 'description', 'longtext', false, true);
++        } else {
++            $this->addVariable(_("Name"), 'name', 'text', true);
++            $this->addVariable(_("Description"), 'description', 'longtext', false, false, null, array(4, 60));
++        }
+-        $this->addVariable(_("Description"), 'description', 'longtext', false, false, null, array(4, 60));
+ 
          $this->setButtons(array(_("Save")));
      }
  
-+    function activeSyncSegment($devices, $default)
++    function activeSyncSegment($devices)
 +    {
 +        $this->addHidden('', 'activesync_devices', 'text');
 +        $this->addVariable('', '', 'spacer');
-+        $this->addVariable(_("Synchronize this calendar with the following ActiveSync devices"), '', 'header');
++        $this->addVariable(_("Synchronization options for ActiveSync devices"), '', 'header');
 +        foreach ($devices as $id => $config) {
-+            $this->addVariable($id, 'activesync_' . $id . '_sync', 'boolean', false);
-+        }
-+        $this->addVariable('', '', 'spacer');
-+        $this->addVariable(_("Activate alarms for this calendar on the following ActiveSync devices"), '', 'header');
-+        foreach ($devices as $id => $config) {
-+            $this->addVariable($id, 'activesync_' . $id . '_alarm', 'boolean', false);
++            $this->addVariable(sprintf("Device \"%s\"", $id), 'activesync_' . $id, 'radio', false, false, null, 
++                           array(array(_("does not synchronize with this addressbook"), _("synchronizes with this addressbook"))));
 +        }
 +    }
 +
      function execute()
      {
-         $this->_addressbook->set('name', $this->_vars->get('name'));
+-        $this->_addressbook->set('name', $this->_vars->get('name'));
++        if ($this->_addressbook->get('owner') == Auth::getAuth()) {
++            $this->_addressbook->set('name', $this->_vars->get('name'));
++        }
          $this->_addressbook->set('desc', $this->_vars->get('description'));
 +
 +        if ($this->_vars->get('activesync_devices', '')) {
-+            $params = array();
++            $params = @unserialize($this->_addressbook->get('params'));
++            if ($params === false) {
++                $params = array();
++            }
 +            $ids = explode('|', $this->_vars->get('activesync_devices', ''));
 +            foreach ($ids as $id) {
-+                $sync = $this->_vars->get('activesync_' . $id . '_sync');
-+                $alarm = $this->_vars->get('activesync_' . $id . '_alarm');
-+                $params['activesync']['FOLDER'][$id]['SYNC'] = empty($sync) ? 0 : 1;
-+                $params['activesync']['FOLDER'][$id]['ALARM'] = empty($alarm) ? 0 : 1;
++                $sync = (int) $this->_vars->get('activesync_' . $id, 0);
++                if ($sync === 0 || $sync === 1 || $sync === 2) {
++                    $params['activesync']['FOLDER'][$id]['S'] = $sync;
++                }
 +            }
 +            $this->_addressbook->set('params', serialize($params));
 +        }

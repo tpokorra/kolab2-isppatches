@@ -197,9 +197,9 @@ install-data-hook:
 	$(mkinstalldirs) -m 755 $(DESTDIR)$(webserver_sessions)
 	$(mkinstalldirs) -m 755 $(DESTDIR)$(kolab_statedir)
 	$(mkinstalldirs) -m 755 $(DESTDIR)$(webserver_document_root)$(webserver_web_prefix)/locks
-	chmod 444 $(DESTDIR)$(kolabconfdir)/kolab.globals
+	chmod 644 $(DESTDIR)$(kolabconfdir)/kolab.globals
 	chmod 775 $(DESTDIR)$(kolabdir)$(kolab_FILES)
-	chmod 744 $(DESTDIR)$(kolabnamespacedir)/*
+	chmod 755 $(DESTDIR)$(kolabnamespacedir)/*
 if ! OPENPKG
 	chmod 755 $(DESTDIR)$(sbindir)/kolabsrv
 endif
