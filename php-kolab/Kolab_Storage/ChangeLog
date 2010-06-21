@@ -1,3 +1,11 @@
+2010-06-07  Gunnar Wrobel  <p@rdus.de>
+
+	* patches/Kolab_Storage-0.4.0/t_framework_HK_GW_ZpushAnnotations.diff:
+
+	Only allow modification of the annotation type (default setting)
+	in case the user owns a folder. Do not store empty share
+	parameters.
+
 2010-05-06  Gunnar Wrobel  <p@rdus.de>
 
 	* patches/Kolab_Storage-0.4.0/t_framework_HK_GW_ZpushAnnotations.diff:
