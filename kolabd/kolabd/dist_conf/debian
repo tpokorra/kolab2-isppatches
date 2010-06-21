@@ -68,8 +68,8 @@ emailserver_tables_usr=root
 
 imap_confdir=${sysconfdir}
 imap_confperm=0640
-imap_usr=root
-imap_grp=root
+imap_usr=cyrus
+imap_grp=mail
 imap_masterlogfile=${localstatedir}/log/mail.log
 imap_misclogfile=${localstatedir}/log/mail.log
 imap_statedir=${localstatedir}/lib/cyrus
