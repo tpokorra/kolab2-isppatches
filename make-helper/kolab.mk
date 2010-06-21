@@ -1,23 +1,24 @@
 KOLAB_VERSION = 2.2.3
 
 # Check if we are in a test environment
-TEST_ENVIRONMENT=$(test -e test_environment && echo YES)
+TEST_ENVIRONMENT=$(shell test -e test_environment && echo YES)
 ifeq "x$(TEST_ENVIRONMENT)" "xYES"
-    BINARY_PKGS_DIR=$(. test_environment && echo $$BINARY_PKGS_DIR)
-    SOURCE_PKGS_DIR=$(.  test_environment && echo $$SOURCE_PKGS_DIR)
-    KOLABDIR=$(. test_environment && echo $$KOLABDIR)
-    KOLABUID=$(. test_environment && echo $$KOLABUID)
+    BINARY_PKGS_DIR=$(shell . ./test_environment && echo $$BINARY_PKGS_DIR)
+    SOURCE_PKGS_DIR=$(shell . ./test_environment && echo $$SOURCE_PKGS_DIR)
+    KOLABDIR=$(shell . ./test_environment && echo $$KOLABDIR)
+    KOLABUID=$(shell . ./test_environment && echo $$KOLABUID)
+    INSTALL_TYPE=$(shell . ./test_environment && echo $$INSTALL_TYPE)
     OPENPKG=$(KOLABDIR)/bin/openpkg
 else
     BINARY_PKGS_DIR=/root/kolab-server-$(KOLAB_VERSION)/ix86-debian5.0 
     SOURCE_PKGS_DIR=/root/kolab-server-$(KOLAB_VERSION)/sources
     KOLABUID=19414
-endif
 
-# Initial sanity check for the OpenPKG tool
-OPENPKG ?= $(shell which openpkg && echo YES)
-ifeq "x$(OPENPKG)" "x"
-  $(error Did not find the "openpkg" tool. Make sure your environment settings are sane. On a standard kolab system you might need to run "eval `/kolab/etc/rc --eval all env`")
+    # Initial sanity check for the OpenPKG tool
+    OPENPKG ?= $(shell which openpkg && echo YES)
+    ifeq "x$(OPENPKG)" "x"
+      $(error Did not find the "openpkg" tool. Make sure your environment settings are sane. On a standard kolab system you might need to run "eval `/kolab/etc/rc --eval all env`")
+    endif
 endif
 
 # Set KOLABDIR to the base directory of the OpenPKG/Kolab installation if it is unset
