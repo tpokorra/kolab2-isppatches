@@ -36,7 +36,7 @@ function checkPasswordRegEx($regex) {
 		return array();
 	if(substr($password_regex, 0, 1) != substr(strrev($password_regex), 0, 1))
 		$password_regex = "/" . $password_regex . "/";
-	return stripslashes($password_regex);
+	return $password_regex;
 }
 
 function extract_ldap_values()
