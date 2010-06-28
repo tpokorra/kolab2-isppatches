@@ -325,7 +325,7 @@ if($_REQUEST['deletecustomer']) {
 		// Delete customer root object recursively
 		$customer_obj_dn = 'cn=' . $ldap->escape(trim($_REQUEST['customer_cn']))
 				. ',' . $_SESSION['base_dn'];
-		if($customer_obj_dn == $_SESSION['base_dn'])
+		if(!trim($_REQUEST['customer_cn']))
 			$errors[] = _("Error deleting customer root object: Customer CN is empty");
 		if(!$errors && $ldap->read($customer_obj_dn) && !ldap_delete_recursive($ldap->connection,
 				$customer_obj_dn, true))
