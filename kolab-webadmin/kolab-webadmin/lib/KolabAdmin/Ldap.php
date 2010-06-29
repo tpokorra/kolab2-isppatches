@@ -581,6 +581,8 @@ class KolabLDAP {
     $obj = $this->read($dn);
     if(!$obj)
       return ldap_error($this->connection);
+	if(!isset($obj['domains']))
+		return array();
     $obj = $obj['domains'];
     unset($obj['count']);
     sort($obj);
