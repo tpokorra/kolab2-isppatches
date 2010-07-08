@@ -161,7 +161,13 @@ switch( $action ) {
    $form->entries['uid']['validation'] = 'checkuniquemail';   
  case 'save':
    if( $form->isSubmitted() ) {
-     if( !$form->validate() ) {
+     /// begin stupid hack
+     $old_dn = $dn;
+     $dn = 'cn=internal,' . $_SESSION['base_dn'];
+     $valid = $form->validate();
+     $dn = $old_dn;
+     /// end stupid hack
+	 if(!$valid) {
        $form->setValues();
        $content = $form->outputForm();
      } else {
