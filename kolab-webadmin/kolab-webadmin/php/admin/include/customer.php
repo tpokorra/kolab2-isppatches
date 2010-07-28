@@ -57,23 +57,6 @@ function getNamedCustomerList($maintainer = '') {
 	return array('cns' => $cns, 'descriptions' => $descriptions);
 }
 
-// Get customer cn for a member
-function dnToCustomerDescription($dn){
-  global $ldap;
-	$count = 0;
-  $result = $ldap->search( "cn=customers,cn=internal,".$_SESSION['base_dn'],"(member=".$dn.")",array("cn"));
-  if (ldap_count_entries($ldap->connection,$result) > 0){
-    foreach ($ldap->getEntries() as $v){
-		  if (is_array($v['cn'])){
- 		  	foreach(getCustomerList() as $customer){
-			    if (getCustomerList(true, $count) == $v['cn'][0]) return $count;
-					$count++;
-		  	}
-		  }
-    }
-  } else return false;
-}
-
 // Get customer description for a customer dn
 function customerDnToDescription($customer_dn){
   global $ldap;
