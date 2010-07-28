@@ -319,7 +319,7 @@ $systemaliasconf = array();
 // Section administrative email addresses may be hidden by
 // setting HIDE_ADMINISTRATIVE_EMAILSETTINGS to 'true' in
 // php/admin/include/conf.php
-if( $auth->group() == 'admin' && !defined('HIDE_ADMINISTRATIVE_EMAILSETTINGS')) {
+if( $auth->group() == 'admin' && !HIDE_ADMINISTRATIVE_EMAILSETTINGS) {
   $domain_count = 0;
   foreach( $ldap->domains() as $domain ) {
 	if( !exists_group( 'hostmaster@'.$domain ) ||
