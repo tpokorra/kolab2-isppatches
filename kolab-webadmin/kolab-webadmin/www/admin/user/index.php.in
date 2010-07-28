@@ -176,7 +176,7 @@ if( !$errors ) {
 		// skip admins and maintainers
 		if( !array_key_exists( $dn, $privmembers ) ) {
 		  // Check sieve for forwarding address
-		  if(HIDE_FORWARD_IN_USER_LIST != 'true' && !in_array($kolabhomeserver, $errsrv)) {
+		  if(!HIDE_FORWARD_IN_USER_LIST && !in_array($kolabhomeserver, $errsrv)) {
 			$sieve =& new Net_Sieve( "nobody", $_SESSION["php_pw"], $kolabhomeserver,
 					"2000", "", $uid);
 			if($sieve->getError() == "") {
