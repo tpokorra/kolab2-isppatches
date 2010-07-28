@@ -137,7 +137,8 @@ if( !$errors ) {
 	  $endtime = getmicrotime();
 	  //print "sorting took ".($endtime-$starttime)."<br/>";
 	  $entry = ldap_first_entry($ldap->connection, $result);
-	  imap_timeout(IMAP_OPENTIMEOUT, IMAP_CONNECT_TIMEOUT);
+	  if(IMAP_CONNECT_TIMEOUT > 0)
+		  imap_timeout(IMAP_OPENTIMEOUT, IMAP_CONNECT_TIMEOUT);
 	  $dead_servers = array();
 	  while( $entry ) {
 		$attrs = ldap_get_attributes($ldap->connection, $entry);
@@ -148,7 +149,7 @@ if( !$errors ) {
 		$sn = $attrs['sn'][0];
 		$cn = $attrs['cn'][0];
 		$kolabhomeserver = $attrs['kolabHomeServer'][0];
-		if(in_array($kolabhomeserver, $dead_servers))
+		if(IMAP_CONNECT_TIMEOUT < 0 || in_array($kolabhomeserver, $dead_servers))
 			// use 'unknown' value
 			$quota = 0;
 		else {
