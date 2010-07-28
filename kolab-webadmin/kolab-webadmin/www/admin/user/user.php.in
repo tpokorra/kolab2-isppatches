@@ -488,7 +488,7 @@ $entries = array( 'givenname' => array( 'name' => _('First Name'),
 				     'comment'    => $comment_mail ),
 		  'uid'    => array( 'name' => _('Unique Identity (UID)'),
                                      'validation' => 'checkuid',
-									 'value' => ($auth->group() == 'domain-maintainer' && UID_PREFIX_AUTOSET == "true")
+									 'value' => ($auth->group() == 'domain-maintainer' && UID_PREFIX_AUTOSET)
 										? (empty($_SESSION['uid_prefix']) ? _('(will be generated automatically)')
 										: getNextFreeUid()) : "",
                                      'comment' => _('Optional - Defaults to Primary Email Address') ),
@@ -556,7 +556,7 @@ if( $auth->group() == 'admin' || $auth->group() == 'maintainer' || $auth->group(
 }
 if($auth->group() == 'domain-maintainer') {
 	$entries['uid']['type'] = 'uid';
-	if(UID_PREFIX_AUTOSET == "true")
+	if(UID_PREFIX_AUTOSET)
 		$entries['uid']['attrs'] = 'readonly';
 }
 $entries['kolabFreeBusyFuture_0'] = array( 'name' => _('Free/Busy interval in days'),
@@ -580,7 +580,7 @@ if( $auth->group() == 'user' ) {
   apply_attributeaccess( $entries );
 }
 elseif($auth->group() == 'domain-maintainer') {
-	if(UID_PREFIX_AUTOSET != "true")
+	if(!UID_PREFIX_AUTOSET)
 		// Remove uid prefix in form for domain-maintainer
 		$ldap_object["uid"][0] = str_replace($_SESSION["uid_prefix"], "", $ldap_object["uid"][0]);
 }
@@ -616,7 +616,7 @@ switch( $action ) {
 	   $mailaddress = trim(strtolower($_POST['user_mail'])) . '@'
 			. trim(strtolower($_POST['domain_mail']));
        $ldap_object['mail'] = $mailaddress;
-	   if(UID_PREFIX_AUTOSET != "true")
+	   if(!UID_PREFIX_AUTOSET)
 			$ldap_object['uid'] = $_SESSION["uid_prefix"] . trim(strtolower($_POST['uid']));
 	   else {
 			if(isset($_SESSION["uid_prefix"]) && trim($_GET['action']) == "create") {
@@ -630,7 +630,7 @@ switch( $action ) {
 	   }
        if( $action == 'firstsave' ) {
 		 // Check UID with auto value
-		 if(UID_PREFIX_AUTOSET == "true" && !empty($_SESSION['customer_subtree'])) {
+		 if(UID_PREFIX_AUTOSET && !empty($_SESSION['customer_subtree'])) {
 			if($auth->group() == "admin" && $_POST['uid'] != "")
 				$ldap_object['uid'] = trim( strtolower( $_POST['uid'] ) );
 			else {
@@ -640,7 +640,7 @@ switch( $action ) {
 			if ($ldap_object['uid']=="")
 				$ldap_object['uid'] = $_SESSION["uid_prefix"].trim( strtolower( $_POST['uid'] ) );
 		 }
-		 else if(UID_PREFIX_AUTOSET == "true" && empty($_SESSION['customer_subtree'])
+		 else if(UID_PREFIX_AUTOSET && empty($_SESSION['customer_subtree'])
 				&& ($auth->group() == 'domain-maintainer' || ($auth->group() == 'admin'
 				|| $auth->group() == 'maintainer') && empty($_POST['uid'])))
 			$ldap_object['uid'] = $mailaddress;
@@ -900,7 +900,7 @@ switch( $action ) {
 			 $heading = _('Create New User');
 			 $form->entries['action']['value'] = 'firstsave';
 			 // Refresh value and set attributes for UID field for creating next user
-			 if(UID_PREFIX_AUTOSET == "true")
+			 if(UID_PREFIX_AUTOSET)
 				if($auth->group() == "domain-maintainer")
 					$form->entries['uid'] = array(
 						'value' => getNextFreeUid(),
