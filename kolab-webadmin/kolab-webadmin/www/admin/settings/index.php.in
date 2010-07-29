@@ -413,7 +413,8 @@ if($_REQUEST['changecustomer']) {
 			$errors[] = sprintf(_("LDAP Error: failed to modify customer object: %s"),
 					ldap_error($ldap->connection));
 	if(empty($errors))
-		adjustSessionForCustomerUpdate($customer_cn, 'modified', $customer_description);
+		adjustSessionForCustomerUpdate($customer_cn, 'modified', $customer_description, null,
+				$customer_disablegroupware == 'TRUE');
 }
 
 // Delete kolabhost
