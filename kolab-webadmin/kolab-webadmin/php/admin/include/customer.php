@@ -275,6 +275,7 @@ function adjustSessionForCustomerUpdate($customer, $action, $descr = null, $serv
 			if($index == -1)
 				break;
 			$_SESSION['customer_dn_options'][$index]['descr'] = $descr;
+			$_SESSION['customer_dn_options'][$index]['homeserver'] = $server;
 			break;
 	}
 }
