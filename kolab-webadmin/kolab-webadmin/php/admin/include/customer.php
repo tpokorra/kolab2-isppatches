@@ -254,9 +254,7 @@ function adjustSessionForCustomerUpdate($customer, $action, $descr = null, $serv
 				'descr' => $descr,
 				'subtree' => "cn=$customer,cn=customers,cn=internal,"
 						. $_SESSION['base_dn'],
-				'nogroupware' => $nogroup ? 'TRUE' : 'FALSE',
-				'homeserver' => $server,
-				'ignore' => 0
+				'ignore' => 0,
 			);
 			$_SESSION['customer_dn_options'][] = $info;
 			sortCustomerList();
