@@ -393,13 +393,15 @@ if($_REQUEST['changecustomer']) {
 		$customer_description = array();
 	$attrs = array();
 	$attrs['description'] = $customer_description;
+	$customer_kolabhomeserver = trim($_REQUEST['kolabhomeserver']);
+	$attrs['kolabHomeServer'] = $customer_kolabhomeserver;
 	if(empty($errors))
 		if(!($result = ldap_modify($ldap->connection, "cn=" . $customer_cn
 				. ",cn=customers,cn=internal," . $_SESSION['base_dn'], $attrs)))
 			$errors[] = sprintf(_("LDAP Error: failed to modify customer object: %s"),
 					ldap_error($ldap->connection));
 	if(empty($errors))
-		adjustSessionForCustomerUpdate($customer_cn, 'modified', $customer_description);
+		adjustSessionForCustomerUpdate($customer_cn, 'modified', $customer_description, $customer_kolabhomeserver);
 }
 
 // Delete kolabhost
