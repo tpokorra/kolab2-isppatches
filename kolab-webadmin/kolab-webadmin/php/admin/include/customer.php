@@ -27,7 +27,7 @@ function getCustomerList($add_choose = true, $customer_id = ""){
        $item_count++;
       }
     }
-    return $customer;
+    return $customer_id ? false : $customer;
   } else return $customer;
 }
 
@@ -95,15 +95,17 @@ function getPrefixForCustomer($customer_dn){
 }
 
 // Get customer dn for select field id
+// this function is stupid and should be superfluous, but i dare not remove it  -- simon
 function getCustomerDnFromId($id){
 	$id = trim($id);
 	if(is_numeric($id) && $id > 0){
 		$customer_tree = getCustomerList(true, $id);
-		return "cn=$customer_tree,".$_SESSION['base_dn'];
+		return $customer_tree ? "cn=$customer_tree,".$_SESSION['base_dn'] : false;
 	} else return $_SESSION['base_dn'];
 }
 
 // Get customer ID from a dn
+// this function is stupid and should be superfluous, but i dare not remove it  -- simon
 function getCustomerIdFromDn($dn){
 	global $ldap;
 	preg_match("/cn=([a-zA-Z0-9]+),".$_SESSION["base_dn"]."$/",$dn,$matches);
@@ -154,7 +156,7 @@ function removeDomainFromAllCustomers($domain) {
 		$cn = $cn[0];
 		if($error = removeDomainFromCustomer($domain, $cn)) {
 			ldap_free_result($result);
-			return 'rdfac:'.$error;
+			return $error;
 		}
 	}
 	ldap_free_result($result);
@@ -234,7 +236,7 @@ function setDomainOwner($domain, $customer) {
 
 function findCustomerInSessionArrayByCN($cn) {
 	$idx = 0;
-	$dn = $cn . ',' . $_SESSION['base_dn'];
+	$dn = "cn=$cn," . $_SESSION['base_dn'];
 	foreach($_SESSION['customer_dn_options'] as $option)
 		if($option['dn'] == $dn)
 			return $idx;
@@ -252,9 +254,7 @@ function adjustSessionForCustomerUpdate($customer, $action, $descr = null, $serv
 				'descr' => $descr,
 				'subtree' => "cn=$customer,cn=customers,cn=internal,"
 						. $_SESSION['base_dn'],
-				'nogroupware' => $nogroup ? 'TRUE' : 'FALSE',
-				'homeserver' => $server,
-				'ignore' => 0
+				'ignore' => 0,
 			);
 			$_SESSION['customer_dn_options'][] = $info;
 			sortCustomerList();
