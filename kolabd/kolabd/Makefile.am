@@ -53,7 +53,6 @@ kolabtemplate_DATA = templates/access.template \
 	templates/kolab_smtpdpolicy.conf.template \
 	templates/php.ini.template \
 	templates/relocated.template \
-	templates/resmgr.conf.template \
 	templates/saslauthd.conf.template \
 	templates/session_vars.php.template \
 	templates/slapd.access.template \
@@ -80,9 +79,7 @@ kolabnamespacedir = $(libexecdir)/kolab
 kolabnamespace_DATA = $(kolabnamespace_FILES)
 
 
-ldapschema_FILES =  kolab2.schema \
-	horde.schema \
-	rfc2739.schema
+ldapschema_FILES =  kolab2.schema
 
 ldapschemadir = $(ldapserver_schemadir)
 dist_ldapschema_DATA = $(ldapschema_FILES)
@@ -190,6 +187,7 @@ EXTRA_DIST += dist_conf/common \
 install-data-hook:
 	$(mkinstalldirs) -m 755 $(DESTDIR)
 	$(mkinstalldirs) -m 755 $(DESTDIR)$(kolab_logdir)
+	$(mkinstalldirs) -m 755 $(DESTDIR)$(kolab_hooksdir)/delete
 	$(mkinstalldirs) -m 755 $(DESTDIR)$(webserver_document_root)$(webserver_web_prefix)/cgi-bin
 	$(mkinstalldirs) -m 755 $(DESTDIR)$(webserver_document_root)$(webserver_web_prefix)/icons
 	$(mkinstalldirs) -m 755 $(DESTDIR)$(webserver_document_root)$(webserver_web_prefix)/freebusy
