@@ -1,3 +1,20 @@
+2010-06-25  Gunnar Wrobel  <p@rdus.de>
+
+	* patches/Kolab_Storage-0.5.0/Kolab_Storage_0.5.0_p2.patch:
+
+	kolab/issue4169 (kolab-webclient sometimes shows a blank page on
+	login)
+
+2010-06-24  Gunnar Wrobel  <p@rdus.de>
+
+	* patches/Kolab_Storage-0.5.0/Kolab_Storage_0.5.0_p1.patch:
+
+	Allow access to the matchNamespace() function.
+
+2010-06-22  Gunnar Wrobel  <p@rdus.de>
+
+	* package.info: Update to 0.5.0.
+
 2010-06-07  Gunnar Wrobel  <p@rdus.de>
 
 	* patches/Kolab_Storage-0.4.0/t_framework_HK_GW_ZpushAnnotations.diff:
