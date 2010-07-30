@@ -52,7 +52,7 @@ function getDomainQuotaInUse($domain){
   if (isset($_POST["user_mail"]) && isset($_POST["domain_mail"])){
     $exclude_filter="(!(mail=".trim(strtolower($_POST["user_mail"]))."@".trim(strtolower($_POST["domain_mail"]))."))";
   }
-  if ($ldap->search( $_SESSION['base_dn'], "(&(objectClass=kolabInetOrgPerson)(mail=*".$domain.")".$exclude_filter.")",array("cyrus-userquota"))){
+  if ($ldap->search( $_SESSION['base_dn'], "(&(objectClass=kolabInetOrgPerson)(mail=*@".$domain.")".$exclude_filter.")",array("cyrus-userquota"))){
     foreach($ldap->getEntries()as $v){
       if(isset($v["cyrus-userquota" ])) $quotainuse =  $quotainuse + $v["cyrus-userquota"][0];
     }
