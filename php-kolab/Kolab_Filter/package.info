@@ -13,13 +13,13 @@ package_url='http://pear.horde.org/index.php?package='
 package_origin='WGET'
 
 # Version number
-version='0.1.9'
+version='0.1.10'
 
 # Package release number
-release='20100420'
+release='20100721'
 
 # Source URL to download from
-sourceurl='http://pear.horde.org/get'
+sourceurl='http://files.kolab.org/incoming/wrobel'
 
 # In which PHP library location should the library get installed
 php_lib_loc='php'
@@ -39,6 +39,7 @@ PreReq:       PEAR-Horde-Channel           \
 PreReq:       Kolab_Format >= 1.0.1        \
 PreReq:       Kolab_Server >= 0.5.0        \
 PreReq:       Kolab_Storage >= 0.4.0       \
+PreReq:       Kolab_Resource >= 0.1.0       \
 PreReq:       PEAR-HTTP_Request            \
 PreReq:       PEAR-Net_LMTP                \
 PreReq:       PEAR-Net_SMTP                \
