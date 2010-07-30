@@ -91,6 +91,7 @@ do_subst = sed \
 	-e 's=[@]kolab_pkgs[@]=$(kolab_pkgs)=g' \
 	-e 's=[@]kolab_rusr[@]=$(kolab_rusr)=g' \
 	-e 's=[@]kolab_scriptsdir[@]=$(kolab_scriptsdir)=g' \
+	-e 's=[@]kolab_hooksdir[@]=$(kolab_hooksdir)=g' \
 	-e 's=[@]kolab_statedir[@]=$(kolab_statedir)=g' \
 	-e 's=[@]kolab_smtpdpolicy_conffile_grp[@]=$(kolab_smtpdpolicy_conffile_grp)=g' \
 	-e 's=[@]kolab_smtpdpolicy_conffile_usr[@]=$(kolab_smtpdpolicy_conffile_usr)=g' \
@@ -133,6 +134,7 @@ do_subst = sed \
 	-e 's=[@]sasl_smtpconffile[@]=$(sasl_smtpconffile)=g' \
 	-e 's=[@]smarty_compiledir[@]=$(smarty_compiledir)=g' \
 	-e 's=[@]spamassassin_confdir[@]=$(spamassassin_confdir)=g' \
+	-e 's=[@]webclient_data_root[@]=$(webclient_data_root)=g' \
 	-e 's=[@]webserver_acceptlock[@]=$(webserver_acceptlock)=g' \
 	-e 's=[@]webserver_accesslogfile[@]=$(webserver_accesslogfile)=g' \
 	-e 's=[@]webserver_cgidir[@]=$(webserver_cgidir)=g' \
