@@ -302,6 +302,8 @@ function getCustomerUsedDomainQuota($customer) {
 	if(!$customer)
 		return 0;
 	$domains = $ldap->domainsOfCustomer($customer);
+	if(is_string($domains))
+		return $domains;
 	$used = 0;
 	foreach($domains as $domain)
 		$used += getCustomerUsedDomainQuotaByDomain($domain);
