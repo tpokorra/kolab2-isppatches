@@ -1,0 +1,22 @@
+From: Gunnar Wrobel <wrobel@pardus.de>
+Subject: [PATCH] Kolab_Storage_0.5.0_p1.patch
+
+Allow access to the matchNamespace() function.
+
+This is required for the active sync configuration frontend.
+
+STATUS: MERGED
+
+Signed-off-by: Gunnar Wrobel <wrobel@pardus.de>
+
+--- a/framework/Kolab_Storage/lib/Horde/Kolab/Storage/Namespace.php	22 Jun 2010 09:31:39 -0000	1.1.2.1
++++ b/framework/Kolab_Storage/lib/Horde/Kolab/Storage/Namespace.php	24 Jun 2010 14:21:12 -0000	1.1.2.2
+@@ -104,7 +104,7 @@
+      * @throws Horde_Kolab_Storage_Exception If the namespace of the folder
+      *                                       cannot be determined.
+      */
+-    protected function matchNamespace($name)
++    public function matchNamespace($name)
+     {
+         foreach ($this->_namespaces as $namespace) {
+             if ($namespace->matches($name)) {

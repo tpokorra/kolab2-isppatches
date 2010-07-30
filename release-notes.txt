@@ -33,6 +33,7 @@ Changes between 2.2.3 and 2.???:
 	Support setting Zpush configuration values.
 
 	kolab/issue2991 (The Kolab web client is always in the privileged networks) 
+	kolab/issue3472 (web client user prefs not deleted when user gets deleted)
 
     - imp-4.3.6-2010????
 
@@ -44,16 +45,32 @@ Changes between 2.2.3 and 2.???:
 
     - kolab-webadmin-2.2.3-2009????
 
+	kolab/issue606  (It is not possible to register people with
+	                 middlename correctly)
 	kolab/issue1446 (Webinterface for setting vacation, email-delivery and
 	                 forwarding (rt#5033))
 	kolab/issue3401 (Change font color of the kolab-webadmin)
 	kolab/issue3428 (Present the checkbox in the "accept internet email"
 	                 nicer)
+	kolab/issue4430 ("Modify User" reply page contains user password
+	                 in plain text)
+
+    - Kolab_Config-0.1.0-2010????
+
+        A new package that supports reading the Kolab server
+        configuration files.
+
+	kolab/issue3472 (web client user prefs not deleted when user gets
+	                 deleted)
 
     - Kolab_Filter-0.1.9-2010????
 
 	Added french translation. Submitted by Mathieu Parent
 	(mathieuparent@users.sourceforge.net).
+
+	Use the new Kolab_Resource package.
+
+	Improved (reduced) logging.
 
 	kolab/issue1336 (Resource booking fails, if TRANSP:TRANSPARENT in the
 	                 invitation)
@@ -61,6 +78,7 @@ Changes between 2.2.3 and 2.???:
 	kolab/issue3289 (resmgr dies when it should accept, but has not Calender
 	                 folder access)
 	kolab/issue3364 (manpages for kolabfilter and kolabmailboxfilter)
+	kolab/issue3522 (No logrotate for kolab-filter.log and friends)
 	kolab/issue3560 (php error when inviting outside of free/busy interval)
 	kolab/issue3616 (automatic replies to invitations contain 127.0.0.1 in
 	                 Message-ID)
@@ -70,14 +88,16 @@ Changes between 2.2.3 and 2.???:
 	kolab/issue4257 ("Always accept" policy doesn't set atendee status
 	                 to "accepted")
 
-    - Kolab_Format-1.0.1-2009????
+    - Kolab_Format-1.0.1-2010????
+
+	Make the task handler independent of the Kolab package.
 
 	kolab/issue3520 (calendar with certain entries does not display in web
 	                 client)
 	kolab/issue3525 (free/busy regeneration aborts for unparsable events)
 	kolab/issue3528 (Events with broken encoding should work)
 
-    - Kolab_FreeBusy-0.1.6-2009????
+    - Kolab_FreeBusy-0.1.7-2009????
 
 	Improved handling of dba access.
 	Extended support for more complex scenario testing.
@@ -89,12 +109,25 @@ Changes between 2.2.3 and 2.???:
 	kolab/issue3446 (SERVER_NAME undefined in freebusy/regenerate.php)
 	kolab/issue3450 (freebusy/user@example.com.ifb returns extended
 	                 free/busy information)
+	kolab/issue3522 (No logrotate for kolab-filter.log and friends)
 	kolab/issue3527 (no immediately printing of folders during
 	                 freebusy cache regeneration)
 	kolab/issue3537 (Allowing xfb access to groups does not work)
 	kolab/issue3544 (Cached xfb access not up to date for changed
 	                 distribution lists)
+	kolab/issue3732 (Logging needed for errors when creating a Kolab
+	                 session object)
 	kolab/issue3983 (Phpunit testsuite fails on OpenPKG Kolab 2.2.2) 
+	kolab/issue4395 (freebusy list contains time of an event, which is
+	                 from a now *not* shared, before shared calendar folder)
+	kolab/issue4436 (free/busy interval is often too low)
+
+    - Kolab_Resource-0.1.0-2010????
+
+	kolab/issue4434 (Resource (Reject if conflicts) accepts
+	                 recurring event even if second occurrence is busy)
+	kolab/issue4481 (Automatically trigger a resource when booking
+	                 in case its free/busy information is too old)
 
     - Kolab_Server-0.5.0-2010????
 
@@ -103,7 +136,7 @@ Changes between 2.2.3 and 2.???:
 	kolab/issue3537 (Allowing xfb access to groups does not work)
 	kolab/issue3983 (Phpunit testsuite fails on OpenPKG Kolab 2.2.2) 
 
-    - Kolab_Storage-0.4.0-2010????
+    - Kolab_Storage-0.5.0-2010????
 
 	Support setting Zpush configuration values.
 
@@ -111,6 +144,8 @@ Changes between 2.2.3 and 2.???:
 	kolab/issue3983 (Phpunit testsuite fails on OpenPKG Kolab 2.2.2)
 	kolab/issue4165 (kolab-webclient does not show shared/
 	                 calendar and contact folders)
+	kolab/issue4169 (kolab-webclient sometimes shows a blank page on
+	                 login)
 
     - kolabd-2.?.?-2009????
 
@@ -135,6 +170,11 @@ Changes between 2.2.3 and 2.???:
 	Cyrus user and group is cyrus:mail on Debian
 	(http://bugs.debian.org/581757).
 
+	Support a hooks directory that allows to extend the deletion of
+	users.
+
+	Reduced amount of logging in the Kolab_Filter package.
+
 	kolab/issue1382 (resmgr accepts concurrent overlapping invitations)
 	kolab/issue1671 (Improving the warning about kolab templates within
 	                 configuration files)
@@ -145,8 +185,13 @@ Changes between 2.2.3 and 2.???:
 	kolab/issue1755 (syncrepl support (for OpenLDAP >=2.4.6))
 	kolab/issue2499 (Notification messages by the resource manager sould be
 	                 localized)
+	kolab/issue3245 (Remove horde.schema and rfc2739.schema from
+	                 kolab-server/slapd.conf.template)
+	kolab/issue3472 (web client user prefs not deleted when user gets
+	                 deleted)
 	kolab/issue3490 (Please include dist_conf/kolabsrv.in in source
 	                 packages)
+	kolab/issue3522 (No logrotate for kolab-filter.log and friends)
 	kolab/issue3584 (rfc2739 is not copyrightable nor licensable)
 	kolab/issue3765 (dist_conf'iguration for openldap module loading)
 	kolab/issue3953 (use spamassassin_confdir in local.cf.template comment)
@@ -203,6 +248,10 @@ Changes between 2.2.3 and 2.???:
 	kolab/issue3509 (calender not displaying in horde if german holidays
 	                 are selected)
 
+    - PEAR-Horde-Channel-1.0-20090119
+
+	kolab/issue3315 (PEAR-Horde-Channel-1.0 fails to compile on solaris 10)
+
     - PEAR-Mail-1.1.14-2
 
 	kolab/issue3983 (Phpunit testsuite fails on OpenPKG Kolab 2.2.2)
@@ -210,6 +259,10 @@ Changes between 2.2.3 and 2.???:
     - PEAR-Mail_mimeDecode-1.5.0-2
 
 	kolab/issue3983 (Phpunit testsuite fails on OpenPKG Kolab 2.2.2) 
+
+    - PEAR-PHPUnit-Channel-1.0-20090119
+
+	kolab/issue3315 (PEAR-Horde-Channel-1.0 fails to compile on solaris 10)
 
     - perl-kolab-2.?.?-2009????
 
@@ -230,10 +283,17 @@ Changes between 2.2.3 and 2.???:
 	Added arguments to rebuildTemplates(): dorunonchange and templates.
 	Use those in kolab_bootstrap (in replacement of bootstrapConfig()).
 
+	Support a hooks directory that allows to extend the deletion of
+	users.
+
 	kolab/issue919  (kolab server has problems with some characters in
 	                 passwords (rt#5558)) 
+	kolab/issue977  (Kolab suppresses ldap error messages) 
+	kolab/issue978  (incorrect $ldap->abandon; call)
 	kolab/issue1679 (Update template META mechanism to support service
 	                 restarts)
+	kolab/issue3472 (web client user prefs not deleted when user gets
+	                 deleted)
 	kolab/issue3604 (Change LDAPD in kolab_bootstrap to just openldap)
 	kolab/issue3951 (kolabconf -n (noreload) restarts services if
 	                 RUNONCHANGE is used)
@@ -248,6 +308,10 @@ Changes between 2.2.3 and 2.???:
 	Activated the HASH and JSON modules.
 
 	Added support for PDO sqlite3.
+
+    - postfix-2.4.6-20080101_kolab2
+
+	kolab/issue1072 (postfix logs readable for everyone)
 
     - turba-2.3.3-2010????
 
@@ -3573,4 +3637,4 @@ Changes between 2.1-beta-1 and 2.1-beta-2:
 	kolab/issue1245 (rewriting problems on folded Header "From:"-line)
 
 
-$Id: release-notes.txt,v 1.550 2010/06/17 18:48:58 mathieu Exp $
+$Id: release-notes.txt,v 1.571 2010/07/25 20:18:17 gunnar Exp $
