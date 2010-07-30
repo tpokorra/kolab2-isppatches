@@ -1,0 +1,57 @@
+# The name of Horde source package
+pear_package='Kolab_Resource'
+
+# The name of the RPM package
+package='Kolab_Resource'
+
+# Where to find information about the package
+package_url='http://pear.horde.org/index.php?package='
+
+# How should the source be retrieved?
+#
+# WGET: Download via wget
+package_origin='WGET'
+
+# Version number
+version='0.1.1'
+
+# Package release number
+release='20100725'
+
+# Source URL to download from
+sourceurl='http://files.kolab.org/incoming/wrobel'
+
+# In which PHP library location should the library get installed
+php_lib_loc='php'
+
+# Build prerequisites
+buildprereq='                              \
+BuildPreReq:  OpenPKG, openpkg >= 20070603 \
+BuildPreReq:  php, php::with_pear = yes    \
+BuildPreReq:  PEAR-Horde-Channel           \
+'
+
+# Installatin prerequisites
+prereq='                                   \
+PreReq:       OpenPKG, openpkg >= 20070603 \
+PreReq:       php, php::with_pear = yes    \
+PreReq:       PEAR-Horde-Channel           \
+PreReq:       Kolab_Format >= 1.0.1        \
+PreReq:       Kolab_Storage >= 0.4.0       \
+PreReq:       PEAR-HTTP_Request            \
+PreReq:       Horde_iCalendar              \
+PreReq:       Horde_MIME                   \
+PreReq:       Horde_Framework              \
+PreReq:       Horde_Util                   \
+'
+
+# Package summary description
+summary='Resource management for the Kolab server'
+
+# Long package description
+description=' \
+This package allows booking of Kolab server resources. \
+'
+
+# Source code license
+license='LGPL'
