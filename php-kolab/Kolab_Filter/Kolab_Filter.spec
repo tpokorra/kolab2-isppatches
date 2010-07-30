@@ -6,8 +6,8 @@
 %define         V_package_origin WGET
 %define         V_repo_commit 
 %define         V_repo_release 
-%define         V_version 0.1.9
-%define         V_release 20100420
+%define         V_version 0.1.10
+%define         V_release 20100721
 %define         V_sourceurl http://pear.horde.org/get
 %define         V_php_lib_loc php
 %define         V_www_loc 
@@ -26,7 +26,9 @@ Group:     Development/Libraries
 Distribution:	OpenPKG
 
 # List of Sources
-Source:    %{V_sourceurl}/%{V_pear_package}-%{V_version}.tgz
+Source0:    %{V_sourceurl}/%{V_pear_package}-%{V_version}.tgz
+Source1:    filter.conf.template
+Source2:    rc.filter.template
 
 # List of patches
 Patch0:    package.patch
@@ -85,6 +87,7 @@ This package allows to convert Kolab data objects from XML to hashes.
         %{l_shtool} install -d $RPM_BUILD_ROOT%{l_prefix}/var/kolab-filter/locks
         %{l_shtool} install -d $RPM_BUILD_ROOT%{l_prefix}/var/kolab-filter/tmp
         %{l_shtool} install -d $RPM_BUILD_ROOT%{l_prefix}/man/man1
+	%{l_shtool} install -d $RPM_BUILD_ROOT%{l_prefix}/etc/kolab/templates	
 
         env PHP_PEAR_PHP_BIN="%{l_prefix}/bin/php -d safe_mode=off -d memory_limit=40M"\
             PHP_PEAR_CACHE_DIR="/tmp/pear/cache"                                       \
@@ -104,8 +107,12 @@ This package allows to convert Kolab data objects from XML to hashes.
 	cp $RPM_BUILD_ROOT/%{l_prefix}/lib/php/doc/Kolab_Filter/man/man1/kolabfilter.1 $RPM_BUILD_ROOT/%{l_prefix}/man/man1
 	cd $RPM_BUILD_ROOT/%{l_prefix}/man/man1 && ln -s kolabfilter.1 kolabmailboxfilter.1 && cd -
 
+	%{l_shtool} install -c -m 644 %{l_value -s -a} %{S:1} %{S:2} \
+	  $RPM_BUILD_ROOT%{l_prefix}/etc/kolab/templates
+
         %{l_rpmtool} files -v -ofiles -r$RPM_BUILD_ROOT %{l_files_std}                 \
             %dir '%defattr(-,%{l_nusr},%{l_ngrp})' %{l_prefix}/var/kolab-filter/tmp    \
+            %dir '%defattr(-,%{l_nusr},%{l_ngrp})' %{l_prefix}/var/kolab-filter/locks  \
             %dir '%defattr(-,%{l_nusr},%{l_ngrp})' %{l_prefix}/var/kolab-filter/log
 
 %clean
