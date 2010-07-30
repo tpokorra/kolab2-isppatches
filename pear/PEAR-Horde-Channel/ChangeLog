@@ -1,3 +1,10 @@
+2010-07-06  Gunnar Wrobel  <p@rdus.de>
+
+	* PEAR-Horde-Channel.spec:
+
+	kolab/issue3315 (PEAR-Horde-Channel-1.0 fails to compile on
+	solaris 10)
+
 2009-05-18  Gunnar Wrobel  <p@rdus.de>
 
 	* PEAR-Horde-Channel.spec: Prepare the channel installation for

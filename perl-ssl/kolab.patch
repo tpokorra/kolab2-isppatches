@@ -1,0 +1,47 @@
+diff -Naur --exclude='*~' --exclude='*.tar.gz' --exclude='*tar.gz.*' /kolab/RPM/SRC/perl-ssl.orig/perl-ssl.patch /kolab/RPM/SRC/perl-ssl/perl-ssl.patch
+--- /kolab/RPM/SRC/perl-ssl.orig/perl-ssl.patch	2010-06-28 17:33:29.478151129 +0200
++++ /kolab/RPM/SRC/perl-ssl/perl-ssl.patch	2010-06-28 17:45:40.519154865 +0200
+@@ -41,22 +41,3 @@
+  }
+  
+  # contrary to the behavior of read sysread can read partial data
+-Index: Net-SSLeay-1.32/Makefile.PL
+---- Net-SSLeay-1.32/Makefile.PL.orig	2007-09-18 08:28:10 +0200
+-+++ Net-SSLeay-1.32/Makefile.PL	2007-09-18 08:28:40 +0200
+-@@ -11,10 +11,8 @@
+- ssleay();
+- 
+- build_requires('Sub::Uplevel');
+--build_requires('Test::Exception');
+- build_requires('Array::Compare');
+- build_requires('Tree::DAG_Node');
+--build_requires('Test::Warn');
+- requires('MIME::Base64');
+- 
+- clean_files(map { fixpath($_) } qw(
+-@@ -33,3 +31,4 @@
+- 
+- auto_install();
+- WriteAll();
+-+
+diff -Naur --exclude='*~' --exclude='*.tar.gz' --exclude='*tar.gz.*' /kolab/RPM/SRC/perl-ssl.orig/perl-ssl.spec /kolab/RPM/SRC/perl-ssl/perl-ssl.spec
+--- /kolab/RPM/SRC/perl-ssl.orig/perl-ssl.spec	2010-06-28 17:33:29.498151550 +0200
++++ /kolab/RPM/SRC/perl-ssl/perl-ssl.spec	2010-06-28 17:51:38.192539975 +0200
+@@ -23,7 +23,7 @@
+ 
+ #   versions of individual parts
+ %define       V_perl              5.10.0
+-%define       V_net_ssleay        1.32
++%define       V_net_ssleay        1.36
+ %define       V_crypt_ssleay      0.57
+ %define       V_io_socket_ssl     1.12
+ 
+@@ -38,7 +38,7 @@
+ Group:        Perl
+ License:      GPL/Artistic
+ Version:      %{V_perl}
+-Release:      20080101
++Release:      20080101_kolab1
+ 
+ #   list of sources
+ Source0:      http://www.cpan.org/modules/by-module/Net/Net-SSLeay-%{V_net_ssleay}.tar.gz

@@ -1,0 +1,41 @@
+From: Gunnar Wrobel <wrobel@pardus.de>
+Subject: [PATCH] Kolab_Package_Dependency.patch
+
+Does make the task handler independent of the Kolab package.
+
+STATUS: MERGED
+
+Signed-off-by: Gunnar Wrobel <wrobel@pardus.de>
+
+diff -u -B -r1.2.2.6 task.php
+--- a/framework/Kolab_Format/lib/Horde/Kolab/Format/XML/task.php	12 Dec 2008 11:39:04 -0000	1.2.2.6
++++ a/framework/Kolab_Format/lib/Horde/Kolab/Format/XML/task.php	22 Jun 2010 23:56:53 -0000
+@@ -154,7 +154,7 @@
+             $object['parent'] = null;
+         }
+ 
+-        $object['completed'] = (bool) Kolab::percentageToBoolean($object['completed']);
++        $object['completed'] = (bool) $this->percentageToBoolean($object['completed']);
+ 
+         if (isset($object['organizer']) && isset($object['organizer']['smtp-address'])) {
+             $object['assignee'] = $object['organizer']['smtp-address'];
+@@ -184,8 +184,18 @@
+ 
+         $object['estimate'] = number_format($object['estimate'], 2);
+ 
+-        $object['completed'] = Kolab::BooleanToPercentage($object['completed']);
++        $object['completed'] = $this->booleanToPercentage($object['completed']);
+ 
+         return $this->_saveArray($root, $object, $this->_fields_specific);
+     }
++
++    function percentageToBoolean($percentage)
++    {
++        return $percentage == 100 ? '1' : '0';
++    }
++
++    function booleanToPercentage($boolean)
++    {
++        return $boolean ? '100' : '0';
++    }
+ }

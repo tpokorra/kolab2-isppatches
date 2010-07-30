@@ -1,3 +1,20 @@
+2010-07-12  Gunnar Wrobel  <p@rdus.de>
+
+	* www/admin/administrator/admin.php.in:
+	* www/admin/domainmaintainer/domainmaintainer.php.in:
+	* www/admin/maintainer/maintainer.php.in:
+	* www/admin/user/user.php.in:
+
+	kolab/issue4430 ("Modify User" reply page contains user password
+	in plain text)
+
+2010-06-28  Gunnar Wrobel  <p@rdus.de>
+
+	* www/admin/user/user.php.in:
+
+	kolab/issue606 (It is not possible to register people with
+	middlename correctly)
+
 2010-05-21  Mathieu Parent  <math.parent@gmail.com>
 
 	* php/admin/locale/*/LC_MESSAGES/messages.po, www/admin/settings/index.php.in:
