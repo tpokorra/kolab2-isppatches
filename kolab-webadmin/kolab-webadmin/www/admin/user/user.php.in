@@ -274,11 +274,14 @@ function fill_form_for_modify( &$form, $dn, &$ldap_object ) {
   if (is_array($ldap_object['cn'])) $cn = $ldap_object['cn'][0];
   else $cn = $ldap_object['cn'];
   if ($cn && $sn) $givenname = KolabLDAP::getGivenName($cn, $sn);
+  if (is_array($ldap_object['initials'])) $initials = $ldap_object['initials'][0];
+  else $initials = $ldap_object['initials'];
   if (is_array($ldap_object['mail'])) $mail = $ldap_object['mail'][0];
   else $mail = $ldap_object['mail'];
   if (is_array($ldap_object['uid'])) $uid = $ldap_object['uid'][0];
   else $uid = $ldap_object['uid'];
   if(array_key_exists('givenname',$form->entries)) $form->entries['givenname']['value'] = $givenname;
+  if(array_key_exists('initials',$form->entries)) $form->entries['initials']['value'] = $initials;
   if(array_key_exists('sn',$form->entries)) $form->entries['sn']['value'] = $sn;
   if(array_key_exists('password_0',$form->entries))  $form->entries['password_0']['value'] = '';
   if(array_key_exists('password_1',$form->entries))  $form->entries['password_1']['value'] = '';
@@ -447,6 +450,7 @@ if ($action == "create") {
 $entries = array( 'givenname' => array( 'name' => _('First Name'),
 					'validation' => 'notempty',
 					'comment' => _('Required') ),
+		  'initials' => array( 'name' => _('Middle Name')),
 		  'sn' => array( 'name' => _('Last Name'),
 				       'validation' => 'notempty',
 				       'comment' => _('Required') ),
@@ -518,8 +522,9 @@ if( $auth->group() == 'admin' || $auth->group() == 'maintainer' || $auth->group(
 				       'validation' => 'checkquota');
 } else {
   $entries['givenname']['attrs'] = 'readonly';
-  $entries['sn']['attrs'] = 'readonly';
   $entries['givenname']['comment'] = '';
+  $entries['initials']['attrs'] = 'readonly';
+  $entries['sn']['attrs'] = 'readonly';
   $entries['sn']['comment'] = '';
   $entries['alias']['attrs'] = 'readonly';
   $entries['kolabdelegate']['attrs'] = 'readonly';
@@ -597,6 +602,11 @@ switch( $action ) {
        $ldap_object['sn'] = trim($_POST['sn']);
        $ldap_object['cn'] = trim($_POST['givenname']).' '.$ldap_object['sn'];
 	   $ldap_object['givenName'] = trim($_POST['givenname']);
+	   if (!empty($_POST['initials'])) {
+		 $ldap_object['initials'] = trim($_POST['initials']);
+	   } else {
+		 $ldap_object['initials'] = array();
+	   }
        if( !empty( $_POST['password_0'] ) ) {
 	         $ldap_object['userPassword'] = ssha( $_POST['password_0'], gensalt());
 		 if( $action == 'save' && $auth->dn() == $dn ) {
@@ -779,6 +789,8 @@ switch( $action ) {
 		 $heading = _('Modify User');
 		 if( !$errors ) $messages[] = sprintf(_("User '%s' successfully modified"), $dn);
 		 $form->setValues();
+		 if(array_key_exists('password_0',$form->entries))  $form->entries['password_0']['value'] = '';
+		 if(array_key_exists('password_1',$form->entries))  $form->entries['password_1']['value'] = '';
 		 $form->entries['mail']['attrs'] = 'readonly';
 		 $form->entries['kolabhomeserver']['attrs'] = 'readonly';
 		 $form->entries['action']['value'] = 'save';
