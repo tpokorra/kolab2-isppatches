@@ -1,0 +1,63 @@
+# The name of Horde source package
+pear_package='Kolab_Config'
+
+# The name of the RPM package
+package='Kolab_Config'
+
+# Where to find information about the package
+package_url='http://pear.horde.org/index.php?package='
+
+# How should the source be retrieved?
+#
+# WGET: Download via wget
+#package_origin='WGET'
+package_origin='VC-GIT'
+
+# The name of the package in the source repository
+pear_pkgdir='framework/Kolab_Config'
+
+# Commit tag or date to user
+repo_commit='8db04d5dbc71180908279b3b701b770e5e5eb1a5'
+
+# What release number should the source snapshot get (usually a date)?
+repo_release='20100628'
+
+# Version number
+version='0.1.0dev20100628'
+
+# Package release number
+release='20100628'
+
+# Source URL to download from
+#sourceurl='http://pear.horde.org/get'
+sourceurl='http://files.kolab.org/incoming/wrobel/'
+
+# In which PHP library location should the library get installed
+php_lib_loc='php'
+
+# Build prerequisites
+buildprereq='                              \
+BuildPreReq:  OpenPKG, openpkg >= 20070603 \
+BuildPreReq:  php, php::with_pear = yes    \
+BuildPreReq:  PEAR-Horde-Channel           \
+'
+
+# Installatin prerequisites
+prereq='                                   \
+PreReq:       OpenPKG, openpkg >= 20070603 \
+PreReq:       php, php::with_pear = yes    \
+PreReq:       PEAR-Horde-Channel           \
+'
+
+# Package summary description
+summary='A package for reading the Kolab server configuration.'
+
+# Long package description
+description=' \
+This package reads the various Kolab server \
+ configuration files. It should also support retrieving configuration\
+ parameters from LDAP but this is not yet implemented. \
+'
+
+# Source code license
+license='LGPL'

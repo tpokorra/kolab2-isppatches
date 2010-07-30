@@ -244,6 +244,8 @@ switch( $action ) {
 		 $heading = _('Modify Administrator');
 		 $messages[] = _('Administrator ').$ldap_object['dn']._(' successfully modified');
 		 $form->setValues();
+		 $form->entries['password_0']['value'] = '';
+		 $form->entries['password_1']['value'] = '';
 		 $form->entries['action']['value'] = 'save';
 		 $form->entries['uid']['attrs'] = 'readonly';
 		 $content = $form->outputForm();

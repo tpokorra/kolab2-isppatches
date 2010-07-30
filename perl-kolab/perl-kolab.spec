@@ -21,12 +21,12 @@
 ##  along with this program; if not, write to the Free Software
 ##  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
-##  $Revision: 1.116 $
+##  $Revision: 1.119 $
 
 #   versions of individual parts
 %define       V_perl         5.8.8
 %define       V_package      perl-kolab
-%define       V_version      2.2.3+cvs20100330
+%define       V_version      2.2.3+cvs20100717
 %define       V_release      1
 
 #   package information
