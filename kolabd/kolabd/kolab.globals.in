@@ -44,6 +44,8 @@ kolab_rusr: @kolab_rusr@
 kolab_rgrp: @kolab_rgrp@
 kolab_musr: @kolab_musr@
 kolab_mgrp: @kolab_mgrp@
+kolab_susr: @kolab_susr@
+kolab_hooksdir: @kolab_hooksdir@
 kolab_quotawarning: @kolab_quotawarning@
 hashmethod: @sbindir@/slappasswd -s
 templatedir: @sysconfdir@/kolab/templates
@@ -56,6 +58,7 @@ webserver_logdir: @webserver_logdir@
 webserver_document_root: @webserver_document_root@
 webserver_usr: @webserver_usr@
 webserver_grp: @webserver_grp@
+webclient_data_root: @webclient_data_root@
 horde_cookie_path: @horde_cookie_path@
 horde_confdir: @horde_confdir@
 dimp_confdir: @dimp_confdir@
@@ -105,3 +108,12 @@ freebusy_log_type: @freebusy_log_type@
 freebusy_log_name: @freebusy_log_name@
 freebusy_logdir: @freebusy_logdir@
 freebusy_cachedir: @freebusy_cachedir@
+resmgr_confdir: @resmgr_confdir@
+resmgr_conffile_usr: @resmgr_conffile_usr@
+resmgr_conffile_grp: @resmgr_conffile_grp@
+resmgr_tmpdir: @resmgr_tmpdir@
+resmgr_localedir: @resmgr_localedir@
+resmgr_locksdir: @resmgr_locksdir@
+resmgr_logdir: @resmgr_logdir@
+resmgr_log_type: @resmgr_log_type@
+resmgr_log_name: @resmgr_log_name@
