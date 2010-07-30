@@ -6,8 +6,8 @@
 %define         V_package_origin WGET
 %define         V_repo_commit 
 %define         V_repo_release 
-%define         V_version 0.1.6
-%define         V_release 20100516
+%define         V_version 0.1.7
+%define         V_release 20100722
 %define         V_sourceurl http://pear.horde.org/get
 %define         V_php_lib_loc php
 %define         V_www_loc freebusy
@@ -28,6 +28,7 @@ Distribution:	OpenPKG
 # List of Sources
 Source0:    %{V_sourceurl}/%{V_pear_package}-%{V_version}.tgz
 Source1:    freebusy.conf.template
+Source2:    rc.freebusy.template
 
 # List of patches
 Patch0:    package.patch
@@ -94,7 +95,7 @@ This package allows to convert Kolab data objects from XML to hashes.
                 cp -a $RPM_BUILD_ROOT/%{l_prefix}/lib/%{V_php_lib_loc} $RPM_BUILD_ROOT%{l_prefix}/var/kolab/www/%{l_prefix}/lib/
         %endif
 
-	%{l_shtool} install -c -m 644 %{l_value -s -a} %{S:1} \
+	%{l_shtool} install -c -m 644 %{l_value -s -a} %{S:1} %{S:2} \
 	  $RPM_BUILD_ROOT%{l_prefix}/etc/kolab/templates
 
         %{l_rpmtool} files -v -ofiles -r$RPM_BUILD_ROOT %{l_files_std}                     \

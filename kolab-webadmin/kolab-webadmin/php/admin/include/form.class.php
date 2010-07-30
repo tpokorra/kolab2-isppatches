@@ -418,7 +418,7 @@ class KolabForm {
 	      if( strlen(trim($_REQUEST['user_'.$key])) == 0 ) {
 		$this->errors[] = _('Required field ').$value['name']._(' is empty');
 	      }
-	    } else if( strlen( trim($_REQUEST[$key]) ) == 0 ) {
+	    } else if( (!is_array($_REQUEST[$key]) && strlen( trim($_REQUEST[$key]) ) == 0) || empty($_REQUEST[$key]) ) {
 	      $this->errors[] = _('Required field ').$value['name']._(' is empty');
 	    }
 	  } else {

@@ -1,0 +1,54 @@
+From: Gunnar Wrobel <wrobel@pardus.de>
+Subject: [PATCH] Kolab_FreeBusy_0.1.7_p1.patch
+
+Fixes kolab/issue3732 (Logging needed for errors when creating a Kolab session object)
+
+STATUS: MERGED
+
+REF: https://issues.kolab.org/issue3732
+
+Signed-off-by: Gunnar Wrobel <wrobel@pardus.de>
+
+diff -u -B -r1.15.2.3 Access.php
+--- a/framework/Kolab_FreeBusy/lib/Horde/Kolab/FreeBusy/Access.php	28 Apr 2010 20:03:06 -0000	1.15.2.3
++++ a/framework/Kolab_FreeBusy/lib/Horde/Kolab/FreeBusy/Access.php	25 Jun 2010 08:08:13 -0000
+@@ -40,11 +40,18 @@
+     /**
+      * Did the above combination authenticate?
+      *
+-     * @var string
++     * @var boolean
+      */
+     var $_authenticated = false;
+ 
+     /**
++     * Contains an error string if authentication failed.
++     *
++     * @var string
++     */
++    var $_auth_error;
++
++    /**
+      * The object representing the user calling the script.
+      *
+      * @var string
+@@ -227,8 +234,8 @@
+         }
+ 
+         if (!$this->_authenticated) {
+-            return PEAR::raiseError(sprintf(_("Invalid authentication for user %s!"), 
+-                                            $this->user));
++            return PEAR::raiseError(sprintf(_("Invalid authentication for user %s: %s"), 
++                                            $this->user, $this->_auth_error));
+         }
+         return true;
+     }
+@@ -301,6 +308,8 @@
+                     'remote_addr' => isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : null,
+                 );
+                 Auth::setCredential('password', $pass);
++            } else {
++                $this->_auth_error = $auth->getLogoutReasonString();
+             }
+         }
+     }

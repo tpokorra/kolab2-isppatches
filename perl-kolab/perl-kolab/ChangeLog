@@ -1,3 +1,27 @@
+2010-07-17  Gunnar Wrobel  <p@rdus.de>
+
+	* lib/Kolab/LDAP.pm:
+
+	kolab/issue977 (Kolab suppresses ldap error messages)
+	kolab/issue978 (incorrect $ldap->abandon; call)
+
+2010-06-28  Gunnar Wrobel  <p@rdus.de>
+
+	* lib/Kolab/LDAP.pm:
+
+	Removed hack for kolab/issue3472 (web client user prefs not
+	deleted when user gets deleted)
+
+2010-06-27  Gunnar Wrobel  <p@rdus.de>
+
+	* lib/Kolab/LDAP.pm (deleteObject):
+
+	Support a hooks directory that allows to extend the deletion of
+	users.
+
+	kolab/issue3472 (web client user prefs not deleted when user gets
+	deleted)
+
 2010-04-27  Thomas Arendsen Hein  <thomas@intevation.de>
 
 	* sbin/kolab_bootstrap.in: Check for availability of submission port,
