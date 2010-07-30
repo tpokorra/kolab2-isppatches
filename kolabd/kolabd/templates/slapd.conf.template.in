@@ -26,8 +26,22 @@ moduleload     unique
 include @ldapserver_schemadir@/core.schema
 include @ldapserver_schemadir@/cosine.schema
 include @ldapserver_schemadir@/inetorgperson.schema
-include @ldapserver_schemadir@/rfc2739.schema
 include @ldapserver_schemadir@/kolab2.schema
+
+# Only include this in case you need the calFBURL attribute in
+# kolabInetOrgPerson objects.
+# see also kolab/issue3245 (https://issues.kolab.org/issue3245)
+#
+# The schema remains available at
+# /kolab/var/kolab/www/client/turba/scripts/ldap/rfc2739.schema
+#include @ldapserver_schemadir@/rfc2739.schema
+
+# Only include this in case you want to store the preferences of the
+# kolab web client in LDAP.
+# see also kolab/issue3245 (https://issues.kolab.org/issue3245)
+#
+# The schema remains available at
+# /kolab/var/kolab/www/client/scripts/ldap/horde.schema
 #include @ldapserver_schemadir@/horde.schema
 
 pidfile		@ldapserver_pidfile@

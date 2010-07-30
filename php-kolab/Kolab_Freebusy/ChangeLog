@@ -1,3 +1,37 @@
+2010-07-22  Gunnar Wrobel  <p@rdus.de>
+
+	* patches/Kolab_FreeBusy-0.1.7/Kolab_FreeBusy_0.1.7_p3.patch:
+
+	kolab/issue4436 (free/busy interval is often too low)
+
+2010-07-21  Gunnar Wrobel  <p@rdus.de>
+
+	* templates/Kolab_FreeBusy-0.1.7/rc.freebusy.template:
+
+	kolab/issue3522 (No logrotate for kolab-filter.log and friends)
+
+2010-06-25  Gunnar Wrobel  <p@rdus.de>
+
+	* patches/Kolab_FreeBusy-0.1.7/Kolab_FreeBusy_0.1.7_p2.patch:
+
+	kolab/issue3732 (Logging needed for errors when creating a Kolab
+	session object)
+
+2010-06-24  Gunnar Wrobel  <p@rdus.de>
+
+	* patches/Kolab_FreeBusy-0.1.7/Kolab_FreeBusy_0.1.7_p1.patch:
+
+	kolab/issue4395 (freebusy list contains time of an event, which is
+	from a now *not* shared, before shared calendar folder)
+
+2010-06-23  Gunnar Wrobel  <p@rdus.de>
+
+	* Kolab_FreeBusy.spec: Update to 0.1.7
+
+	kolab/issue3983 (Phpunit testsuite fails on OpenPKG Kolab 2.2.2)
+	kolab/issue4395 (freebusy list contains time of an event, which is
+	from a now *not* shared, before shared calendar folder)
+
 2010-05-16  Gunnar Wrobel  <p@rdus.de>
 
 	* Kolab_FreeBusy.spec: Update to 0.1.6
@@ -31,7 +65,7 @@
 	                 free/busy information)
 	kolab/issue3527 (no immediately printing of folders during
 	                 freebusy cache regeneration)
-	
+
 2009-03-06  Gunnar Wrobel  <p@rdus.de>
 
 	* Kolab_FreeBusy.spec: Update to 0.1.3.

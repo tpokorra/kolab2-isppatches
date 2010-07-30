@@ -1,3 +1,22 @@
+2010-07-21  Gunnar Wrobel  <p@rdus.de>
+
+	* kolab.globals.in, rc.kolabd.in:
+
+	kolab/issue3522 (No logrotate for kolab-filter.log and friends)
+
+2010-07-17  Gunnar Wrobel  <p@rdus.de>
+
+	* kolab2.schema, horde.schema, rfc2739.schema:
+
+	kolab/issue3245 (Remove horde.schema and rfc2739.schema from
+	kolab-server/slapd.conf.template)
+
+2010-07-15  Gunnar Wrobel  <p@rdus.de>
+
+	* templates/resmgr.conf.template.in:
+
+	Reduced amount of logging in the Kolab_Filter package.
+
 2010-06-17  Mathieu Parent <math.parent@gmail.com>
 
 	* dist_conf/debian: Cyrus user and group is cyrus:mail on Debian

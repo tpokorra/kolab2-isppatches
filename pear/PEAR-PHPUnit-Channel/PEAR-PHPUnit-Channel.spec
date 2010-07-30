@@ -2,7 +2,7 @@
 
 Name:           PEAR-PHPUnit-Channel
 Version:        1.0
-Release:        20090119
+Release:        20100706
 Summary:        Adds pear.phpunit.de channel to PEAR
 
 Group:          Development/Languages
@@ -30,7 +30,7 @@ from this channel to be installed.
 %install
 rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT%{pear_xmldir}
-install -m 644 %{SOURCE0} $RPM_BUILD_ROOT%{pear_xmldir}
+%{l_prefix}/lib/openpkg/shtool install -c -m 644 %{SOURCE0} $RPM_BUILD_ROOT%{pear_xmldir}/pear.phpunit.de.xml
 %{l_rpmtool} files -v -ofiles -r$RPM_BUILD_ROOT %{l_files_std} 
 
 %clean
