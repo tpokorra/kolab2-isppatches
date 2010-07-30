@@ -89,6 +89,7 @@ imap_notify_socket=${imap_statedir}/socket/notify
 syslog_facility=user
 kolab_statedir=${localstatedir}/kolab
 kolab_logdir=${kolab_statedir}/log
+kolab_hooksdir=${kolab_statedir}/hooks
 kolab_pidfile=${kolab_statedir}/kolab.pid
 kolab_mailboxuiddb=${kolab_statedir}/mailbox-uidcache.db
 kolab_smtpdpolicy_conffile_usr=${kolab_musr}
@@ -146,6 +147,7 @@ webserver_usr=${kolab_usr}
 webserver_grp=${kolab_grp}
 
 #webclient
+webclient_data_root=${localstatedir}/kolab/webclient_data
 horde_cookie_path=/client
 horde_confdir=${webserver_document_root}/client/config
 dimp_confdir=${webserver_document_root}/client/dimp/config

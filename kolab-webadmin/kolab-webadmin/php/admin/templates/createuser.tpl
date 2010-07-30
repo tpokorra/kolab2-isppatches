@@ -17,6 +17,11 @@
 	<td>{tr msg="Required"}</td>
 </tr>
 <tr>
+	<td>{tr msg="Middle Name"}</td>
+	<td><input name="middlename" type="text" value="" size="50" onfocus="javascript:this.select()" /></td>
+	<td></td>
+</tr>
+<tr>
 	<td>{tr msg="Last Name"}</td>
 	<td><input name="lastname" type="text" value="" size="50" onfocus="javascript:this.select()" /></td>
 	<td>{tr msg="Required"}</td>
@@ -37,7 +42,8 @@
 	<td>{tr msg="Required, non volatile"}</td>
 </tr>
 <tr>
-	<td>{tr msg="Title"}</td><td><input name="title_0" type="text" value=""  size="50" onfocus="javascript:this.select()" /></td>
+	<td>{tr msg="Title"}</td>
+	<td><input name="title_0" type="text" value=""  size="50" onfocus="javascript:this.select()" /></td>
 	<td></td>
 </tr>
 <tr>
