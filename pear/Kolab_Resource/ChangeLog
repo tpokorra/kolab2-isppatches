@@ -1,0 +1,13 @@
+2010-07-25  Gunnar Wrobel  <p@rdus.de>
+
+	* package.info:
+
+	Update to Kolab-Resource-0.1.1.
+
+	kolab/issue3562 (tentative answer when inviting outside of
+	free/busy interval is confusing)
+
+2010-07-14  Gunnar Wrobel  <p@rdus.de>
+
+	* package.info: Added package to Kolab CVS.
+
