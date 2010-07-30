@@ -1,0 +1,198 @@
+From: Gunnar Wrobel <wrobel@pardus.de>
+Subject: [PATCH] issue3416.patch
+
+Do not block when free/busy is not available.
+
+STATUS: UNMERGED
+
+REF: http://issues.kolab.org/issue3416
+
+Signed-off-by: Gunnar Wrobel <wrobel@pardus.de>
+
+--- a/framework/Kolab_Storage/lib/Horde/Kolab/Storage/Folder.php	2010-04-28 17:18:16.000000000 +0200
++++ b/framework/Kolab_Storage/lib/Horde/Kolab/Storage/Folder.php	2010-04-28 18:05:34.684348740 +0200
+@@ -31,6 +31,8 @@
+ require_once 'Horde/String.php';
+ require_once 'Horde/NLS.php';
+ 
++require_once 'HTTP/Request.php';
++
+ /**
+  * The root of the Kolab annotation hierarchy, used on the various IMAP folder
+  * that are used by Kolab clients.
+@@ -1256,14 +1258,15 @@
+ 
+         $options['method'] = 'GET';
+         $options['timeout'] = 5;
++        $options['readTimeout'] = array(5, 1000);
++        $options['socketOptions']['http']['timeout'] = 5.0;
+         $options['allowRedirects'] = true;
+ 
+         if (isset($conf['http']['proxy']) && !empty($conf['http']['proxy']['proxy_host'])) {
+             $options = array_merge($options, $conf['http']['proxy']);
+         }
+ 
+-        require_once 'HTTP/Request.php';
+-        $http = new HTTP_Request($url, $options);
++        $http = new HTTP_Request_NonBlocking($url, $options);
+         $http->setBasicAuth(Auth::getAuth(), Auth::getCredential('password'));
+         @$http->sendRequest();
+         if ($http->getResponseCode() != 200) {
+@@ -1643,3 +1646,157 @@
+                                      $value);
+     }
+ }
++
++class HTTP_Request_NonBlocking extends HTTP_Request
++{
++    /**
++    * Sends the request
++    *
++    * @access public
++    * @param  bool   Whether to store response body in Response object property,
++    *                set this to false if downloading a LARGE file and using a Listener
++    * @return mixed  PEAR error on error, true otherwise
++    */
++    function sendRequest($saveBody = true)
++    {
++        if (!is_a($this->_url, 'Net_URL')) {
++            return PEAR::raiseError('No URL given', HTTP_REQUEST_ERROR_URL);
++        }
++
++        $host = isset($this->_proxy_host) ? $this->_proxy_host : $this->_url->host;
++        $port = isset($this->_proxy_port) ? $this->_proxy_port : $this->_url->port;
++
++        if (strcasecmp($this->_url->protocol, 'https') == 0) {
++            // Bug #14127, don't try connecting to HTTPS sites without OpenSSL
++            if (version_compare(PHP_VERSION, '4.3.0', '<') || !extension_loaded('openssl')) {
++                return PEAR::raiseError('Need PHP 4.3.0 or later with OpenSSL support for https:// requests',
++                                        HTTP_REQUEST_ERROR_URL);
++            } elseif (isset($this->_proxy_host)) {
++                return PEAR::raiseError('HTTPS proxies are not supported', HTTP_REQUEST_ERROR_PROXY);
++            }
++            $host = 'ssl://' . $host;
++        }
++
++        // magic quotes may fuck up file uploads and chunked response processing
++        $magicQuotes = ini_get('magic_quotes_runtime');
++        ini_set('magic_quotes_runtime', false);
++
++        // RFC 2068, section 19.7.1: A client MUST NOT send the Keep-Alive
++        // connection token to a proxy server...
++        if (isset($this->_proxy_host) && !empty($this->_requestHeaders['connection']) &&
++            'Keep-Alive' == $this->_requestHeaders['connection'])
++        {
++            $this->removeHeader('connection');
++        }
++
++        $keepAlive = (HTTP_REQUEST_HTTP_VER_1_1 == $this->_http && empty($this->_requestHeaders['connection'])) ||
++                     (!empty($this->_requestHeaders['connection']) && 'Keep-Alive' == $this->_requestHeaders['connection']);
++        $sockets   = &PEAR::getStaticProperty('HTTP_Request', 'sockets');
++        $sockKey   = $host . ':' . $port;
++        unset($this->_sock);
++
++        // There is a connected socket in the "static" property?
++        if ($keepAlive && !empty($sockets[$sockKey]) &&
++            !empty($sockets[$sockKey]->fp))
++        {
++            $this->_sock =& $sockets[$sockKey];
++            $err = null;
++        } else {
++            $this->_notify('connect');
++            $this->_sock =& new Net_Socket();
++            $err = $this->_sock->connect($host, $port, null, $this->_timeout, $this->_socketOptions);
++            $this->_sock->setBlocking(false);
++        }
++        PEAR::isError($err) or $err = $this->_sock->write($this->_buildRequest());
++
++if (!PEAR::isError($err)) {
++            if (!empty($this->_readTimeout)) {
++                $this->_sock->setTimeout($this->_readTimeout[0], $this->_readTimeout[1]);
++            }
++
++            $this->_notify('sentRequest');
++
++            // Read the response
++            $this->_response = &new HTTP_Response($this->_sock, $this->_listeners);
++            $err = $this->_response->process(
++                $this->_saveBody && $saveBody,
++                HTTP_REQUEST_METHOD_HEAD != $this->_method
++            );
++
++            if ($keepAlive) {
++                $keepAlive = (isset($this->_response->_headers['content-length'])
++                              || (isset($this->_response->_headers['transfer-encoding'])
++                                  && strtolower($this->_response->_headers['transfer-encoding']) == 'chunked'));
++                if ($keepAlive) {
++                    if (isset($this->_response->_headers['connection'])) {
++                        $keepAlive = strtolower($this->_response->_headers['connection']) == 'keep-alive';
++                    } else {
++                        $keepAlive = 'HTTP/'.HTTP_REQUEST_HTTP_VER_1_1 == $this->_response->_protocol;
++                    }
++                }
++            }
++        }
++
++        ini_set('magic_quotes_runtime', $magicQuotes);
++
++        if (PEAR::isError($err)) {
++            return $err;
++        }
++
++        if (!$keepAlive) {
++            $this->disconnect();
++        // Store the connected socket in "static" property
++        } elseif (empty($sockets[$sockKey]) || empty($sockets[$sockKey]->fp)) {
++            $sockets[$sockKey] =& $this->_sock;
++        }
++
++        // Check for redirection
++        if (    $this->_allowRedirects
++            AND $this->_redirects <= $this->_maxRedirects
++            AND $this->getResponseCode() > 300
++            AND $this->getResponseCode() < 399
++            AND !empty($this->_response->_headers['location'])) {
++
++
++            $redirect = $this->_response->_headers['location'];
++
++            // Absolute URL
++            if (preg_match('/^https?:\/\//i', $redirect)) {
++                $this->_url = &new Net_URL($redirect);
++                $this->addHeader('Host', $this->_generateHostHeader());
++            // Absolute path
++            } elseif ($redirect{0} == '/') {
++                $this->_url->path = $redirect;
++
++            // Relative path
++            } elseif (substr($redirect, 0, 3) == '../' OR substr($redirect, 0, 2) == './') {
++                if (substr($this->_url->path, -1) == '/') {
++                    $redirect = $this->_url->path . $redirect;
++                } else {
++                    $redirect = dirname($this->_url->path) . '/' . $redirect;
++                }
++                $redirect = Net_URL::resolvePath($redirect);
++                $this->_url->path = $redirect;
++
++            // Filename, no path
++            } else {
++                if (substr($this->_url->path, -1) == '/') {
++                    $redirect = $this->_url->path . $redirect;
++                } else {
++                    $redirect = dirname($this->_url->path) . '/' . $redirect;
++                }
++                $this->_url->path = $redirect;
++            }
++
++            $this->_redirects++;
++            return $this->sendRequest($saveBody);
++
++        // Too many redirects
++        } elseif ($this->_allowRedirects AND $this->_redirects > $this->_maxRedirects) {
++            return PEAR::raiseError('Too many redirects', HTTP_REQUEST_ERROR_REDIRECTS);
++        }
++
++        return true;
++    }
++
++}

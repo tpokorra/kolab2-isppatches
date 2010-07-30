@@ -1,3 +1,17 @@
+2010-07-21  Gunnar Wrobel  <p@rdus.de>
+
+	* templates/Kolab_Filter-0.1.10/rc.filter.template:
+
+	kolab/issue3522 (No logrotate for kolab-filter.log and friends)
+
+
+2010-07-15  Gunnar Wrobel  <p@rdus.de>
+
+	* package.info: Update to 0.1.10.
+
+	Use the new Kolab_Resource package.
+	Improved (reduced) logging.
+
 2010-04-20  Gunnar Wrobel  <p@rdus.de>
 
 	* Kolab_Filter.spec:  Update to 0.1.9.

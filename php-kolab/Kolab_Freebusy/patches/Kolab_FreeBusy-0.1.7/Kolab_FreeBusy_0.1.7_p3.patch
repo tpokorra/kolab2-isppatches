@@ -1,0 +1,25 @@
+From: Gunnar Wrobel <wrobel@pardus.de>
+Subject: [PATCH] Kolab_FreeBusy_0.1.7_p3.patch
+
+kolab/issue4436 (free/busy interval is often too low)
+
+STATUS: MERGED
+
+REF: https://issues.kolab.org/issue4436
+REF: http://git.horde.org/diff.php/framework/Kolab_FreeBusy/lib/Horde/Kolab/FreeBusy/Attic/Cache.php?sa=1&r1=1.17.2.10&r2=1.17.2.11&rt=horde
+
+Signed-off-by: Gunnar Wrobel <wrobel@pardus.de>
+
+--- a/framework/Kolab_FreeBusy/lib/Horde/Kolab/FreeBusy/Cache.php	15 Jun 2010 12:00:33 -0000	1.17.2.10
++++ a/framework/Kolab_FreeBusy/lib/Horde/Kolab/FreeBusy/Cache.php	22 Jul 2010 13:03:07 -0000
+@@ -131,8 +131,8 @@
+         }
+ 
+         $vCal = $fb->generate(null, null,
+-                              !empty($fbpast)?$fbpast:0,
+-                              !empty($fbfuture)?$fbfuture:60,
++                              !empty($fbpast) ? $fbpast : 0,
++                              !empty($fbfuture)? $fbfuture : $conf['fb']['future_days'],
+                               $access->owner,
+                               $access->owner_object->get(KOLAB_ATTR_CN));
+         if (is_a($vCal, 'PEAR_Error')) {
