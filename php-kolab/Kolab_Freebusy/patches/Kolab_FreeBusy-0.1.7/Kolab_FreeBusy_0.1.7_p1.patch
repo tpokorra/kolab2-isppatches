@@ -1,0 +1,19 @@
+From: Gunnar Wrobel <wrobel@pardus.de>
+Subject: [PATCH] Kolab_FreeBusy_0.1.7_p1.patch
+
+Completes the fix for kolab/issue4395.
+
+STATUS: MERGED
+
+Signed-off-by: Gunnar Wrobel <wrobel@pardus.de>
+
+--- a/framework/Kolab_FreeBusy/lib/Horde/Kolab/FreeBusy/Cache/File/acl.php	15 Jun 2010 12:00:34 -0000	1.1.2.2
++++ b/framework/Kolab_FreeBusy/lib/Horde/Kolab/FreeBusy/Cache/File/acl.php	24 Jun 2010 17:22:11 -0000
+@@ -103,7 +103,6 @@
+             if (is_a($oldacl, 'PEAR_Error')) {
+                 $oldacl = array();
+             }
+-            $acl = array_merge($oldacl, $acl);
+         } else {
+             $oldacl = array();
+         }
