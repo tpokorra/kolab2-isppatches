@@ -22,7 +22,7 @@ package Kolab::LDAP;
 ##  You can view the  GNU General Public License, online, at the GNU
 ##  Project's homepage; see <http://www.gnu.org/licenses/gpl.html>.
 ##
-##  $Revision: 1.3 $
+##  $Revision: 1.7 $
 
 use 5.008;
 use strict;
@@ -321,7 +321,7 @@ sub create
         timeout => 20,
         async   => $as,
 	verify => 'none',
-	onerror => 'undef'
+	onerror => \&ldap_error
       );
     } else {
       $ldap = Net::LDAP->new(
@@ -330,7 +330,7 @@ sub create
         version => 3,
         timeout => 20,
         async   => $as,
-	onerror => 'undef'
+	onerror => \&ldap_error
       );
     }
     if (!$ldap) {
@@ -356,7 +356,6 @@ sub destroy
     my $ldap = shift;
 
     if (defined($ldap) && ($ldap->isa('Net::LDAP') || $ldap->isa('Net::LDAPS'))) {
-        $ldap->abandon;
         $ldap->unbind;
         $ldap->disconnect;
     }
@@ -719,16 +718,18 @@ sub deleteObject
 	}
     }
 
-    # FIXME
-    # This is a horrible fix for kolab/issue3472. kolabd is a simple
-    # deamon that should react to changes within LDAP. It should NOT
-    # however have any application knowledge. It would be better if
-    # each application that requires cleanup operations after user
-    # removal could add a script in a directory collecting such
-    # operations.
-    if (-e $Kolab::config{'webserver_document_root'} . '/client/storage/' . $uid . '.prefs' ) {
-	unlink($Kolab::config{'webserver_document_root'} . '/client/storage/' . $uid . '.prefs');
-        Kolab::log('L', "Deleted web client user preferences for user $uid.", KOLAB_DEBUG);
+    my $hooksdir = $Kolab::config{'kolab_hooksdir'} . '/delete';
+    opendir(DIR, $hooksdir) or Kolab::log('T', 'Given hook directory $hooksdir does not exist!', KOLAB_ERROR );
+    my @hooks = grep { /^hook-/ } readdir (DIR);
+    closedir(DIR);
+
+    foreach my $hook (@hooks) {
+	system($Kolab::config{'kolab_hooksdir'} . '/delete/' . $hook . " $uid");
+	if ($?==0) {
+	    Kolab::log('L', "Successfully ran hook $hook for user $uid.", KOLAB_DEBUG);
+	} else {
+	    Kolab::log('L', "Failed running hook $hook for user $uid.", KOLAB_ERROR);
+	}
     }
 
     if (!$uid) {
@@ -1005,6 +1006,14 @@ sub make_salt {
     my @tab = ('.', '/', 0 .. 9, 'A' .. 'Z', 'a' .. 'z');
 
     return join "", @tab[ map {rand 64} (1 .. $length) ];
+}
+
+sub ldap_error {
+    my $mesg = shift;
+    my $errstr = $mesg->dn || '';
+    $errstr .= ": " if $errstr;
+    $errstr .= $mesg->error if $mesg->error;
+    Kolab::log('L', $errstr, KOLAB_ERROR);
 }
 
 
