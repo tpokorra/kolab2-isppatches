@@ -240,6 +240,8 @@ switch( $action ) {
 		 $heading = _('Modify Maintainer');
 		 $messages[] = _('Maintainer ').$ldap_object['dn']._(' successfully modified');
 		 $form->setValues();
+		 $form->entries['password_0']['value'] = '';
+		 $form->entries['password_1']['value'] = '';
 		 if( $auth->group() != 'admin' ) {
 		   $form->entries['firstname']['attrs'] = 'readonly';
 		   $form->entries['lastname']['attrs'] = 'readonly';
