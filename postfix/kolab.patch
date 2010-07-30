@@ -5,7 +5,7 @@
  License:      IPL
  Version:      %{V_postfix}
 -Release:      20080101
-+Release:      20080101_kolab
++Release:      20080101_kolab2
  
  #   package options
  %option       with_fsl       yes
@@ -19,3 +19,14 @@
  %endif
  %if "%{with_ssl}" == "yes"
      CCARGS="$CCARGS -DUSE_TLS"
+--- fsl.postfix.orig	2010-07-17 16:24:41.000000000 +0200
++++ fsl.postfix	2010-07-17 16:25:29.000000000 +0200
+@@ -9,7 +9,7 @@
+     -> {
+         debug: file(
+             path="@l_prefix@/var/postfix/log/postfix.log",
+-            perm=0644, monitor=3600
++            perm=0640, monitor=3600
+         )
+     }
+ };
