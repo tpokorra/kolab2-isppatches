@@ -1,0 +1,28 @@
+From: Gunnar Wrobel <wrobel@pardus.de>
+Subject: [PATCH] Kolab_Storage_0.5.0_p2.patch
+
+Avoid PEAR Errors in the session data.
+
+STATUS: MERGED
+
+REF: https://issues.kolab.org/issue4169
+
+Signed-off-by: Gunnar Wrobel <wrobel@pardus.de>
+
+--- a/framework/Kolab_Storage/lib/Horde/Kolab/Storage/List.php	22 Jun 2010 09:31:39 -0000	1.3.2.9
++++ b/framework/Kolab_Storage/lib/Horde/Kolab/Storage/List.php	25 Jun 2010 04:53:49 -0000	1.3.2.10
+@@ -168,10 +168,11 @@
+             }
+ 
+             // Obtain a list of all folders the current user has access to
+-            $this->_list = $imap->getMailboxes();
+-            if (is_a($this->_list, 'PEAR_Error')) {
+-                return $this->_list;
++            $list = $imap->getMailboxes();
++            if (is_a($list, 'PEAR_Error')) {
++                return $list;
+             }
++            $this->_list = $list;
+         }
+         return $this->_list;
+     }
