@@ -1,32 +1,4 @@
-
 <html>
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII"/>
-		<meta http-equiv="Content-Style-Type" content="text/css" />
-		<title>Kolab ISP Extensions</title>
-		<style type="text/css">
-			code {
-				color: #AA00AA;
-			}
-			.it {
-				font-style: italic;
-			}
-			.bo {
-				font-weight: bold;
-			}
-			table {
-				border-style: groove;
-				border-color: black;
-				border-width: 1px;
-				border-collapse: collapse;
-			}
-			tr, td, th {
-				border-style: groove;
-				border-color: black;
-				border-width: 1px;
-			}
-		</style>
-	</head>
 	<body>
 		<h1>Kolab ISP Extensions</h1>
 		<p>The Kolab extensions by
@@ -55,7 +27,7 @@
 			</thead>
 			<tbody>
 				<tr>
-					<td><code><a href="https://github.com/tpokorra/kolab2-isppatches/tree/master-cvs">master-cvs</a></code></td>
+					<td><code><a href="https://github.com/tpokorra/kolab2-isppatches/tree/master_cvs">master_cvs</a></code></td>
 					<td>
 						track pesudo-origin; would-be identical
 						to HEAD from <code>cvs.kolab.org</code>
